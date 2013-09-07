@@ -62,8 +62,8 @@ CA cert name too large ( > 63 )\n");
 		retval = NODOM;
 	}
 	if ((alen == NONE) && (data->action == REMOVE)) {
-		printf("No CA Certificate name provided\n");
-		printf("Assuming self certified certificate\n--\n\n");
+		fprintf(stderr, "No CA Certificate name provided\n");
+		fprintf(stderr, "Assuming self certified certificate\n--\n\n");
 	}
 	return retval;
 }
@@ -106,28 +106,35 @@ output_insert_ssl(cert_s *data)
 dn: cn=config\n\
 changeType: modify\n\
 add: olcTLSCACertificateFile\n\
-add: olcTLSCertificateFile\n\
-add: olcTLSCertificateKeyFile\n\
-add: olcTLSCRLCheck\n\
-add: olcTLSVerifyClient\n\
 olcTLSCACertificateFile: /etc/ssl/certs/%s.pem\n\
+-\n\
+add: olcTLSCertificateFile\n\
 olcTLSCertificateFile: /etc/ldap/ssl.crt/%s.crt\n\
+-\n\
+add: olcTLSCertificateKeyFile\n\
 olcTLSCertificateKeyFile: /etc/ldap/ssl.key/%s.pem\n\
+-\n\
+add: olcTLSCRLCheck\n\
 olcTLSCRLCheck: none\n\
-olcTLSVerifyClient: never\n\
+-\n\
+add: olcTLSVerifyClient\n\
+olcTLSVerifyClient: never\n\n\
 ", data->ca, data->domain, data->domain);
 	else
 		printf("\
 dn: cn=config\n\
 changeType: modify\n\
 add: olcTLSCertificateFile\n\
-add: olcTLSCertificateKeyFile\n\
-add: olcTLSCRLCheck\n\
-add: olcTLSVerifyClient\n\
 olcTLSCertificateFile: /etc/ldap/ssl.crt/%s.crt\n\
+-\n\
+add: olcTLSCertificateKeyFile\n\
 olcTLSCertificateKeyFile: /etc/ldap/ssl.key/%s.pem\n\
+-\n\
+add: olcTLSCRLCheck\n\
 olcTLSCRLCheck: none\n\
-olcTLSVerifyClient: never\n\
+-\n\
+add: olcTLSVerifyClient\n\
+olcTLSVerifyClient: never\n\n\
 ", data->domain, data->domain);
 
 }
@@ -140,19 +147,26 @@ output_remove_ssl(cert_s *data)
 dn: cn=config\n\
 changeType: modify\n\
 delete: olcTLSCACertificateFile\n\
+-\n\
 delete: olcTLSCertificateFile\n\
+-\n\
 delete: olcTLSCertificateKeyFile\n\
+-\n\
 delete: olcTLSCRLCheck\n\
-delete: olcTLSVerifyClient\n\
+-\n\
+delete: olcTLSVerifyClient\n\n\
 ");
 	else
 		printf("\
 dn: cn=config\n\
 changeType: modify\n\
 delete: olcTLSCertificateFile\n\
+-\n\
 delete: olcTLSCertificateKeyFile\n\
+-\n\
 delete: olcTLSCRLCheck\n\
-delete: olcTLSVerifyClient\n\
+-\n\
+delete: olcTLSVerifyClient\n\n\
 ");
 }
 
