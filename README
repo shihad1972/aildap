@@ -1,0 +1,30 @@
+These are various ldap utilities when you have an ldap directory used for
+user authentication
+
+lcc
+  This will generate the ldif to either add or remove the main containers
+or ou's, for your directory. You have the option of adding a sudoers ou
+as well
+-i	insert
+-r	remove
+-d	domain name
+-s	sudo
+
+lcc [ -i | -r ] -d <domain-name> (-s)
+
+lsc
+  This will generate an ssl configuration to add to the already existing
+configuration for the domain. You must have already have the certificate
+and key pair for the domain, and optionally the CA certificate. The key
+should be in /etc/ldap/ssl.key, the certificate in /etc/ldap/ssl.crt and
+the CA cert (if you wish to add it) in /etc/ssl/certs. The CA certificate
+file postfix should be .pem, as should the domain key file. The domain
+certificate file should be postfixed with .crt. The domain key and certificate
+should have their name as the domain name.
+
+-i	insert
+-r	remove
+-a	CA certificate
+-d	domain
+
+lsc [ -i | -r ] -d <domain-name> (-a CA-file-name)
