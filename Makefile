@@ -10,7 +10,7 @@ CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=
 PCFLAGS = -DLDAP_DEPRECATED
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
-bin_PROGRAMS = lsc lcc lcd tsha ltc
+bin_PROGRAMS = lsc lcc tsha ltc
 lsc_OBJECTS = ssl-config.o
 lcc_OBJECTS = containers.o
 ltc_OBJECTS = test-ldap-connection.o
@@ -18,7 +18,7 @@ lcd_OBJECTS = domains.o
 sha_OBJECTS = sha1.c
 
 
-all:	lsc lcc lcd tsha ltc
+all:	lsc lcc tsha
 
 lcc:	$(lcc_OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $(lcc_OBJECTS)

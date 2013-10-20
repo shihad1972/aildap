@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
 int
-main (int argc, char *argv[])
+/*main (int argc, char *argv[]) */
+main ()
 {
 	EVP_MD_CTX *msg;
 	const EVP_MD *md;
@@ -29,8 +31,7 @@ main (int argc, char *argv[])
 	EVP_MD_CTX_destroy(msg);
 	for (i = 0; i < SHA_DIGEST_LENGTH; i++)
 		printf("%02x", md_value[i]);
-	printf("\n");
-	printf("\n");
+/*	printf("\n"); */
 
 	return 0;
 }
