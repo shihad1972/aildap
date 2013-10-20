@@ -28,3 +28,4 @@ should have their name as the domain name.
 -d	domain
 
 lsc [ -i | -r ] -d <domain-name> (-a CA-file-name)
+
