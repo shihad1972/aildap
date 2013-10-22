@@ -11,29 +11,29 @@ PCFLAGS = -DLDAP_DEPRECATED
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 bin_PROGRAMS = lsc lcc tsha ltc
-lsc_OBJECTS = ssl-config.o
-lcc_OBJECTS = containers.o
-ltc_OBJECTS = test-ldap-connection.o
-lcd_OBJECTS = domains.o
-sha_OBJECTS = sha1.c
+lsc_SOURCES = ssl-config.c
+lcc_SOURCES = containers.c
+ltc_SOURCES = test-ldap-connection.c
+lcd_SOURCES = domains.c
+sha_SOURCES = sha1.c
 
 
-all:	lsc lcc tsha
+all:	lsc lcc tsha ltc
 
-lcc:	$(lcc_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $(lcc_OBJECTS)
+lcc:	$(lcc_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(lcc_SOURCES)
 
-lsc:	$(lsc_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $(lsc_OBJECTS)
+lsc:	$(lsc_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(lsc_SOURCES)
 
-ltc:	$(ltc_OBJECTS)
-	$(CC) $(PCFLAGS) $(CFLAGS) -o $@ $(ltc_OBJECTS) $(LLDFLAGS)
+ltc:	$(ltc_SOURCES)
+	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(ltc_SOURCES) $(LLDFLAGS)
 
-lcd:	$(lcd_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $(lcd_OBJECTS) $(SLDFLAGS)
+lcd:	$(lcd_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS)
 
-tsha:	$(sha_OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $(sha_OBJECTS) $(SLDFLAGS)
+tsha:	$(sha_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(sha_SOURCES) $(SLDFLAGS)
 
 clean:
 	$(RM) *.o lsc lcc ltc lcd tsha
