@@ -37,14 +37,14 @@ parse_command_line(int argc, char *argv[], cert_s *data)
 Domain name too large ( > 255)\n");
 				retval = DOMLONG;
 			}
-		snprintf(data->domain, DOMAIN, "%s", optarg);
+			snprintf(data->domain, DOMAIN, "%s", optarg);
 		} else if (opt == 'a') {
 			if ((alen = strlen(optarg)) > (CANAME - 1)) {
 				fprintf(stderr, "\
 CA cert name too large ( > 63 )\n");
 				retval = CALONG;
 			}
-		snprintf(data->ca, CANAME, "%s", optarg);
+			snprintf(data->ca, CANAME, "%s", optarg);
 		} else if (opt == 'i') {
 			data->action = INSERT;
 		} else if (opt == 'r') {
