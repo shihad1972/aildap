@@ -15,7 +15,7 @@ lsc_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 ltc_SOURCES = test-ldap-connection.c
 lcd_SOURCES = domains.c
-sha_SOURCES = sha1.c
+sha_SOURCES = sha1.c base-sha.c
 
 
 all:	lsc lcc tsha ltc
