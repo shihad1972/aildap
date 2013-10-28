@@ -68,7 +68,7 @@ Usage: %s -d domain [ -g ] [ -l ] -n name -p password -s surname -u userid\n\
 	}
 	return NONE;
 }
-
+/*
 int
 hex_conv(const char *pass, guchar *out)
 {
@@ -79,4 +79,4 @@ hex_conv(const char *pass, guchar *out)
 	}
 	return retval;
 }
-
+*/

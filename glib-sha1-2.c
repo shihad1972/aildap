@@ -18,11 +18,11 @@ main()
 	sum = g_checksum_new(G_CHECKSUM_SHA1);
 	g_checksum_update(sum, mess, -1);
 	pass = g_checksum_get_string(sum);
-	if ((retval = hex_conv(pass, out)) != NONE) {
+/*	if ((retval = hex_conv(pass, out)) != NONE) {
 		printf("Conversion failed!\n");
 		g_checksum_free(sum);
 		exit (ONE);
-	}
+	} */
 	conv = g_base64_encode(out, 20);
 	printf("%s\n", conv);
 	g_checksum_free(sum);

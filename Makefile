@@ -24,7 +24,7 @@ gsha2_SOURCES = glib-sha1-2.c base-sha.c
 gsha3_SOURCES = glib-sha1-3.c
 
 
-all:	lsc lcc tsha ltc
+all:	lsc lcc lcd tsha ltc gsha3
 
 lcc:	$(lcc_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lcc_SOURCES)
@@ -36,7 +36,7 @@ ltc:	$(ltc_SOURCES)
 	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(ltc_SOURCES) $(LLDFLAGS)
 
 lcd:	$(lcd_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS)
+	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 tsha:	$(sha_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(sha_SOURCES) $(SLDFLAGS) $(GLIBS)
