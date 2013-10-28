@@ -1,5 +1,6 @@
 #ifndef HAVE_BASE_H
 # define HAVE_BASE_H
+# include <glib.h>
 
 enum {
 	NONE = 0,
@@ -16,6 +17,32 @@ typedef struct inp_data_s {
 	char *dom, *pass, *sur, *name;
 } inp_data_s;
 
+#ifndef MALLOC_DATA_MEMBER
+# define MALLOC_DATA_MEMBER(mem, SIZE) {                            \
+	if (!(data->mem = calloc(ONE, SIZE)))                       \
+		rep_err("Cannot malloc mem");                       \
+}
+#endif /* MALLOC_DATA_MEMBER */
+
+#ifndef CLEAN_DATA_MEMBER
+# define CLEAN_DATA_MEMBER(mem) {                                   \
+	if (data->mem) {                                            \
+		free(data->mem);                                    \
+	} else {                                                    \
+		fprintf(stderr, "data->mem does not exist??\n");    \
+		exit (MEM);                                         \
+	}                                                           \
+}
+#endif /* CLEAN_DATA_MEMBER */
+
+#ifndef GET_OPT_ARG
+# define GET_OPT_ARG(member, LEN, Name) {                                     \
+	if ((slen = snprintf(data->member, LEN, "%s", optarg)) > LEN) {       \
+		fprintf(stderr, "Name truncated by %d\n", (slen - LEN) + 1);  \
+	}                                                                     \
+}
+#endif /* GET_OPT_ARG */
+
 void
 rep_err(const char *error);
 
@@ -27,5 +54,8 @@ clean_data(inp_data_s *data);
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data);
+
+int
+hex_conv(const char *pass, guchar *out);
 
 #endif /* HAVE_BASE_H */

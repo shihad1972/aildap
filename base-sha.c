@@ -2,14 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <glib.h>
 #include "base-sha.h"
 
-#ifndef MALLOC_DATA_MEMBER
-# define MALLOC_DATA_MEMBER(mem, SIZE) {                            \
-	if (!(data->mem = calloc(ONE, SIZE)))                       \
-		rep_err("Cannot malloc mem");                       \
-}
-#endif /* MALLOC_DATA_MEMBER */
 
 void
 rep_err(const char *error)
@@ -32,17 +27,6 @@ init_input_data(inp_data_s *data)
 	return NONE;
 }
 
-#ifndef CLEAN_DATA_MEMBER
-# define CLEAN_DATA_MEMBER(mem) {                                   \
-	if (data->mem) {                                            \
-		free(data->mem);                                    \
-	} else {                                                    \
-		fprintf(stderr, "data->mem does not exist??\n");    \
-		exit (MEM);                                         \
-	}                                                           \
-}
-#endif /* CLEAN_DATA_MEMBER */
-
 void
 clean_data(inp_data_s *data)
 {
@@ -53,14 +37,6 @@ clean_data(inp_data_s *data)
 	CLEAN_DATA_MEMBER(sur)
 	CLEAN_DATA_MEMBER(name)
 }
-
-#ifndef GET_OPT_ARG
-# define GET_OPT_ARG(member, LEN, Name) {                                     \
-	if ((slen = snprintf(data->member, LEN, "%s", optarg)) > LEN) {       \
-		fprintf(stderr, "Name truncated by %d\n", (slen - LEN) + 1);  \
-	}                                                                     \
-}
-#endif /* GET_OPT_ARG */
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data)
@@ -93,6 +69,14 @@ Usage: %s -d domain [ -g ] [ -l ] -n name -p password -s surname -u userid\n\
 	return NONE;
 }
 
-#undef MALLOC_DATA_MEMBER
-#undef GET_OPT_ARG
-#undef CLEAN_DATA_MEMBER
+int
+hex_conv(const char *pass, guchar *out)
+{
+	int retval = NONE;
+	gsize olen = strlen(out), x;
+	for (x = 0; x < olen; x++) {
+		sscanf(pass + 2*x, "%02x", &out[x]);
+	}
+	return retval;
+}
+
