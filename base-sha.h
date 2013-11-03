@@ -43,6 +43,11 @@ typedef struct inp_data_s {
 }
 #endif /* GET_OPT_ARG */
 
+#define PASS_SIZE 100
+
+char *
+getPassword(const char *message);
+
 void
 rep_err(const char *error);
 

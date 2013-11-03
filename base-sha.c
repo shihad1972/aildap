@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <glib.h>
+#include <termios.h> 
 #include "base-sha.h"
 
 
@@ -67,6 +68,38 @@ Usage: %s -d domain [ -g ] [ -l ] -n name -p password -s surname -u userid\n\
 		}
 	}
 	return NONE;
+}
+
+char *
+getPassword(const char *message)
+{
+	static struct termios oldt, newt;
+	int i = 0;
+	int c;
+	char *pass;
+
+	if (!(pass = malloc(PASS_SIZE)))
+		exit (2);
+	printf("%s", message);
+	/*saving the old settings of STDIN_FILENO and copy settings for resetting*/
+	tcgetattr( STDIN_FILENO, &oldt);
+	newt = oldt;
+
+	/*setting the approriate bit in the termios struct*/
+	newt.c_lflag &= ~(ECHO);  
+
+	/*setting the new bits*/
+	tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+
+	/*reading the password from the console*/
+	while ((c = getchar())!= '\n' && c != EOF && i < (PASS_SIZE - 1))
+		pass[i++] = c;
+	printf("\n");
+	pass[i] = '\0';
+
+	/*resetting our old STDIN_FILENO*/ 
+	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
+	return pass;
 }
 /*
 int
