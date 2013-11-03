@@ -60,6 +60,9 @@ clean_data(inp_data_s *data);
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data);
 
+void
+comm_line_err(char *prog);
+
 int
 hex_conv(const char *pass, guchar *out);
 

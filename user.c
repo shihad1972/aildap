@@ -6,12 +6,18 @@
 #include "base-sha.h"
 
 int
-main ()
+main (int argc, char *argv[])
 {
 	char *pass/*, *npass */;
 	int retval = 0;
+	inp_data_s *data;
 
-	pass = getPassword("Enter your password: ");
+	if (!(data = malloc(sizeof(inp_data_s))))
+		rep_err("data in main");
+	init_input_data(data);
+	parse_command_line(argc, argv, data);
+	pass = getPassword("Enter password for user: ");
 	free(pass);
+	clean_data(data);
 	return retval;
 }
