@@ -2,8 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <glib.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <termios.h> 
+#include <glib.h>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
 #include "base-sha.h"
 
 
@@ -125,6 +131,150 @@ comm_line_err(char *prog)
 Usage: %s -d domain [ -g ] [ -l ] -n name -s surname -u userid\n\
 -g: create group for the user (same name and id)\n\
 -l: create long user name (first initial plus surname\n", prog);
+}
+
+void
+output_ldif(inp_data_s *data)
+{
+	char *name, *ldom, *phash;
+
+	ldom = get_ldif_domain(data->dom);
+	name = get_ldif_user(data);
+	phash = get_ldif_pass_hash(data->pass);
+	*(data->sur) = toupper(*(data->sur));
+	printf("\
+# %s, people, %s\n\
+dn: uid=%s,ou=people,%s\n\
+uid: %s\n\
+sn: %s\n\
+objectClass: inetOrgPerson\n\
+objectClass: posixAccount\n\
+objectClass: top\n\
+objectClass: shadowAccount\n\
+shadowLastChange: 0\n\
+shadowMax: 99999\n\
+shadowWarning: 7\n\
+loginShell: /bin/bash\n\
+uidNumber: %hd\n\
+userPassword: {SSHA}%s\n\
+homeDirectory: /home/%s\n\
+", name, data->dom, name, ldom, name, data->sur, data->user
+, phash, name);
+	*(data->name) = toupper(*(data->name));
+	printf("gecos: %s %s\n", data->name, data->sur);
+	*(data->name) = tolower(*(data->name));
+	printf("mail: %s@%s\n", name, data->dom);
+	if (data->gr > NONE)
+		printf("\
+gidNumber: %hd\n\
+\n\
+# %s, group, %s\n\
+dn: cn=%s,ou=group,%s\n\
+cn: %s\n\
+gidNumber: %hd\n\
+objectClass: posixGroup\n\
+objectClass: top\n\
+", data->user, name, data->dom, name, ldom, name, data->user);
+	else
+		printf("\
+gidNumber: 100\n\
+\n\
+");
+	free(name);
+	free(ldom);
+	free(phash);
+}
+
+char *
+get_ldif_domain(char *dom)
+{
+	char *ldom, *tmp, *save, *empty = '\0', *buff, *domain;
+	const char *delim = ".";
+	int c;
+	size_t len = NONE;
+
+	if (!(buff = malloc(DOMAIN)))
+		rep_err("buff in get_ldif_domain");
+	len = strlen(dom);
+	if (!(domain = calloc((len + 1), sizeof(char))))
+		rep_err("domain in get_ldif_domain");
+	strncpy(domain, dom, len);
+	tmp = domain;
+	while (strchr(tmp, '.')) {
+		tmp++;
+		c++;
+	}
+	len = strlen(dom) + (size_t)(c * 3);
+	if (len >= DOMAIN) {
+		if(!(ldom = malloc(BUFF))) {
+			rep_err("ldom in get_ldif_domain");
+		}
+	} else {
+		if (!(ldom = malloc(DOMAIN))) {
+			rep_err("ldom in get_ldif_domain");
+		}
+	}
+	tmp = strtok_r(domain, delim, &save);
+	sprintf(ldom, "dc=%s", tmp);
+	while (strtok_r(empty, delim, &save)) {
+		sprintf(buff, ",dc=%s", tmp);
+		strcat(ldom, buff);
+	}
+	free(buff);
+	free(domain);
+	return ldom;
+}
+
+char *
+get_ldif_user(inp_data_s *data)
+{
+	char *name;
+
+	if (!(name = malloc(USER)))
+		rep_err("name in get_ldif_user");
+	*(data->sur) = tolower(*(data->sur));
+	if (data->lu > 0)
+		sprintf(name, "%c%s", *(data->name), data->sur);
+	else
+		sprintf(name, "%s", data->name);
+	return name;
+}
+
+char *
+get_ldif_pass_hash(char *pass)
+{
+	int rd = open("/dev/urandom", O_RDONLY), i;
+	char *npass, salt[6], type[] = "sha";
+	guchar *out;
+        EVP_MD_CTX *msg;
+        const EVP_MD *md;
+        unsigned int md_len;
+
+	if (!(out = malloc(26)))
+		rep_err("out in get_ldif_pass_hash");
+	if ((read(rd, &salt, 6)) != 6) {
+		close(rd);
+		rep_err("Could not read enough random data");
+	}
+	close(rd);
+	OpenSSL_add_all_digests();
+	md = EVP_get_digestbyname(type);
+        if (!md) {
+                printf("Unknown digest %s!\n", type);
+                exit(1);
+        }
+	msg = EVP_MD_CTX_create();
+	EVP_DigestInit_ex(msg, md, NULL);
+	EVP_DigestUpdate(msg, pass, strlen(pass));
+	EVP_DigestUpdate(msg, salt, 6);
+	EVP_DigestFinal_ex(msg, out, &md_len);
+	EVP_MD_CTX_destroy(msg);
+	EVP_cleanup();
+	for (i = 0; i < 6; i++)
+		*(out + 20 + i) = salt[i];
+	npass = g_base64_encode(out, 26);
+	free(out);
+	return npass;
 }
 
 /*
