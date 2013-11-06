@@ -1,3 +1,11 @@
+/*
+ * user.c: (C) 2013 Iain M Conochie
+ * 
+ * Main function for the program to create user entries in the ldap
+ * directory
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,5 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+/*
+ * ssha1.c (C) Iain M Conochie 2013
+ * 
+ * Test program to create ssha passwords (salted sha). This was for use
+ * in openldap for user passwords.
+ * 
+ */
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>

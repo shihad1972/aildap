@@ -1,3 +1,12 @@
+/*
+ * ssl-config.c (C) 2013 Iain M Conochie
+ * 
+ * Program to create the configuration for slapd
+ * to have SSL and TLS connections. This is based
+ * on the public / private key pair and also the CA certificate.
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +68,8 @@ CA cert name too large ( > 63 )\n");
 		return (retval);
 	if ((dlen == NONE) && (data->action == INSERT)) {
 		fprintf(stderr, "No domain provided\n");
+		fprintf(stderr, "Usage: %s -a CA-cert -d domain [ -i | r ]\n",
+			argv[0]);
 		retval = NODOM;
 	}
 	if ((alen == NONE) && (data->action == REMOVE)) {
@@ -187,7 +198,10 @@ main (int argc, char *argv[])
 		output_insert_ssl(data);
 	else if (data->action == REMOVE)
 		output_remove_ssl(data);
-	else
+	else {
 		fprintf(stderr, "No action specified\n");
+		fprintf(stderr, "Usage: %s -a CA-cert -d domain [ -i | r ]\n",
+			argv[0]);
+	}
 	return (retval);
 }
