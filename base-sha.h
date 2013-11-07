@@ -9,12 +9,13 @@ enum {
 	SURNAME= 31,
 	USER = 32,
 	DOMAIN = 256,
-	MEM = 300
+	MEM = 300,
+	BUFF = 512
 };
 
 typedef struct inp_data_s {
 	unsigned short int gr, lu, user;
-	char *dom, *pass, *sur, *name;
+	char *dom, *sur, *name, *pass;
 } inp_data_s;
 
 #ifndef MALLOC_DATA_MEMBER
@@ -43,6 +44,11 @@ typedef struct inp_data_s {
 }
 #endif /* GET_OPT_ARG */
 
+#define PASS_SIZE 100
+
+char *
+getPassword(const char *message);
+
 void
 rep_err(const char *error);
 
@@ -54,6 +60,21 @@ clean_data(inp_data_s *data);
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data);
+
+void
+comm_line_err(char *prog);
+
+void
+output_ldif(inp_data_s *data);
+
+char *
+get_ldif_domain(char *domain);
+
+char *
+get_ldif_user(inp_data_s *data);
+
+char *
+get_ldif_pass_hash(char *pass);
 
 int
 hex_conv(const char *pass, guchar *out);

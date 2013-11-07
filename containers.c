@@ -68,6 +68,7 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 	}
 	if (strlen(data->domain) == 0) {
 		fprintf(stderr, "No domain specified\n");
+		fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name (-s)\n", argv[0]);
 		retval = NODOM;
 	}
 	return retval;

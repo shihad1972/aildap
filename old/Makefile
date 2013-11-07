@@ -13,7 +13,7 @@ GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
 GLIBS = `pkg-config --libs-only-l glib-2.0`
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
-bin_PROGRAMS = lsc lcc tsha ltc gsha gsha2
+bin_PROGRAMS = lcd tsha gsha gsha2
 lsc_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 ltc_SOURCES = test-ldap-connection.c
@@ -36,3 +36,6 @@ gsha2:	$(gsha2_SOURCES)
 
 lcd:	$(lcd_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS) $(GLIBS)
+	
+clean:
+	$(RM) *.o $(bin_PROGRAMS)
