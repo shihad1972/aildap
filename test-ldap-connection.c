@@ -117,15 +117,14 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 int
 main (int argc, char *argv[])
 {
-	int retval = NONE, *proto, protocol = LDAP_VERSION3;
-	const char user[] = "test@shihad.org", pass[] = "***";
+	int retval = NONE, proto = LDAP_VERSION3;
+/*	const char user[] = "test@shihad.org", pass[] = "***"; */
 	LDAP *shihad = '\0';
 	cont_s *data = '\0';
 
         if (!(data = calloc(ONE, sizeof(cont_s))))
                 report_error("data");
 	init_data_struct(data);
-	proto = &protocol;
 	if ((retval = parse_command_line(argc, argv, data)) != 0) {
 		if (data)
 			clean_data(data);
@@ -138,7 +137,7 @@ main (int argc, char *argv[])
 			clean_data(data);
 		exit (CONFAIL);
 	}
-	if ((retval = ldap_set_option(shihad, LDAP_OPT_PROTOCOL_VERSION, proto)) != 0) {
+	if ((retval = ldap_set_option(shihad, LDAP_OPT_PROTOCOL_VERSION, &proto)) != 0) {
 		fprintf(stderr, "Cannot set protocol version to v3\n");
 		if (shihad)
 			ldap_unbind(shihad);
@@ -146,7 +145,7 @@ main (int argc, char *argv[])
 			clean_data(data);
 		exit (FAIL);
 	}
-	if ((retval = ldap_simple_bind(shihad, user, pass)) != NONE) {
+	if ((retval = ldap_simple_bind_s(shihad, NULL, NULL)) != NONE) {
 		fprintf(stderr, "Bind failed with %s\n", ldap_err2string(retval));
 		if (shihad)
 			ldap_unbind(shihad);
