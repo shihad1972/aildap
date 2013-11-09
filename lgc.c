@@ -17,6 +17,7 @@ enum {
 	WARG,
 	NODOM,
 	NOGRP,
+	NOGRNM,
 	NAME = 32,
 	DC = 64,
 	DNL = 67,
@@ -29,6 +30,12 @@ rep_error(const char *error)
 {
 	fprintf(stderr, "Cannot allocate memory for %s\n", error);
 	exit(MALLOC);
+}
+
+void
+rep_usage(const char *prog)
+{
+	fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name -g gid -n group\n", prog);
 }
 
 void
@@ -90,16 +97,22 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 		} else if (opt == 'g') {
 			data->group = (short)strtoul(optarg, NULL, 10);
 		} else {
-			fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name -g gid\n", argv[0]);
+			rep_usage(argv[0]);
 			return WARG;
 		}
 	}
 	if (strlen(data->domain) == 0) {
 		fprintf(stderr, "No domain specified\n");
+		rep_usage(argv[0]);
 		retval = NODOM;
 	} else if (data->group == 0) {
-		fprintf(stderr, "No group specified\n");
+		fprintf(stderr, "No gid specified\n");
+		rep_usage(argv[0]);
 		retval = NOGRP;
+	} else if (strlen(data->name) == 0) {
+		fprintf(stderr, "No group specified\n");
+		rep_usage(argv[0]);
+		retval = NOGRNM;
 	}
 	return retval;
 }

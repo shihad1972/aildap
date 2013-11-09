@@ -198,7 +198,7 @@ get_ldif_domain(char *dom)
 {
 	char *ldom, *tmp, *save, *empty = '\0', *buff, *domain;
 	const char *delim = ".";
-	int c;
+	int c = NONE;
 	size_t len = NONE;
 
 	if (!(buff = malloc(DOMAIN)))
@@ -208,7 +208,7 @@ get_ldif_domain(char *dom)
 		rep_err("domain in get_ldif_domain");
 	strncpy(domain, dom, len);
 	tmp = domain;
-	while (strchr(tmp, '.')) {
+	while ((tmp = strchr(tmp, '.'))) {
 		tmp++;
 		c++;
 	}
@@ -224,7 +224,7 @@ get_ldif_domain(char *dom)
 	}
 	tmp = strtok_r(domain, delim, &save);
 	sprintf(ldom, "dc=%s", tmp);
-	while (strtok_r(empty, delim, &save)) {
+	while ((tmp = strtok_r(empty, delim, &save))) {
 		sprintf(buff, ",dc=%s", tmp);
 		strcat(ldom, buff);
 	}
