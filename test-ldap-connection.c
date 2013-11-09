@@ -13,6 +13,7 @@ enum {
         WARG,
         NODOM,
 	NOUSER,
+	NOHOST,
 	CONFAIL,
 	BINDFAIL,
 	FAIL,
@@ -110,6 +111,9 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 	} else if (strlen(data->user) == NONE) {
 		fprintf(stderr, "No user specified\n");
 		retval = NOUSER;
+	} else if (strlen(data->host) == NONE) {
+		fprintf(stderr, "No host specified\n");
+		retval = NOHOST;
 	}
 	return retval;
 }
