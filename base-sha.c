@@ -38,6 +38,8 @@ init_input_data(inp_data_s *data)
 	MALLOC_DATA_MEMBER(dom, DOMAIN);
 	MALLOC_DATA_MEMBER(pass, DOMAIN);
 	MALLOC_DATA_MEMBER(sur, SURNAME);
+	MALLOC_DATA_MEMBER(uname, SURNAME);
+	MALLOC_DATA_MEMBER(fname, SURNAME);
 	MALLOC_DATA_MEMBER(name, USER);
 	return NONE;
 }
@@ -51,7 +53,71 @@ clean_data(inp_data_s *data)
 	CLEAN_DATA_MEMBER(pass)
 	CLEAN_DATA_MEMBER(sur)
 	CLEAN_DATA_MEMBER(name)
+	CLEAN_DATA_MEMBER(uname)
+	CLEAN_DATA_MEMBER(fname)
 	free(data);
+}
+
+void
+split_name(inp_data_s *data)
+{
+	char *work, *tmp, *pos;
+	int c = NONE, len = NONE; /* c counts names */
+	unsigned char f = NONE, s = NONE; /* first letter of (f)irst and (s)urname */
+
+	work = strndup(data->name, USERL);
+	tmp = work;
+	while ((tmp = strchr(tmp, ' '))) {
+		c++;
+		tmp++;
+	}
+	tmp = work;
+	if (c < 1) {
+		fprintf(stderr, "No surname or first name provided\n");
+		free(work);
+		clean_data(data);
+		exit(1);
+	} else if (c < 2) { /* No middle name. Wierdo! */
+		tmp = strchr(tmp, ' ');
+		*tmp = '\0';
+		tmp++;
+		if ((len = snprintf(data->fname, SURNAME, "%s", work)) > SURNAME)
+			fprintf(stderr, "First name truncated by %d!\n",
+				(len - SURNAME) + 1);
+		if ((len = snprintf(data->sur, SURNAME, "%s", tmp)) > SURNAME)
+			fprintf(stderr, "Surname Truncated by %d!\n",
+				(len - SURNAME) + 1);
+	} else { /* We have a middle name */
+		tmp = strchr(tmp, ' ');
+		*tmp = '\0';
+		tmp++;
+		if ((len = snprintf(data->fname, SURNAME, "%s", work)) > SURNAME)
+			fprintf(stderr, "First name truncated by %d!\n",
+				(len - SURNAME) + 1);
+		while ((tmp = strchr(tmp, ' ')))
+			pos = ++tmp;
+		if ((len = snprintf(data->sur, SURNAME, "%s", pos)) > SURNAME)
+			fprintf(stderr, "Surname truncated by %d\n",
+				(len = SURNAME) + 1);
+	}
+	pos = data->sur;
+	pos++;
+	f = tolower(*(data->fname));
+	s = tolower(*(data->sur));
+	if (data->lu > NONE) {/* Long format username */
+		if ((len = snprintf(data->uname, SURNAME, "%c%c%s",
+		 f, s, pos)) > SURNAME)
+			fprintf(stderr, "Username truncated by %d!\n",
+				(len - SURNAME) + 1);
+	} else {
+		pos = data->fname;
+		pos++;
+		if ((len = snprintf(data->uname, SURNAME, "%c%s",
+		 f, pos)) > SURNAME)
+			fprintf(stderr, "Username truncated by %d!\n",
+				(len - SURNAME) + 1);
+	}
+	free(work);
 }
 
 int
@@ -59,7 +125,7 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
 	int opt = NONE, slen = NONE;
 
-	while ((opt = getopt(argc, argv, "d:gln:s:u:")) != -1) {
+	while ((opt = getopt(argc, argv, "d:gln:u:")) != -1) {
 		if (opt == 'd') {
 			GET_OPT_ARG(dom, DOMAIN, Domain)
 		} else if (opt == 'g') {
@@ -68,8 +134,6 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 			data->lu = ONE;
 		} else if (opt == 'n') {
 			GET_OPT_ARG(name, USER, Name)
-		} else if (opt == 's') {
-			GET_OPT_ARG(sur, SURNAME, Surname)
 		} else if (opt == 'u') {
 			if (optarg)
 				data->user = (short)strtoul(optarg, NULL, DECIMAL);
@@ -86,10 +150,6 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		exit (1);
 	} else if (strlen(data->name) == 0) {
 		fprintf(stderr, "No name specified\n");
-		comm_line_err(argv[0]);
-		exit (1);
-	} else if (strlen(data->sur) == 0) {
-		fprintf(stderr, "No surname specified\n");
 		comm_line_err(argv[0]);
 		exit (1);
 	} else if (data->user == 0) {
@@ -110,7 +170,7 @@ getPassword(const char *message)
 
 	if (!(pass = malloc(PASS_SIZE)))
 		exit (2);
-	printf("%s", message);
+	fprintf(stderr, "%s", message);
 	/*saving the old settings of STDIN_FILENO and copy settings for resetting*/
 	tcgetattr( STDIN_FILENO, &oldt);
 	newt = oldt;
@@ -124,11 +184,11 @@ getPassword(const char *message)
 	/*reading the password from the console*/
 	while ((c = getchar())!= '\n' && c != EOF && i < (PASS_SIZE - 1))
 		pass[i++] = c;
-	printf("\n");
 	pass[i] = '\0';
 
 	/*resetting our old STDIN_FILENO*/ 
 	tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
+	fprintf(stderr, "\n");
 	return pass;
 }
 
@@ -136,7 +196,7 @@ void
 comm_line_err(char *prog)
 {
 	fprintf(stderr, "\
-Usage: %s -d domain [ -g ] [ -l ] -n name -s surname -u userid\n\
+Usage: %s -d domain [ -g ] [ -l ] -n full-name -u userid\n\
 -g: create group for the user (same name and id)\n\
 -l: create long user name (first initial plus surname\n", prog);
 }
@@ -147,7 +207,8 @@ output_ldif(inp_data_s *data)
 	char *name, *ldom, *phash;
 
 	ldom = get_ldif_domain(data->dom);
-	name = get_ldif_user(data);
+/*	name = get_ldif_user(data); */
+	name = data->uname;
 	phash = get_ldif_pass_hash(data->pass);
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
@@ -155,6 +216,8 @@ output_ldif(inp_data_s *data)
 dn: uid=%s,ou=people,%s\n\
 uid: %s\n\
 sn: %s\n\
+gn: %s\n\
+cn: %s\n\
 objectClass: inetOrgPerson\n\
 objectClass: posixAccount\n\
 objectClass: top\n\
@@ -166,10 +229,10 @@ loginShell: /bin/bash\n\
 uidNumber: %hd\n\
 userPassword: {SSHA}%s\n\
 homeDirectory: /home/%s\n\
-", name, data->dom, name, ldom, name, data->sur, data->user
-, phash, name);
+", name, data->dom, name, ldom, name, data->sur, data->fname, data->name, 
+data->user, phash, name);
 	*(data->name) = toupper(*(data->name));
-	printf("gecos: %s %s\n", data->name, data->sur);
+	printf("gecos: %s\n", data->name);
 	*(data->name) = tolower(*(data->name));
 	printf("mail: %s@%s\n", name, data->dom);
 	if (data->gr > NONE)

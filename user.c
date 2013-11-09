@@ -23,6 +23,7 @@ main (int argc, char *argv[])
 		rep_err("data in main");
 	init_input_data(data);
 	parse_command_line(argc, argv, data);
+	split_name(data);
 	pass = getPassword("Enter password for user: ");
 	snprintf(data->pass, DOMAIN, "%s", pass);
 	free(pass);
