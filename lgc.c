@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 typedef struct cont_s {
-	char *domain, *dc, *dn, *name;
+	char *domain, *dc, *dn, *name, *users;
 	short int action, group;
 } cont_s;
 
@@ -35,7 +35,8 @@ rep_error(const char *error)
 void
 rep_usage(const char *prog)
 {
-	fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name -g gid -n group\n", prog);
+	fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name -g gid -n group\
+ [ -u user1,user2,...userN ]\n", prog);
 }
 
 void
@@ -55,6 +56,8 @@ init_data_struct(cont_s *data)
 		rep_error("dn in data");
 	if (!(data->name = calloc(ONE, NAME)))
 		rep_error("group in data");
+	if (!(data->users = calloc(ONE, DN)))
+		rep_error("users in data");
 }
 
 void
@@ -68,6 +71,8 @@ clean_data(cont_s *data)
 		free(data->dn);
 	if (data->name)
 		free(data->name);
+	if (data->users)
+		free(data->users);
 	if (data)
 		free(data);
 }
@@ -77,7 +82,7 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 {
 	int retval = NONE, opt = NONE;
 
-	while ((opt = getopt(argc, argv, "d:g:n:")) != -1) {
+	while ((opt = getopt(argc, argv, "d:g:n:u:")) != -1) {
 		if (opt == 'd') {
 			if ((retval = snprintf(data->domain, DOMAIN, "%s", optarg)) > DOMAIN) {
 				fprintf(stderr, "Domain truncated!\n");
@@ -96,6 +101,12 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 			data->action = REMOVE; */
 		} else if (opt == 'g') {
 			data->group = (short)strtoul(optarg, NULL, 10);
+		} else if (opt == 'u') {
+			if ((retval = snprintf(data->users, DN, "%s", optarg)) > DN) {
+				fprintf(stderr, "Users truncated!\n");
+				fprintf(stderr, "Max %d characters in user list\n", DN);
+			}
+			retval = NONE;
 		} else {
 			rep_usage(argv[0]);
 			return WARG;
@@ -147,8 +158,11 @@ output_insert_cont(cont_s *data)
 {
 	if (!(data))
 		return;
-	char *grp = data->name, *dn = data->dn;
+	char *grp = data->name, *dn = data->dn, *users = '\0';
+	char *tmp, *pos;
 	short int gid = data->group;
+	if ((strlen(data->users)) > 0)
+		users = strndup(data->users, DN);
 	printf("\
 # %s, group, %s\n\
 dn: cn=%s,ou=group,%s\n\
@@ -156,6 +170,17 @@ cn: %s\n\
 gidNumber: %hd\n\
 objectClass: posixGroup\n\
 objectClass: top\n", grp, data->domain, grp, dn, grp, gid);
+	if (users) {
+		tmp = pos = users;
+		while ((tmp = strchr(pos, ','))) {
+			*tmp = '\0';
+			tmp++;
+			printf("memberUid: %s\n", pos);
+			pos = tmp;
+		}
+		printf("memberUid: %s\n", pos);
+		free(users);
+	}
 }
 /*
 void
