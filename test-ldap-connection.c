@@ -76,6 +76,12 @@ clean_data(cont_s *data)
 	}
 }
 
+void
+print_usage(const char *msg)
+{
+	fprintf(stderr, "Usage: %s -d domain -u user -h host\n", msg);
+}
+
 int
 parse_command_line(int argc, char *argv[], cont_s *data)
 {
@@ -101,18 +107,21 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 			}
 			retval = NONE;
 		} else {
-			fprintf(stderr, "Usage: %s -d domain -u user\n", argv[0]);
+			print_usage(argv[0]);
 			return WARG;
 		}
 	}
 	if (strlen(data->domain) == NONE) {
 		fprintf(stderr, "No domain specified\n");
+		print_usage(argv[0]);
 		retval = NODOM;
 	} else if (strlen(data->user) == NONE) {
 		fprintf(stderr, "No user specified\n");
+		print_usage(argv[0]);
 		retval = NOUSER;
 	} else if (strlen(data->host) == NONE) {
 		fprintf(stderr, "No host specified\n");
+		print_usage(argv[0]);
 		retval = NOHOST;
 	}
 	return retval;

@@ -29,3 +29,11 @@ should have their name as the domain name.
 
 lsc [ -i | -r ] -d <domain-name> (-a CA-file-name)
 
+ltc
+  This will test a connection to the ldap database and will search for the
+user you specify on the command line.
+
+-d	base domain in the directory
+-u	user you want to search for
+-h	host name of the ldap server
+
