@@ -14,7 +14,7 @@ main ()
 	EVP_MD_CTX *msg;
 	const EVP_MD *md;
 	char mess[] = "password";
-	char type[] = "sha";
+	char type[] = "sha1";
 	int retval = 0;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
 	unsigned int md_len;

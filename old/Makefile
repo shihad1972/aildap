@@ -18,15 +18,17 @@ lsc_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 ltc_SOURCES = test-ldap-connection.c
 lcd_SOURCES = domains.c
-sha_SOURCES = sha1.c base-sha.c
+sha_SOURCES = sha.c
+tsha_SOURCES = sha1.c base-sha.c
+sha1_SOURCES = sha1.c
 gsha_SOURCES = glib-sha1.c base-sha.c
 gsha2_SOURCES = glib-sha1-2.c base-sha.c
 gsha3_SOURCES = glib-sha1-3.c
 
 all:	lcd tsha gsha gsha2
 
-tsha:	$(sha_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(sha_SOURCES) $(SLDFLAGS) $(GLIBS)
+tsha:	$(tsha_SOURCES)
+	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(tsha_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 gsha:	$(gsha_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(gsha_SOURCES) $(GLIBS)
@@ -37,8 +39,11 @@ gsha2:	$(gsha2_SOURCES)
 lcd:	$(lcd_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS) $(GLIBS)
 
-sha1:	sha1.c
-	$(CC) $(CFLAGS) -o $@ sha1.c $(SLDFLAGS)
+sha1:	$(sha1_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(sha1_SOURCES) $(SLDFLAGS)
+
+sha:	$(sha_SOURCES)
+	$(CC) $(CFLAGS) -s $@ $(sha_SOURCES) $(SLDFLAGS)
 	
 clean:
 	$(RM) *.o $(bin_PROGRAMS)
