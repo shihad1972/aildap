@@ -5,14 +5,12 @@
 
 typedef struct cont_s {
 	char *domain, *dc, *dn, *name, *users;
-	short int action, group;
+	short int group;
 } cont_s;
 
 enum {
 	NONE = 0,
 	ONE,
-	INSERT,
-	REMOVE,
 	MALLOC,
 	WARG,
 	NODOM,
@@ -35,8 +33,8 @@ rep_error(const char *error)
 void
 rep_usage(const char *prog)
 {
-	fprintf(stderr, "Usage: %s [ -i | -r ] -d domain-name -g gid -n group\
- [ -u user1,user2,...userN ]\n", prog);
+	fprintf(stderr, "Usage: %s -d domain-name -g gid -n group\
+ [ -u user1,user2,...,userN ]\n", prog);
 }
 
 void
@@ -46,7 +44,6 @@ init_data_struct(cont_s *data)
 	data->dc = '\0';
 	data->dn = '\0';
 	data->name = '\0';
-	data->action = 0;
 	data->group = 0;
 	if (!(data->domain = calloc(ONE, DOMAIN)))
 		rep_error("domain in data");
@@ -95,10 +92,6 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 				fprintf(stderr, "Max %d characters in a group name\n", NAME);
 			}
 			retval = NONE;
-/*		} else if (opt == 'i') {
-			data->action = INSERT;
-		} else if (opt == 'r') {
-			data->action = REMOVE; */
 		} else if (opt == 'g') {
 			data->group = (short)strtoul(optarg, NULL, 10);
 		} else if (opt == 'u') {
@@ -182,15 +175,7 @@ objectClass: top\n", grp, data->domain, grp, dn, grp, gid);
 		free(users);
 	}
 }
-/*
-void
-output_remove_cont(cont_s *data)
-{
-	if (!(data))
-		return;
-	char *grp = data->name, *dn = data->dn;
-}
-*/
+
 int
 main(int argc, char *argv[])
 {
@@ -204,17 +189,8 @@ main(int argc, char *argv[])
 		clean_data(data);
 		return retval;
 	}
-	convert_to_dn(data); /*
-	if (data->action == NONE) {
-		fprintf(stderr, "No action specified. Assuming insert\n");
-		output_insert_cont(data);
-	} else if (data->action == INSERT) { */
-		output_insert_cont(data);
-/*	} else if (data->action == REMOVE) {
-		output_remove_cont(data); 
-	} else {
-		fprintf(stderr, "Unknown action %d\n", data->action);
-	} */
+	convert_to_dn(data);
+	output_insert_cont(data);
 	clean_data(data);
 	return retval;
 }
