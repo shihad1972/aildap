@@ -315,7 +315,7 @@ char *
 get_ldif_pass_hash(char *pass)
 {
 	int rd = open("/dev/urandom", O_RDONLY), i;
-	char *npass, salt[6], type[] = "sha";
+	char *npass, salt[6], type[] = "sha1";
 	guchar *out;
         EVP_MD_CTX *msg;
         const EVP_MD *md;
