@@ -5,7 +5,6 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/sha.h>
-#include "base-sha.h"
 
 int
 /*main (int argc, char *argv[]) */
@@ -14,12 +13,13 @@ main ()
 	BIO *bio, *b64;
 	EVP_MD_CTX *msg;
 	const EVP_MD *md;
-	char mess[] = "MyPa55w0rd";
+	char mess[] = "password";
 	char type[] = "sha";
-	int retval = NONE;
+	int retval = 0;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
 	unsigned int md_len;
 
+	printf("Password size: %zu\n", strlen(mess));
 	b64 = BIO_new(BIO_f_base64());
 	bio = BIO_new_fp(stdout, BIO_NOCLOSE);
 	bio = BIO_push(b64, bio);

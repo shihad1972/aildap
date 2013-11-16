@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 /*
  * ssha1.c (C) Iain M Conochie 2013
  * 
@@ -8,6 +6,8 @@
  * 
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -24,7 +24,7 @@ main()
 	GChecksum *sum, *nsum;
 	gchar *pass;
 	gsize slen = 20;
-	const guchar mypass[] = "MyPa55w0rd", salt[6];
+	const guchar mypass[] = "password", salt[6];
 	guint8 *output;
 
 	if (!(output = malloc(26 * sizeof(char))))
