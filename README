@@ -55,4 +55,16 @@ You can also specify users on the command line that will part of this group.
 
 lgc -d domain-name -g gid -n group [ -u user1,user2,...,userN ]
 
+lcu
+  This will create an ldif for a new user in the LDAP directory. Using the options
+you can create a dedicated group for the user and also have a choice of username
+styles (first-name or first initial and surname). 
+
+-d	base domain in the directory
+-n	full name of the user
+-u	userid
+-g	create group
+-l	use long version of username (first initial and surname)
+
+lcu -d domain [ -g ] [ -l ] -n full-name -u userid
 

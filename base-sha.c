@@ -198,7 +198,7 @@ comm_line_err(char *prog)
 	fprintf(stderr, "\
 Usage: %s -d domain [ -g ] [ -l ] -n full-name -u userid\n\
 -g: create group for the user (same name and id)\n\
--l: create long user name (first initial plus surname\n", prog);
+-l: create long user name (first initial plus surname)\n", prog);
 }
 
 void
