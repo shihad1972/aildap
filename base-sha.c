@@ -33,7 +33,7 @@ init_input_data(inp_data_s *data)
 {
 	if (!data)
 		return ONE;
-	data->gr = data->lu = data->user = NONE;
+	data->gr = data->lu = data->user = data->np = NONE;
 	data->dom = data->pass = data->sur = data->name = '\0';
 	MALLOC_DATA_MEMBER(dom, DOMAIN);
 	MALLOC_DATA_MEMBER(pass, DOMAIN);
@@ -125,13 +125,15 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
 	int opt = NONE, slen = NONE;
 
-	while ((opt = getopt(argc, argv, "d:gln:u:")) != -1) {
+	while ((opt = getopt(argc, argv, "d:gln:pu:")) != -1) {
 		if (opt == 'd') {
 			GET_OPT_ARG(dom, DOMAIN, Domain)
 		} else if (opt == 'g') {
 			data->gr = ONE;
 		} else if (opt == 'l') {
 			data->lu = ONE;
+		} else if (opt == 'p') {
+			data->np = ONE;
 		} else if (opt == 'n') {
 			GET_OPT_ARG(name, USER, Name)
 		} else if (opt == 'u') {
@@ -196,20 +198,22 @@ void
 comm_line_err(char *prog)
 {
 	fprintf(stderr, "\
-Usage: %s -d domain [ -g ] [ -l ] -n full-name -u userid\n\
+Usage: %s -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid\n\
 -g: create group for the user (same name and id)\n\
--l: create long user name (first initial plus surname)\n", prog);
+-l: create long user name (first initial plus surname)\n\
+-p: do not ask for a password\n", prog);
 }
 
 void
 output_ldif(inp_data_s *data)
 {
-	char *name, *ldom, *phash;
+	char *name, *ldom, *phash = '\0';
 
 	ldom = get_ldif_domain(data->dom);
 /*	name = get_ldif_user(data); */
 	name = data->uname;
-	phash = get_ldif_pass_hash(data->pass);
+	if (data->np ==  0)
+		phash = get_ldif_pass_hash(data->pass);
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
@@ -227,10 +231,11 @@ shadowMax: 99999\n\
 shadowWarning: 7\n\
 loginShell: /bin/bash\n\
 uidNumber: %hd\n\
-userPassword: {SSHA}%s\n\
 homeDirectory: /home/%s\n\
 ", name, data->dom, name, ldom, name, data->sur, data->fname, data->name, 
-data->user, phash, name);
+data->user, name);
+	if (data->np == 0)
+		printf("userPassword: {SSHA}%s\n", phash);
 	*(data->name) = toupper(*(data->name));
 	printf("gecos: %s\n", data->name);
 	*(data->name) = tolower(*(data->name));
@@ -253,7 +258,8 @@ gidNumber: 100\n\
 ");
 	free(name);
 	free(ldom);
-	free(phash);
+	if (phash)
+		free(phash);
 }
 
 char *

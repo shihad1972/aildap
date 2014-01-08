@@ -24,9 +24,11 @@ main (int argc, char *argv[])
 	init_input_data(data);
 	parse_command_line(argc, argv, data);
 	split_name(data);
-	pass = getPassword("Enter password for user: ");
-	snprintf(data->pass, DOMAIN, "%s", pass);
-	free(pass);
+	if (data->np == 0) {
+		pass = getPassword("Enter password for user: ");
+		snprintf(data->pass, DOMAIN, "%s", pass);
+		free(pass);
+	}
 	output_ldif(data);
 	clean_data(data);
 	return retval;

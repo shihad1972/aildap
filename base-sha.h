@@ -16,7 +16,7 @@ enum {
 };
 
 typedef struct inp_data_s {
-	unsigned short int gr, lu, user;
+	unsigned short int gr, lu, user, np;
 	char *dom, *sur, *name, *uname, *pass, *fname;
 } inp_data_s;
 
