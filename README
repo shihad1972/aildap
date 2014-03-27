@@ -70,3 +70,18 @@ password associated with the user.
 
 lcu -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid
 
+lrc
+  This will create an ldif configuration for replication a directory from
+another server. This will create 2 ldif configuration files; one for the
+provider (or source) and one for the consumer (or destination). You will have
+to know the database number of the specific part of the directory you wish to
+replicate.
+
+-h host
+-d domain
+-u user
+-b database number
+-t | -s Start Tls or use Ssl encryption.
+-c certificate path (Can add this or we will add tls_reqcert=never)
+
+
