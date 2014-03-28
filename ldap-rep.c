@@ -86,3 +86,41 @@ rep_truncate(const char *what, int max)
 {
 	fprintf(stderr, "%s truncated. Max allowed is %d\n", what, max - 1);
 }
+
+void
+init_lcr_data_struct(lcr_t *data)
+{
+	memset(data, 0, sizeof(lcr_t));
+	if (!(data->host = calloc(ONE, DOMAIN)))
+		rep_error("host in data");
+	if (!(data->domain = calloc(ONE, DOMAIN)))
+		rep_error("domain in data");
+	if (!(data->user = calloc(ONE, NAME)))
+		rep_error("name in data");
+	if (!(data->db = calloc(ONE, DB)))
+		rep_error("db in data");
+	if (!(data->ca = calloc(ONE, DOMAIN)))
+		rep_error("ca in data");
+	if (!(data->cdb = calloc(ONE, DB)))
+		rep_error("cdb in data");
+}
+
+void
+clean_lcr_data_struct(lcr_t *data)
+{
+	if (data) {
+		if (data->host)
+			free(data->host);
+		if (data->domain)
+			free(data->domain);
+		if (data->user)
+			free(data->user);
+		if (data->db)
+			free(data->db);
+		if (data->ca)
+			free(data->ca);
+		if (data->cdb)
+			free(data->cdb);
+		free(data);
+	}
+}

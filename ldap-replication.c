@@ -16,46 +16,8 @@ check_snprintf(char *target, int max, const char *string, const char *what)
 		fprintf(stderr, "Output error for %s\n", what);
 }
 
-void
-init_data_struct(lrc_t *data)
-{
-	memset(data, 0, sizeof(lrc_t));
-	if (!(data->host = calloc(ONE, DOMAIN)))
-		rep_error("host in data");
-	if (!(data->domain = calloc(ONE, DOMAIN)))
-		rep_error("domain in data");
-	if (!(data->user = calloc(ONE, NAME)))
-		rep_error("name in data");
-	if (!(data->db = calloc(ONE, DB)))
-		rep_error("db in data");
-	if (!(data->ca = calloc(ONE, DOMAIN)))
-		rep_error("ca in data");
-	if (!(data->cdb = calloc(ONE, DB)))
-		rep_error("cdb in data");
-}
-
-void
-clean_data_struct(lrc_t *data)
-{
-	if (data) {
-		if (data->host)
-			free(data->host);
-		if (data->domain)
-			free(data->domain);
-		if (data->user)
-			free(data->user);
-		if (data->db)
-			free(data->db);
-		if (data->ca)
-			free(data->ca);
-		if (data->cdb)
-			free(data->cdb);
-		free(data);
-	}
-}
-
 int
-parse_command_line(int argc, char *argv[], lrc_t *data)
+parse_command_line(int argc, char *argv[], lcr_t *data)
 {
 	int retval = NONE, opt = NONE;
 
@@ -137,7 +99,7 @@ get_ldif_domain(char *dom)
 }
 
 int
-print_provider(lrc_t *data)
+print_provider(lcr_t *data)
 {
 	FILE *provider;
 	char *dom;
@@ -207,15 +169,15 @@ int
 main (int argc, char *argv[])
 {
 	int retval = NONE;
-	lrc_t *data = '\0';
-	if (!(data = malloc(sizeof(lrc_t))))
+	lcr_t *data = '\0';
+	if (!(data = malloc(sizeof(lcr_t))))
 		rep_error("data");
-	init_data_struct(data);
+	init_lcr_data_struct(data);
 	if ((retval = parse_command_line(argc, argv, data)) > 0) {
-		clean_data_struct(data);
+		clean_lcr_data_struct(data);
 		return retval;
 	}
 	print_provider(data);
-	clean_data_struct(data);
+	clean_lcr_data_struct(data);
 	return retval;
 }

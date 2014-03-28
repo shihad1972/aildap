@@ -32,10 +32,10 @@
 void
 rep_error(const char *error);
 
-typedef struct lrc_t {
+typedef struct lcr_t {
 	char *host, *domain, *user, *db, *cdb, *ca;
 	short int ssl, tls, file;
-} lrc_t;
+} lcr_t;
 
 typedef struct string_len_s {
 	char *string;
@@ -79,5 +79,11 @@ rep_usage(const char *prog);
 
 void
 rep_truncate(const char *what, int max);
+
+void
+init_lcr_data_struct(lcr_t *data);
+
+void
+clean_lcr_data_struct(lcr_t *data);
 
 #endif /* HAVE_LDAP_COL_H */
