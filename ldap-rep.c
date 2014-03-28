@@ -74,11 +74,13 @@ clean_string_len(string_len_s *string)
 void
 rep_usage(const char *prog)
 {
-	const char *lcr = "lcr";
 	fprintf(stderr, "Usage: %s ", prog);
-	if (strstr(prog, lcr)) 
+	if (strstr(prog, "lcr")) 
 		fprintf(stderr, "-d domain -h host -u user\
  -b db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
+	else if (strstr(prog, "lcg"))
+		fprintf(stderr, " -d domain-name -g gid -n group\
+ [ -u user1,user2,...,userN ]\n");
 }
 
 void
@@ -123,4 +125,41 @@ clean_lcr_data_struct(lcr_t *data)
 			free(data->cdb);
 		free(data);
 	}
+}
+
+void
+init_lgc_data_struct(lgc_s *data)
+{
+	data->domain = '\0';
+	data->dc = '\0';
+	data->dn = '\0';
+	data->name = '\0';
+	data->group = 0;
+	if (!(data->domain = calloc(ONE, DOMAIN)))
+		rep_error("domain in data");
+	if (!(data->dc = calloc(ONE, DC)))
+		rep_error("dc in data");
+	if (!(data->dn = calloc(ONE, DN)))
+		rep_error("dn in data");
+	if (!(data->name = calloc(ONE, NAME)))
+		rep_error("group in data");
+	if (!(data->users = calloc(ONE, DN)))
+		rep_error("users in data");
+}
+
+void
+clean_lgc_data(lgc_s *data)
+{
+	if (data->domain)
+		free(data->domain);
+	if (data->dc)
+		free(data->dc);
+	if (data->dn)
+		free(data->dn);
+	if (data->name)
+		free(data->name);
+	if (data->users)
+		free(data->users);
+	if (data)
+		free(data);
 }

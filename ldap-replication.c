@@ -17,7 +17,7 @@ check_snprintf(char *target, int max, const char *string, const char *what)
 }
 
 int
-parse_command_line(int argc, char *argv[], lcr_t *data)
+parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 {
 	int retval = NONE, opt = NONE;
 
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
 	if (!(data = malloc(sizeof(lcr_t))))
 		rep_error("data");
 	init_lcr_data_struct(data);
-	if ((retval = parse_command_line(argc, argv, data)) > 0) {
+	if ((retval = parse_lcr_command_line(argc, argv, data)) > 0) {
 		clean_lcr_data_struct(data);
 		return retval;
 	}

@@ -14,11 +14,12 @@ GLIBS = `pkg-config --libs-only-l glib-2.0`
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 bin_PROGRAMS = lcs lcc lct lcg lcu ssha lcr
+shared_SOURCES = ldap-rep.c
 lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
-lcg_SOURCES = lcg.c
+lcg_SOURCES = lcg.c $(shared_SOURCES)
 lct_SOURCES = test-ldap-connection.c
-lcr_SOURCES = ldap-replication.c ldap-rep.c
+lcr_SOURCES = ldap-replication.c $(shared_SOURCES)
 ssha_SOURCES = ssha1.c
 user_SOURCES = user.c base-sha.c
 

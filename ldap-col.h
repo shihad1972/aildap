@@ -37,6 +37,11 @@ typedef struct lcr_t {
 	short int ssl, tls, file;
 } lcr_t;
 
+typedef struct lgc_s {
+	char *domain, *dc, *dn, *name, *users;
+	short int group;
+} lgc_s;
+
 typedef struct string_len_s {
 	char *string;
 	size_t len;
@@ -86,4 +91,9 @@ init_lcr_data_struct(lcr_t *data);
 void
 clean_lcr_data_struct(lcr_t *data);
 
+void
+init_lgc_data_struct(lgc_s *data);
+
+void
+clean_lgc_data(lgc_s *data);
 #endif /* HAVE_LDAP_COL_H */
