@@ -19,8 +19,7 @@
  *
  *  ldap-rep.c
  *
- *  Data header file for the various ldap collection  program. This contains 
- *  the typedefs for the structs and also various funciton definitions
+ *  Shared function defintions for the ldap-col suite of programs
  *
  *  Part of the ldap collection suite of program
  *
