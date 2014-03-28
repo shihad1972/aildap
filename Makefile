@@ -18,7 +18,7 @@ lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 lcg_SOURCES = lcg.c
 lct_SOURCES = test-ldap-connection.c
-lcr_SOURCES = ldap-replication.c
+lcr_SOURCES = ldap-replication.c ldap-rep.c
 ssha_SOURCES = ssha1.c
 user_SOURCES = user.c base-sha.c
 
