@@ -17,37 +17,44 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- *  base-sha.h
+ *  ldap-rep.c
  *
- *  Contains the sha function definitions for generating passwords for slapd
- *  and also various other functions
+ *  Shared function defintions for the ldap-col suite of programs
  *
+ *  Part of the ldap collection suite of program
+ *
+ *  (C) Iain M Conochie 2014 
  */
 
-#ifndef HAVE_BASE_H
-# define HAVE_BASE_H
-# include <glib.h>
-# include "ldap-col.h"
-
-char *
-getPassword(const char *message);
-
-void
-rep_err(const char *error);
-
-void
-split_name(inp_data_s *data);
-
-void
-comm_line_err(char *prog);
-
-void
-output_ldif(inp_data_s *data);
-
-char *
-get_ldif_pass_hash(char *pass);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include "ldap-col.h"
+#include "base-sha.h"
 
 int
-hex_conv(const char *pass, guchar *out);
+parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)
+{
+	int retval = NONE, opt = NONE;
 
-#endif /* HAVE_BASE_H */
+	if (!(data))
+		return ONE;
+	while ((opt = getopt(argc, argv, "a:d:p:f")) != -1) {
+		;
+	}
+	return retval;
+}
+
+int
+main (int argc, char *argv[])
+{
+	char *pass, *phash;
+
+	pass = getPassword("Enter password for admin DN: ");
+	phash = get_ldif_pass_hash(pass);
+	printf("{SSHA}%s\n", phash);
+	free(phash);
+	free(pass);
+	return NONE;
+}

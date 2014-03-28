@@ -31,18 +31,6 @@
 #include <unistd.h>
 #include "ldap-col.h"
 
-void
-check_snprintf(char *target, int max, const char *string, const char *what)
-{
-	int retval;
-
-	retval = snprintf(target, max, "%s", string);
-	if (retval > max)
-		rep_truncate(what, max);
-	else if (retval < 0)
-		fprintf(stderr, "Output error for %s\n", what);
-}
-
 int
 parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 {
@@ -83,46 +71,6 @@ parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 	if (((data->tls > 0) || (data->ssl > 0)) && (strlen(data->ca) == 0))
 		fprintf(stderr, "No certificate provided. Adding tls_reqcert=never\n\n");
 	return retval;
-}
-
-char *
-get_ldif_domain(char *dom)
-{
-	char *ldom, *tmp, *save, *empty = '\0', *buff, *domain;
-	const char *delim = ".";
-	int c = NONE;
-	size_t len = NONE;
-
-	if (!(buff = malloc(DOMAIN)))
-		rep_error("buff in get_ldif_domain");
-	len = strlen(dom);
-	if (!(domain = calloc((len + 1), sizeof(char))))
-		rep_error("domain in get_ldif_domain");
-	strncpy(domain, dom, len);
-	tmp = domain;
-	while ((tmp = strchr(tmp, '.'))) {
-		tmp++;
-		c++;
-	}
-	len = strlen(dom) + (size_t)(c * 3);
-	if (len >= DOMAIN) {
-		if(!(ldom = malloc(DN))) {
-			rep_error("ldom in get_ldif_domain");
-		}
-	} else {
-		if (!(ldom = malloc(DOMAIN))) {
-			rep_error("ldom in get_ldif_domain");
-		}
-	}
-	tmp = strtok_r(domain, delim, &save);
-	sprintf(ldom, "dc=%s", tmp);
-	while ((tmp = strtok_r(empty, delim, &save))) {
-		sprintf(buff, ",dc=%s", tmp);
-		strcat(ldom, buff);
-	}
-	free(buff);
-	free(domain);
-	return ldom;
 }
 
 int

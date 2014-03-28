@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "ldap-col.h"
 
 void
@@ -88,22 +89,45 @@ rep_truncate(const char *what, int max)
 	fprintf(stderr, "%s truncated. Max allowed is %d\n", what, max - 1);
 }
 
+int
+init_lcu_data(inp_data_s *data) 
+{
+	if (!data)
+		return ONE;
+	memset(data, 0, sizeof(inp_data_s));
+	MALLOC_DATA_MEMBER(dom, DOMAIN);
+	MALLOC_DATA_MEMBER(pass, DOMAIN);
+	MALLOC_DATA_MEMBER(sur, SURNAME);
+	MALLOC_DATA_MEMBER(uname, SURNAME);
+	MALLOC_DATA_MEMBER(fname, SURNAME);
+	MALLOC_DATA_MEMBER(name, USER);
+	return NONE;
+}
+
+void
+clean_lcu_data(inp_data_s *data)
+{
+	if (!data)
+		exit (MEM);
+	CLEAN_DATA_MEMBER(dom)
+	CLEAN_DATA_MEMBER(pass)
+	CLEAN_DATA_MEMBER(sur)
+	CLEAN_DATA_MEMBER(name)
+	CLEAN_DATA_MEMBER(uname)
+	CLEAN_DATA_MEMBER(fname)
+	free(data);
+}
+
 void
 init_lcr_data_struct(lcr_t *data)
 {
 	memset(data, 0, sizeof(lcr_t));
-	if (!(data->host = calloc(ONE, DOMAIN)))
-		rep_error("host in data");
-	if (!(data->domain = calloc(ONE, DOMAIN)))
-		rep_error("domain in data");
-	if (!(data->user = calloc(ONE, NAME)))
-		rep_error("name in data");
-	if (!(data->db = calloc(ONE, DB)))
-		rep_error("db in data");
-	if (!(data->ca = calloc(ONE, DOMAIN)))
-		rep_error("ca in data");
-	if (!(data->cdb = calloc(ONE, DB)))
-		rep_error("cdb in data");
+	MALLOC_DATA_MEMBER(host, DOMAIN);
+	MALLOC_DATA_MEMBER(domain, DOMAIN);
+	MALLOC_DATA_MEMBER(user, NAME);
+	MALLOC_DATA_MEMBER(db, DB);
+	MALLOC_DATA_MEMBER(ca, DOMAIN);
+	MALLOC_DATA_MEMBER(cdb, DB);
 }
 
 void
@@ -129,21 +153,12 @@ clean_lcr_data_struct(lcr_t *data)
 void
 init_lgc_data_struct(lgc_s *data)
 {
-	data->domain = '\0';
-	data->dc = '\0';
-	data->dn = '\0';
-	data->name = '\0';
-	data->group = 0;
-	if (!(data->domain = calloc(ONE, DOMAIN)))
-		rep_error("domain in data");
-	if (!(data->dc = calloc(ONE, DC)))
-		rep_error("dc in data");
-	if (!(data->dn = calloc(ONE, DN)))
-		rep_error("dn in data");
-	if (!(data->name = calloc(ONE, NAME)))
-		rep_error("group in data");
-	if (!(data->users = calloc(ONE, DN)))
-		rep_error("users in data");
+	memset(data, 0, sizeof(lgc_s));
+	MALLOC_DATA_MEMBER(domain, DOMAIN);
+	MALLOC_DATA_MEMBER(dc, DC);
+	MALLOC_DATA_MEMBER(dn, DN);
+	MALLOC_DATA_MEMBER(name, NAME);
+	MALLOC_DATA_MEMBER(users, DN);
 }
 
 void
@@ -161,4 +176,71 @@ clean_lgc_data(lgc_s *data)
 		free(data->users);
 	if (data)
 		free(data);
+}
+
+char *
+get_ldif_domain(char *dom)
+{
+	char *ldom, *tmp, *save, *empty = '\0', *buff, *domain;
+	const char *delim = ".";
+	int c = NONE;
+	size_t len = NONE;
+
+	if (!(buff = malloc(DOMAIN)))
+		rep_error("buff in get_ldif_domain");
+	len = strlen(dom);
+	if (!(domain = calloc((len + 1), sizeof(char))))
+		rep_error("domain in get_ldif_domain");
+	strncpy(domain, dom, len);
+	tmp = domain;
+	while ((tmp = strchr(tmp, '.'))) {
+		tmp++;
+		c++;
+	}
+	len = strlen(dom) + (size_t)(c * 3);
+	if (len >= DOMAIN) {
+		if(!(ldom = malloc(BUFF))) {
+			rep_error("ldom in get_ldif_domain");
+		}
+	} else {
+		if (!(ldom = malloc(DOMAIN))) {
+			rep_error("ldom in get_ldif_domain");
+		}
+	}
+	tmp = strtok_r(domain, delim, &save);
+	sprintf(ldom, "dc=%s", tmp);
+	while ((tmp = strtok_r(empty, delim, &save))) {
+		sprintf(buff, ",dc=%s", tmp);
+		strcat(ldom, buff);
+	}
+	free(buff);
+	free(domain);
+	return ldom;
+}
+
+char *
+get_ldif_user(inp_data_s *data)
+{
+	char *name;
+
+	if (!(name = malloc(USER)))
+		rep_error("name in get_ldif_user");
+	*(data->sur) = tolower(*(data->sur));
+	if (data->lu > 0)
+		sprintf(name, "%c%s", *(data->name), data->sur);
+	else
+		sprintf(name, "%s", data->name);
+	return name;
+}
+
+void
+check_snprintf(char *target, int max, const char *string, const char *what)
+{
+	int retval;
+
+	retval = snprintf(target, max, "%s", string);
+	if (retval > max)
+		rep_truncate(what, max);
+	else if (retval < 0)
+		fprintf(stderr, "Output error for %s\n", what);
 }

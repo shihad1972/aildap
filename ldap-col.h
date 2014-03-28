@@ -42,11 +42,21 @@ typedef struct lgc_s {
 	short int group;
 } lgc_s;
 
+typedef struct lcdb_s {
+	char *domain, *admin, *pass, *phash, *dir;
+	short int file;
+} lcdb_s;
+
 typedef struct string_len_s {
 	char *string;
 	size_t len;
 	size_t size;
 } string_len_s;
+
+typedef struct inp_data_s {
+	unsigned short int gr, lu, user, np;
+	char *dom, *sur, *name, *uname, *pass, *fname;
+} inp_data_s;
 
 enum {
 	NONE = 0,
@@ -66,6 +76,44 @@ enum {
 	DN = 512,
 	FILES = 4096
 };
+
+enum {
+	DECIMAL = 10,
+	SURNAMEL = 31,
+	SURNAME= 32,
+	USERL = 127,
+	USER = 128,
+	MEM = 300,
+	BUFF = 512
+};
+
+#ifndef MALLOC_DATA_MEMBER
+# define MALLOC_DATA_MEMBER(mem, SIZE) {                            \
+	if (!(data->mem = calloc(ONE, SIZE)))                       \
+		rep_error("Cannot malloc data->mem");               \
+}
+#endif /* MALLOC_DATA_MEMBER */
+
+#ifndef CLEAN_DATA_MEMBER
+# define CLEAN_DATA_MEMBER(mem) {                                   \
+	if (data->mem) {                                            \
+		free(data->mem);                                    \
+	} else {                                                    \
+		fprintf(stderr, "data->mem does not exist??\n");    \
+		exit (MEM);                                         \
+	}                                                           \
+}
+#endif /* CLEAN_DATA_MEMBER */
+
+#ifndef GET_OPT_ARG
+# define GET_OPT_ARG(member, LEN, Name) {                                     \
+	if ((slen = snprintf(data->member, LEN, "%s", optarg)) > LEN) {       \
+		fprintf(stderr, "Name truncated by %d\n", (slen - LEN) + 1);  \
+	}                                                                     \
+}
+#endif /* GET_OPT_ARG */
+
+#define PASS_SIZE 100
 
 void
 rep_error(const char *error);
@@ -96,4 +144,19 @@ init_lgc_data_struct(lgc_s *data);
 
 void
 clean_lgc_data(lgc_s *data);
+
+int
+init_lcu_data(inp_data_s *data);
+
+void
+clean_lcu_data(inp_data_s *data);
+
+char *
+get_ldif_domain(char *domain);
+
+char *
+get_ldif_user(inp_data_s *data);
+
+void
+check_snprintf(char *target, int max, const char *string, const char *what);
 #endif /* HAVE_LDAP_COL_H */

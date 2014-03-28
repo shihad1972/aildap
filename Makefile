@@ -13,15 +13,16 @@ GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
 GLIBS = `pkg-config --libs-only-l glib-2.0`
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
-bin_PROGRAMS = lcs lcc lct lcg lcu ssha lcr
+bin_PROGRAMS = lcs lcc lct lcg lcu ssha lcr lcdb
 shared_SOURCES = ldap-rep.c
+lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 lcg_SOURCES = lcg.c $(shared_SOURCES)
 lct_SOURCES = test-ldap-connection.c
 lcr_SOURCES = ldap-replication.c $(shared_SOURCES)
 ssha_SOURCES = ssha1.c
-user_SOURCES = user.c base-sha.c
+user_SOURCES = user.c base-sha.c $(shared_SOURCES)
 
 
 all:	$(bin_PROGRAMS)
@@ -37,9 +38,12 @@ lcr:	$(lcr_SOURCES)
 
 lcg:	$(lcg_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lcg_SOURCES)
-	
+
 lcu:	$(user_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)
+
+lcdb:	$(lcdb_SOURCES)
+	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 lct:	$(lct_SOURCES)
 	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(lct_SOURCES) $(LLDFLAGS)
