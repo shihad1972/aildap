@@ -16,7 +16,7 @@ SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 bin_PROGRAMS = lsc lcc ltc lgc luc ssha lrc
 lsc_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
-lgc_SOURCES = lgc.c
+lcg_SOURCES = lcg.c
 ltc_SOURCES = test-ldap-connection.c
 lrc_SOURCES = ldap-replication.c
 ssha_SOURCES = ssha1.c
@@ -34,8 +34,8 @@ lsc:	$(lsc_SOURCES)
 lrc:	$(lrc_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lrc_SOURCES)
 
-lgc:	$(lgc_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lgc_SOURCES)
+lcg:	$(lcg_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(lcg_SOURCES)
 	
 luc:	$(user_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)
