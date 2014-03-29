@@ -5,7 +5,7 @@
 
 typedef struct cont_s {
 	char *domain, *dc, *dn;
-	short int action, sudo;
+	short int action, sudo, file;
 } cont_s;
 
 enum {
@@ -16,6 +16,7 @@ enum {
 	MALLOC,
 	WARG,
 	NODOM,
+	FILE_O_FAIL,
 	DC = 64,
 	DNL = 67,
 	DOMAIN = 256,
@@ -48,13 +49,15 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 {
 	int retval = NONE, opt = NONE;
 
-	while ((opt = getopt(argc, argv, "d:irs")) != -1) {
+	while ((opt = getopt(argc, argv, "d:firs")) != -1) {
 		if (opt == 'd') {
 			if ((retval = snprintf(data->domain, DOMAIN, "%s", optarg)) > DOMAIN) {
 				fprintf(stderr, "Domain truncated!\n");
 				fprintf(stderr, "Max 255 characters in a domain name\n");
 			}
 			retval = NONE;
+		} else if (opt == 'f') {
+			data->file = ONE;
 		} else if (opt == 'i') {
 			data->action = INSERT;
 		} else if (opt == 'r') {
@@ -115,9 +118,19 @@ convert_to_dn(cont_s *data)
 void
 output_insert_cont(cont_s *data)
 {
+	FILE *out;
 	char *dom = data->domain, *dc = data->dc, *dn = data->dn;
+	const char *file = "containers.ldif";
 	convert_to_dn(data);
-	printf("\
+	if (data->file > 0) {
+		if (!(out = fopen(file, "w"))) {
+			fprintf(stderr, "Cannot open %s for writing!\n", file);
+			exit(FILE_O_FAIL);
+		}
+	} else {
+		out = stdout;
+	}
+	fprintf(out, "\
 # %s\n\
 dn: %s\n\
 dc: %s\n\
@@ -139,13 +152,15 @@ objectClass: organizationalUnit\n\
 ou: group\n\
 \n", dom, dn, dc, dom, dom, dn, dom, dn);
 	if (data->sudo > NONE)
-		printf("\
+		fprintf(out, "\
 # ou=SUDOers %s\n\
 dn: ou=SUDOers,%s\n\
 objectClass: top\n\
 objectClass: organizationalUnit\n\
 ou: SUDOers\n\
 \n", dom, dn);
+	if (data->file > 0)
+		fclose(out);
 }
 
 void
