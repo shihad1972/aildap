@@ -37,7 +37,7 @@ typedef struct lcr_t {
 	short int ssl, tls, file;
 } lcr_t;
 
-typedef struct lgc_s {
+typedef struct lcg_s {
 	char *domain, *dc, *dn, *name, *users;
 	short int group;
 } lgc_s;
@@ -151,6 +151,12 @@ init_lcu_data(inp_data_s *data);
 void
 clean_lcu_data(inp_data_s *data);
 
+void
+init_lcdb_data_struct(lcdb_s *data);
+
+void
+clean_lcdb_data(lcdb_s *data);
+
 char *
 get_ldif_domain(char *domain);
 
@@ -159,4 +165,7 @@ get_ldif_user(inp_data_s *data);
 
 void
 check_snprintf(char *target, int max, const char *string, const char *what);
+
+int
+add_trailing_slash(char *member);
 #endif /* HAVE_LDAP_COL_H */

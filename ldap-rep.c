@@ -78,9 +78,11 @@ rep_usage(const char *prog)
 	if (strstr(prog, "lcr")) 
 		fprintf(stderr, "-d domain -h host -u user\
  -b db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
-	else if (strstr(prog, "lcg"))
+	else if (strstr(prog, "lgc"))
 		fprintf(stderr, " -d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
+	else if (strstr(prog, "lcdb"))
+		fprintf(stderr, " -a admin-user -d domain -p path [ -f ]\n");
 }
 
 void
@@ -107,45 +109,44 @@ init_lcu_data(inp_data_s *data)
 void
 clean_lcu_data(inp_data_s *data)
 {
-	if (!data)
-		exit (MEM);
-	CLEAN_DATA_MEMBER(dom)
-	CLEAN_DATA_MEMBER(pass)
-	CLEAN_DATA_MEMBER(sur)
-	CLEAN_DATA_MEMBER(name)
-	CLEAN_DATA_MEMBER(uname)
-	CLEAN_DATA_MEMBER(fname)
-	free(data);
+	if (data) {
+		CLEAN_DATA_MEMBER(dom)
+		CLEAN_DATA_MEMBER(pass)
+		CLEAN_DATA_MEMBER(sur)
+		CLEAN_DATA_MEMBER(name)
+		CLEAN_DATA_MEMBER(uname)
+		CLEAN_DATA_MEMBER(fname)
+		free(data);
+	}
 }
 
 void
 init_lcr_data_struct(lcr_t *data)
 {
-	memset(data, 0, sizeof(lcr_t));
-	MALLOC_DATA_MEMBER(host, DOMAIN);
-	MALLOC_DATA_MEMBER(domain, DOMAIN);
-	MALLOC_DATA_MEMBER(user, NAME);
-	MALLOC_DATA_MEMBER(db, DB);
-	MALLOC_DATA_MEMBER(ca, DOMAIN);
-	MALLOC_DATA_MEMBER(cdb, DB);
+	if (data) {
+		memset(data, 0, sizeof(lcr_t));
+		MALLOC_DATA_MEMBER(host, DOMAIN);
+		MALLOC_DATA_MEMBER(domain, DOMAIN);
+		MALLOC_DATA_MEMBER(user, NAME);
+		MALLOC_DATA_MEMBER(db, DB);
+		MALLOC_DATA_MEMBER(ca, DOMAIN);
+		MALLOC_DATA_MEMBER(cdb, DB);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lcr_data_struct\n");
+		exit(1);
+	}
 }
 
 void
 clean_lcr_data_struct(lcr_t *data)
 {
 	if (data) {
-		if (data->host)
-			free(data->host);
-		if (data->domain)
-			free(data->domain);
-		if (data->user)
-			free(data->user);
-		if (data->db)
-			free(data->db);
-		if (data->ca)
-			free(data->ca);
-		if (data->cdb)
-			free(data->cdb);
+		CLEAN_DATA_MEMBER(host);
+		CLEAN_DATA_MEMBER(domain);
+		CLEAN_DATA_MEMBER(user);
+		CLEAN_DATA_MEMBER(db);
+		CLEAN_DATA_MEMBER(ca);
+		CLEAN_DATA_MEMBER(cdb);
 		free(data);
 	}
 }
@@ -153,29 +154,59 @@ clean_lcr_data_struct(lcr_t *data)
 void
 init_lgc_data_struct(lgc_s *data)
 {
-	memset(data, 0, sizeof(lgc_s));
-	MALLOC_DATA_MEMBER(domain, DOMAIN);
-	MALLOC_DATA_MEMBER(dc, DC);
-	MALLOC_DATA_MEMBER(dn, DN);
-	MALLOC_DATA_MEMBER(name, NAME);
-	MALLOC_DATA_MEMBER(users, DN);
+	if (data) {
+		memset(data, 0, sizeof(lgc_s));
+		MALLOC_DATA_MEMBER(domain, DOMAIN);
+		MALLOC_DATA_MEMBER(dc, DC);
+		MALLOC_DATA_MEMBER(dn, DN);
+		MALLOC_DATA_MEMBER(name, NAME);
+		MALLOC_DATA_MEMBER(users, DN);
+	}else {
+		fprintf(stderr, "null pointer passed to init_lgc_data_struct\n");
+		exit(1);
+	}
 }
 
 void
 clean_lgc_data(lgc_s *data)
 {
-	if (data->domain)
-		free(data->domain);
-	if (data->dc)
-		free(data->dc);
-	if (data->dn)
-		free(data->dn);
-	if (data->name)
-		free(data->name);
-	if (data->users)
-		free(data->users);
-	if (data)
+	if (data) {
+		CLEAN_DATA_MEMBER(domain);
+		CLEAN_DATA_MEMBER(dc);
+		CLEAN_DATA_MEMBER(dn);
+		CLEAN_DATA_MEMBER(name);
+		CLEAN_DATA_MEMBER(users);
 		free(data);
+	}
+}
+
+void
+init_lcdb_data_struct(lcdb_s *data)
+{
+	if (data) {
+		memset(data, 0, sizeof(lcdb_s));
+		MALLOC_DATA_MEMBER(domain, DOMAIN);
+		MALLOC_DATA_MEMBER(admin, NAME);
+		MALLOC_DATA_MEMBER(phash, NAME);
+		MALLOC_DATA_MEMBER(pass, NAME);
+		MALLOC_DATA_MEMBER(dir, DN);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lcdb_data_struct\n");
+		exit(1);
+	}
+}
+
+void
+clean_lcdb_data(lcdb_s *data)
+{
+	if (data) {
+		CLEAN_DATA_MEMBER(domain);
+		CLEAN_DATA_MEMBER(admin);
+		CLEAN_DATA_MEMBER(phash);
+		CLEAN_DATA_MEMBER(pass);
+		CLEAN_DATA_MEMBER(dir);
+		free(data);
+	}
 }
 
 char *
@@ -243,4 +274,24 @@ check_snprintf(char *target, int max, const char *string, const char *what)
 		rep_truncate(what, max);
 	else if (retval < 0)
 		fprintf(stderr, "Output error for %s\n", what);
+}
+
+int
+add_trailing_slash(char *member)
+{
+	size_t len;
+	int retval;
+
+	retval = 0;
+	len = strlen(member);
+	if (member[len - 1] != '/') {
+		member[len] = '/';
+		member[len + 1] = '\0';
+	} else if ((member[len - 1] == '/')) {
+		retval = NONE;
+	} else {
+		retval = -1;
+	}
+
+	return retval;
 }
