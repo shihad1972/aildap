@@ -38,7 +38,7 @@ typedef struct lcr_t {
 } lcr_t;
 
 typedef struct lcg_s {
-	char *domain, *dc, *dn, *name, *users;
+	char *domain, *dc, *dn, *name, *user;
 	short int group;
 } lgc_s;
 

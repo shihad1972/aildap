@@ -78,11 +78,11 @@ rep_usage(const char *prog)
 	if (strstr(prog, "lcr")) 
 		fprintf(stderr, "-d domain -h host -u user\
  -b db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
-	else if (strstr(prog, "lgc"))
+	else if (strstr(prog, "lcg"))
 		fprintf(stderr, " -d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
 	else if (strstr(prog, "lcdb"))
-		fprintf(stderr, " -a admin-user -d domain -p path [ -f ]\n");
+		fprintf(stderr, " -a admin-user -d domain [ -p path ] [ -f ]\n");
 }
 
 void
@@ -160,7 +160,7 @@ init_lgc_data_struct(lgc_s *data)
 		MALLOC_DATA_MEMBER(dc, DC);
 		MALLOC_DATA_MEMBER(dn, DN);
 		MALLOC_DATA_MEMBER(name, NAME);
-		MALLOC_DATA_MEMBER(users, DN);
+		MALLOC_DATA_MEMBER(user, DN);
 	}else {
 		fprintf(stderr, "null pointer passed to init_lgc_data_struct\n");
 		exit(1);
@@ -175,7 +175,7 @@ clean_lgc_data(lgc_s *data)
 		CLEAN_DATA_MEMBER(dc);
 		CLEAN_DATA_MEMBER(dn);
 		CLEAN_DATA_MEMBER(name);
-		CLEAN_DATA_MEMBER(users);
+		CLEAN_DATA_MEMBER(user);
 		free(data);
 	}
 }

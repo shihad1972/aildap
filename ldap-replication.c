@@ -30,6 +30,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "ldap-col.h"
+#include "base-sha.h"
 
 int
 parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
@@ -141,6 +142,56 @@ data->user, dom, data->cdb, data->db, data->db);
 }
 
 int
+print_consumer(lcr_t *data)
+{
+	FILE *consumer;
+	char *dom, *pass, *phash;
+	const char *file = "consumer.ldif";
+
+	if (data->file > 0) {
+		if (!(consumer = fopen(file, "w")))
+			return FILE_O_FAIL;
+	} else {
+		consumer = stdout;
+	}
+	dom = get_ldif_domain(data->domain);
+	pass = getPassword("Enter admin DN password: ");
+	phash = get_ldif_pass_hash(pass);
+	fprintf(consumer, "\
+#Load the syncprov module.\n\
+dn: cn=module{0},cn=config\n\
+changetype: modify\n\
+add: olcModuleLoad\n\
+olcModuleLoad: syncprov\n\
+\n\
+# syncrepl specific indices\n\
+dn: olcDatabase={%s}hdb,cn=config\n\
+changetype: modify\n\
+add: olcDbIndex\n\
+olcDbIndex: entryUUID eq\n\
+-\n\
+add: olcSyncRepl\n", data->db); 
+	if (data->ssl == 0)
+		fprintf(consumer, "\
+olcSyncRepl: rid=0 provider=ldap://%s bindmethod=simple binddn=\"cn=%s,%s\" \
+credentials=%s searchbase=\"%s\" logbase=\"cn=accesslog\" \
+logfilter=\"(&(objectClass=auditWriteObject)(reqResult=0))\" \
+schemachecking=on type=refreshAndPersist retry=\"60 +\" syncdata=accesslog\n",
+data->host, data->user, dom, pass, dom);
+	free(phash);
+	free(pass);
+	free(dom);
+
+/*
+olcSyncRepl: rid=0 provider=ldap://%s bindmethod=simple binddn=\"cn=%s,%s\" credentials=%s searchbase=\"%s\" logbase=\"cn=accesslog\" logfilter=\"(&(objectClass=auditWriteObject)(reqResult=0))\" schemachecking=on type=refreshAndPersist retry=\"60 +\" syncdata=accesslog\n\
+-\n\
+add: olcUpdateRef\n\
+olcUpdateRef: ldap://%s\n", , data->host, data->user, dom, 
+*/
+	return 0;
+}
+
+int
 main (int argc, char *argv[])
 {
 	int retval = NONE;
@@ -153,6 +204,7 @@ main (int argc, char *argv[])
 		return retval;
 	}
 	print_provider(data);
+	print_consumer(data);
 	clean_lcr_data_struct(data);
 	return retval;
 }

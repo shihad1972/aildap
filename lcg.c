@@ -52,7 +52,7 @@ parse_lgc_command_line(int argc, char *argv[], lgc_s *data)
 		} else if (opt == 'g') {
 			data->group = (short)strtoul(optarg, NULL, 10);
 		} else if (opt == 'u') {
-			if ((retval = snprintf(data->users, DN, "%s", optarg)) > DN) {
+			if ((retval = snprintf(data->user, DN, "%s", optarg)) > DN) {
 				fprintf(stderr, "Users truncated!\n");
 				fprintf(stderr, "Max %d characters in user list\n", DN);
 			}
@@ -108,11 +108,11 @@ output_insert_cont(lgc_s *data)
 {
 	if (!(data))
 		return;
-	char *grp = data->name, *dn = data->dn, *users = '\0';
+	char *grp = data->name, *dn = data->dn, *user = '\0';
 	char *tmp, *pos;
 	short int gid = data->group;
-	if ((strlen(data->users)) > 0)
-		users = strndup(data->users, DN);
+	if ((strlen(data->user)) > 0)
+		user = strndup(data->user, DN);
 	printf("\
 # %s, group, %s\n\
 dn: cn=%s,ou=group,%s\n\
@@ -120,8 +120,8 @@ cn: %s\n\
 gidNumber: %hd\n\
 objectClass: posixGroup\n\
 objectClass: top\n", grp, data->domain, grp, dn, grp, gid);
-	if (users) {
-		tmp = pos = users;
+	if (user) {
+		tmp = pos = user;
 		while ((tmp = strchr(pos, ','))) {
 			*tmp = '\0';
 			tmp++;
@@ -129,7 +129,7 @@ objectClass: top\n", grp, data->domain, grp, dn, grp, gid);
 			pos = tmp;
 		}
 		printf("memberUid: %s\n", pos);
-		free(users);
+		free(user);
 	}
 }
 

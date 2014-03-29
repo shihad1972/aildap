@@ -20,9 +20,9 @@ lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c
 lcg_SOURCES = lcg.c $(shared_SOURCES)
 lct_SOURCES = test-ldap-connection.c
-lcr_SOURCES = ldap-replication.c $(shared_SOURCES)
+lcr_SOURCES = ldap-replication.c $(shared_SOURCES) base-sha.c
 ssha_SOURCES = ssha1.c
-user_SOURCES = user.c base-sha.c $(shared_SOURCES)
+user_SOURCES = user.c $(shared_SOURCES) base-sha.c
 
 
 all:	$(bin_PROGRAMS)
@@ -34,7 +34,7 @@ lcs:	$(lcs_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lcs_SOURCES)
 
 lcr:	$(lcr_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcr_SOURCES)
+	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcr_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 lcg:	$(lcg_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lcg_SOURCES)
