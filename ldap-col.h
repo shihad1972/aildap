@@ -53,6 +53,11 @@ typedef struct string_len_s {
 	size_t size;
 } string_len_s;
 
+typedef struct cont_s {
+	char *domain, *dc, *dn;
+	short int action, sudo, file;
+} cont_s;
+
 typedef struct inp_data_s {
 	unsigned short int gr, lu, user, np;
 	char *dom, *sur, *name, *uname, *pass, *fname;
@@ -68,6 +73,8 @@ enum {
 	NOGRNM,
 	NODATA,
 	DB = 8,
+	INSERT,
+	REMOVE,
 	FILE_O_FAIL = 16,
 	NAME = 32,
 	DC = 64,
@@ -156,6 +163,12 @@ init_lcdb_data_struct(lcdb_s *data);
 
 void
 clean_lcdb_data(lcdb_s *data);
+
+void
+init_lcc_data_struct(cont_s *data);
+
+void
+clean_lcc_data(cont_s *data);
 
 char *
 get_ldif_domain(char *domain);
