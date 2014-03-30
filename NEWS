@@ -1,0 +1,8 @@
+---- Sunday 30th March 2014 ----
+
+After a weekend of work, we now have the following programs:
+
+lcs lcc lct lcg lcu ssha lcr lcdb
+
+These are starting to share various code functions (such as get_ldif_domain)
+Autoconf is stating to be used as well.
