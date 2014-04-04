@@ -5,7 +5,7 @@ GLIBS = `pkg-config --libs-only-l glib-2.0`
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 
-bin_PROGRAMS = lcs lcc lct lcg lcu ssha lcr lcdb
+bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb
 shared_SOURCES = ldap-rep.c
 lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcs_SOURCES = ssl-config.c
@@ -33,12 +33,6 @@ lcu:	$(lcu_SOURCES)
 
 lcdb:	$(lcdb_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-lct:	$(lct_SOURCES)
-	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(lct_SOURCES) $(LLDFLAGS)
-
-ssha:	$(ssha_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(ssha_SOURCES) $(GLIBS)
 
 clean:
 	$(RM) *.o $(bin_PROGRAMS)

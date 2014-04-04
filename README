@@ -29,21 +29,6 @@ should have their name as the domain name.
 
 lsc [ -i | -r ] -d <domain-name> (-a CA-file-name)
 
-ltc
-  This will test a connection to the ldap database and will search for the
-user you specify on the command line.
-
--d	base domain in the directory
--u	user you want to search for
--h	host name of the ldap server
-
-ltc -d <domain-name> -u user -h host
-
-ssha
-  Test program to output sha1 and ssha1 hashes of password
-
-ssha
-
 lgc
   This will create an ldif for a new group to insert into the LDAP directory.
 You can also specify users on the command line that will part of this group.
