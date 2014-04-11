@@ -61,8 +61,7 @@ void
 output_db_ldif(lcdb_s *data)
 {
 	char *ldf, *dir, *dom, *adm, *hsh;
-	int retval = NONE;
-	size_t len, dlen;
+	size_t len;
 	FILE *out;
 
 	if (!(data)) {
@@ -73,19 +72,10 @@ output_db_ldif(lcdb_s *data)
 	dir = data->dir;
 	adm = data->admin;
 	hsh = data->phash;
-	dlen = strlen(dom);
 	len = strlen(data->dir);
 	ldf = get_ldif_domain(dom);
-	if (len > 0) {
-		if ((retval = add_trailing_slash(data->dir)) < 0) {
-			fprintf(stderr, "Can't add trailing slash to dir %s\n",
-				data->dir);
-			exit(BUFF);
-		}
-		strncat(data->dir, dom, dlen);
-	} else {
+	if (len == 0)
 		snprintf(data->dir, DN, "/var/lib/slapd/%s", dom);
-	}
 	if (data->file > 0) {
 		if (!(out = fopen("db.ldif", "w"))) {
 			fprintf(stderr, "Cannot write to db.ldif\n");
