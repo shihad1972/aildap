@@ -34,7 +34,7 @@ sha1:	$(sha1_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(sha1_SOURCES) $(SLDFLAGS)
 
 sha:	$(sha_SOURCES)
-	$(CC) $(CFLAGS) -s $@ $(sha_SOURCES) $(SLDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $(sha_SOURCES) $(SLDFLAGS)
 
 lct:	$(lct_SOURCES)
 	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(lct_SOURCES) $(LLDFLAGS)
