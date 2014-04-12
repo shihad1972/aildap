@@ -39,7 +39,7 @@ parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 
 	if (!(data))
 		return NODATA;
-	while ((opt = getopt(argc, argv, "b:c:d:h:r:u:fts")) != -1) {
+	while ((opt = getopt(argc, argv, "b:c:d:h:p:r:u:fts")) != -1) {
 		if (opt == 'b')
 			check_snprintf(data->db, DB, optarg, "data->db");
 		else if (opt == 'c')
@@ -50,6 +50,8 @@ parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 			check_snprintf(data->host, DOMAIN, optarg, "data->host");
 		else if (opt == 'r')
 			check_snprintf(data->cdb, DB, optarg, "data->cbd");
+		else if (opt == 'p')
+			check_snprintf(data->pdb, DB, optarg, "data->pdb");
 		else if (opt == 'u')
 			check_snprintf(data->user, DOMAIN, optarg, "data->user");
 		else if (opt == 'f')
@@ -78,7 +80,7 @@ int
 print_provider(lcr_t *data)
 {
 	FILE *provider;
-	char *dom;
+	char *dom = '\0';
 	const char *file = "provider.ldif";
 
 	if (data->file > 0) {
@@ -101,7 +103,7 @@ dn: olcDatabase=hdb,cn=config\n\
 objectClass: olcDatabaseConfig\n\
 objectClass: olcHdbConfig\n\
 olcDatabase: hdb\n\
-olcDbDirectory: /var/lib/slapd/accesslog\n\
+olcDbDirectory: /var/lib/slapd/%s/accesslog\n\
 olcSuffix: cn=accesslog\n\
 olcRootDN: cn=%s,%s\n\
 olcDbIndex: default eq\n\
@@ -135,9 +137,11 @@ olcAccessLogSuccess: TRUE\n\
 # scan the accesslog DB every day, and purge entries older than 7 days\n\
 olcAccessLogPurge: 07+00:00 01+00:00\n\
 ",
-data->user, dom, data->cdb, data->db, data->db);
+data->domain, data->user, dom, data->pdb, data->db, data->db);
 	if (data->file > 1)
 		fclose(provider);
+	if (dom)
+		free(dom);
 	return NONE;
 }
 
@@ -170,7 +174,7 @@ changetype: modify\n\
 add: olcDbIndex\n\
 olcDbIndex: entryUUID eq\n\
 -\n\
-add: olcSyncRepl\n", data->db); 
+add: olcSyncRepl\n", data->cdb); 
 	if (data->ssl == 0)
 		fprintf(consumer, "\
 olcSyncRepl: rid=0 provider=ldap://%s bindmethod=simple binddn=\"cn=%s,%s\" \

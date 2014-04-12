@@ -77,7 +77,7 @@ rep_usage(const char *prog)
 	fprintf(stderr, "Usage: %s ", prog);
 	if (strstr(prog, "lcr")) 
 		fprintf(stderr, "-d domain -h host -u user\
- -b db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
+ -b db# -p db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
 	else if (strstr(prog, "lcg"))
 		fprintf(stderr, " -d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
@@ -131,6 +131,7 @@ init_lcr_data_struct(lcr_t *data)
 		MALLOC_DATA_MEMBER(db, DB);
 		MALLOC_DATA_MEMBER(ca, DOMAIN);
 		MALLOC_DATA_MEMBER(cdb, DB);
+		MALLOC_DATA_MEMBER(pdb, DB);
 	} else {
 		fprintf(stderr, "null pointer passed to init_lcr_data_struct\n");
 		exit(1);
@@ -147,6 +148,7 @@ clean_lcr_data_struct(lcr_t *data)
 		CLEAN_DATA_MEMBER(db);
 		CLEAN_DATA_MEMBER(ca);
 		CLEAN_DATA_MEMBER(cdb);
+		CLEAN_DATA_MEMBER(pdb);
 		free(data);
 	}
 }

@@ -44,4 +44,4 @@ lcdb:	$(lcdb_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 clean:
-	$(RM) *.o $(bin_PROGRAMS)
+	$(RM) *.o $(bin_PROGRAMS) *.ldif ../*.ldif

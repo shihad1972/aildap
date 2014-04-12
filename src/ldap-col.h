@@ -33,7 +33,7 @@ void
 rep_error(const char *error);
 
 typedef struct lcr_t {
-	char *host, *domain, *user, *db, *cdb, *ca;
+	char *host, *domain, *user, *db, *cdb, *pdb, *ca;
 	short int ssl, tls, file;
 } lcr_t;
 

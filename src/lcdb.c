@@ -75,7 +75,7 @@ output_db_ldif(lcdb_s *data)
 	len = strlen(data->dir);
 	ldf = get_ldif_domain(dom);
 	if (len == 0)
-		snprintf(data->dir, DN, "/var/lib/slapd/%s", dom);
+		snprintf(data->dir, DN, "/var/lib/slapd/%s/domain", dom);
 	if (data->file > 0) {
 		if (!(out = fopen("db.ldif", "w"))) {
 			fprintf(stderr, "Cannot write to db.ldif\n");
@@ -128,8 +128,12 @@ main (int argc, char *argv[])
 		return retval;
 	}
 	data->pass = getPassword("Enter password for admin DN: ");
-	data->phash = get_ldif_pass_hash(data->pass);
-	output_db_ldif(data);
+	if (strlen(data->pass) > 0) {
+		data->phash = get_ldif_pass_hash(data->pass);
+		output_db_ldif(data);
+	} else {
+		fprintf(stderr, "Empty password!\n");
+	}
 	clean_lcdb_data(data);
 	return retval;
 }
