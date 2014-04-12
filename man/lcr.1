@@ -1,0 +1,75 @@
+.TH LCR 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcr \- LDAP create replication.
+.SH SYNOPSIS
+.B lcr
+.B -d domain
+.B -h host
+.B -u user
+.B -b db#
+.B -p db#
+.B -r db#
+[
+.B -f
+] ([
+.B -s | -t
+] [
+.B -c ca-cert
+]) [
+.B -C | -P
+] [
+.B -M
+]
+.SH DESCRIPTION
+\fBlcr\fP will create the configuration needed for ldap replication in
+\fIopenldap\fP 2.4. This will create a \fIcn=config\fP style configuration
+which you can add using \fBldapadd\fP on the ldap server. You can output
+to \fIstdout\fP or use the \fB-f\fP switch to write to separate files,
+\fBconsumer.ldif\fP and \fBprovider.ldif\fP. \fIOpenldap\fP uses the terms
+\fIprovider\fP and \fIconsumer\fP instead of \fImaster\fP and \fIslave\fP,
+where the \fIprovider\fP holds the authoratative records, and the
+\fIconsumer\fP gets updates from the \fIprovider\fP
+
+With the cn=config style, each database has a unique number. You will need
+to know the number of the database you wish to replicate on the provider,
+the last database number on the provider so you can add one to it for the
+new accesslog database, and also the last database number on the consumer
+so you can add one to it for the new replicated database.
+.SH OPTIONS
+.IP "-d domain"
+Specify the base DN of the branch of the directory.
+.IP "-h host"
+Specify the provider (or master) host.
+.IP "-b db"
+Number of the database on the provider you want to replicate.
+.IP "-p db"
+Number of the database that will be the new accesslog database on the provider.
+.IP "-r db"
+Number of the database that will be the new replicated database.
+.IP -f
+Write the output to the files provider.ldif and consumer.ldif.
+.IP -s
+Enable SSL connection to the provider.
+.IP -t
+Enable TLS connection to the provider.
+.IP "-c ca-cert"
+Specify the CA certificate of the key that has signed the provider's
+certificate, so you can trust the provider.
+.IP -C
+Only write the consumer ldif.
+.IP -P
+Only write the provider ldif.
+.IP -M
+Remove the ldif section that adds the accesslog and syncprov modules. This
+option is useful if you have already have databases replicated on these ldap
+servers.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcu(1)
+.BR lcg(1)
+.BR lcc(1)
+.BR lcs(1)
+.BR lcdb(1)

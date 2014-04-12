@@ -1,0 +1,4 @@
+13/04/2014
+Too many double negatives (-M do NOT add module config, -p do NOT ask for a
+password). These options should CREATE the module and password. Make sure to
+update documentation!

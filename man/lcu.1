@@ -1,0 +1,45 @@
+.TH LCU 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcu \- LDAP create user.
+.SH SYNOPSIS
+.B lcu
+.B -d doomain
+.B -n full-name
+.B -u uid
+[
+.B -g
+] [
+.B -l
+] [
+.B -p
+]
+.SH DESCRIPTION
+\fBlcu\fP will create ldif suitable for an \fIRFC 2307\fP user. You must specify
+the base domain for the branch of the directory, the full name of the user,
+and the uid. You can optionally specify a gid. You may also create a long
+username, where the first initial and the surname are combined into a username,
+although the default is to use the first or given name of the user. By default,
+\fBlcu\fP will ask for a password. This can be overwritten.
+.SH OPTIONS
+.IP "-d domain"
+Specify the base DN of the branch of the directory.
+.IP "-n full-name"
+Specify the full name of the user.
+.IP "-u uid"
+Specify the uid of the user.
+.IP "-g gid"
+Specify the gid of the user.
+.IP "-l"
+Create the long version of the username.
+.IP -p
+Do not ask for a password.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcu(1)
+.BR lcr(1)
+.BR lcc(1)
+.BR lcs(1)
+.BR lcdb(1)

@@ -1,0 +1,35 @@
+.TH LCG 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcg \- LDAP create group.
+.SH SYNOPSIS
+.B lcg
+.B -d domain
+.B -g gid
+.B -n group
+[
+.B -u user1,user2,...,userN
+]
+.SH DESCRIPTION
+\fBlcg\fP will create ldif output suitable for an \fIRFC 2307\fP group.
+You must specify the base domain for the branch of the directory, the
+group name, and the gid. You can optionally add users to this group, with a
+comma separated list of usernames.
+.SH OPTIONS
+.IP "-d domain"
+Specify the base DN of the branch of the directory.
+.IP "-g gid"
+Specify the designated gid.
+.IP "-n group-name"
+Specify the designated group name.
+.IP -u user1,user2,...,userN
+Specify a comma separated list of usernames that will be members of this group.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcu(1)
+.BR lcr(1)
+.BR lcc(1)
+.BR lcs(1)
+.BR lcdb(1)
