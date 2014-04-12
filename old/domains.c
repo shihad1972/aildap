@@ -12,8 +12,8 @@ int
 main ()
 {
 	int rd = open("/dev/random", O_RDONLY), i;
-	guchar md[SHA_DIGEST_LENGTH], salt[6], *np;
-	const guchar pass[] = "MyPa55w0rd", newp[26];
+	guchar md[SHA_DIGEST_LENGTH], salt[7], *np, newp[26];
+	const guchar pass[] = "MyPa55w0rd";
 	gchar *out;
 	SHA_CTX msg;
 
