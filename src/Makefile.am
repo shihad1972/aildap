@@ -11,9 +11,7 @@ lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
-lct_SOURCES = test-ldap-connection.c
 lcr_SOURCES = ldap-replication.c $(shared_SOURCES) base-sha.c
-ssha_SOURCES = ssha1.c
 lcu_SOURCES = user.c $(shared_SOURCES) base-sha.c
 
 lcc:	$(lcc_SOURCES)
