@@ -1,36 +1,31 @@
-PCFLAGS = -DLDAP_DEPRECATED
-GCFLAGS = `pkg-config --cflags glib-2.0`
-GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
-GLIBS = `pkg-config --libs-only-l glib-2.0`
-LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
-SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
+AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
+AM_LDFLAGS =
 
-bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb
+bin_PROGRAMS = lcs lcc lcg
 shared_SOURCES = ldap-rep.c
-lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
+noinst_HEADERS = base-sha.h ldap-col.h
 lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
+lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
+lcdb_CFLAGS = $(AM_CFLAGS)
+lcdb_LDFLAGS = $(AM_LDFLAGS)
 lcr_SOURCES = ldap-replication.c $(shared_SOURCES) base-sha.c
+lcr_CFLAGS = $(AM_CFLAGS)
+lcr_LDFLAGS = $(AM_LDFLAGS)
 lcu_SOURCES = user.c $(shared_SOURCES) base-sha.c
+lcu_CFLAGS = $(AM_CFLAGS)
+lcu_LDFLAGS = $(AM_LDFLAGS)
 
-lcc:	$(lcc_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcc_SOURCES)
-
-lcs:	$(lcs_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcs_SOURCES)
-
-lcr:	$(lcr_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcr_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-lcg:	$(lcg_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcg_SOURCES)
-
-lcu:	$(lcu_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcu_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-lcdb:	$(lcdb_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-clean:
-	$(RM) *.o $(bin_PROGRAMS)
+if HAVE_LIBCRYPTO
+if HAVE_GLIBS
+LIBS += -lglib-2.0
+lcdb_CFLAGS += $(GLIB_CFLAGS)
+lcdb_LDFLAGS += $(GLIB_LDFLAGS)
+lcr_CFLAGS += $(GLIB_CFLAGS)
+lcr_LDFLAGS += $(GLIB_LDFLAGS)
+lcu_CFLAGS += $(GLIB_CFLAGS)
+lcu_LDFLAGS += $(GLIB_LDFLAGS)
+bin_PROGRAMS += lcu lcr lcdb
+endif
+endif
