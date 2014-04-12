@@ -35,11 +35,12 @@
 int
 parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 {
+	const char arguments[] = "b:c:d:h:p:r:u:ftsCMP";
 	int retval = NONE, opt = NONE;
 
 	if (!(data))
 		return NODATA;
-	while ((opt = getopt(argc, argv, "b:c:d:h:p:r:u:fts")) != -1) {
+	while ((opt = getopt(argc, argv, arguments)) != -1) {
 		if (opt == 'b')
 			check_snprintf(data->db, DB, optarg, "data->db");
 		else if (opt == 'c')
@@ -60,6 +61,12 @@ parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 			data->tls = 1;
 		else if (opt == 's')
 			data->ssl = 1;
+		else if (opt == 'C')
+			data->cons = 1;
+		else if (opt == 'M')
+			data->mod = 1;
+		else if (opt == 'P')
+			data->prov = 1;
 		else {
 			rep_usage(argv[0]);
 			return WARG;
@@ -68,6 +75,16 @@ parse_lcr_command_line(int argc, char *argv[], lcr_t *data)
 	if ((strlen(data->db) == 0) || (strlen(data->domain) == 0) ||
 	 (strlen(data->host) == 0) || (strlen(data->user) == 0) ||
 	 (strlen(data->cdb) == 0)) {
+		rep_usage(argv[0]);
+		return WARG;
+	}
+	if ((data->tls > 0) && (data->ssl > 0)) {
+		fprintf(stderr, "Only one of -t or -s is allowed\n");
+		rep_usage(argv[0]);
+		return WARG;
+	}
+	if ((data->prov > 0) && (data->cons > 0)) {
+		fprintf(stderr, "Only one of -C or -P is allowed\n");
 		rep_usage(argv[0]);
 		return WARG;
 	}
@@ -90,14 +107,16 @@ print_provider(lcr_t *data)
 		provider = stdout;
 	}
 	dom = get_ldif_domain(data->domain);
-	fprintf(provider, "\
+	if (data->mod == 0)
+		fprintf(provider, "\
 #Load the accesslog module\n\
 dn: cn=module{0},cn=config\n\
 changeType: modify\n\
 add: olcModuleLoad\n\
 olcModuleLoad: accesslog\n\
 olcModuleLoad: syncprov\n\
-\n\
+\n");
+	fprintf(provider, "\
 # Accesslog database definition\n\
 dn: olcDatabase=hdb,cn=config\n\
 objectClass: olcDatabaseConfig\n\
@@ -149,7 +168,7 @@ int
 print_consumer(lcr_t *data)
 {
 	FILE *consumer;
-	char *dom, *pass, *phash;
+	char *dom, *phash;
 	const char *file = "consumer.ldif";
 
 	if (data->file > 0) {
@@ -157,17 +176,19 @@ print_consumer(lcr_t *data)
 			return FILE_O_FAIL;
 	} else {
 		consumer = stdout;
+		printf("\n");
 	}
 	dom = get_ldif_domain(data->domain);
-	pass = getPassword("Enter admin DN password: ");
-	phash = get_ldif_pass_hash(pass);
-	fprintf(consumer, "\
+	phash = get_ldif_pass_hash(data->pass);
+	if (data->mod == 0)
+		fprintf(consumer, "\
 #Load the syncprov module.\n\
 dn: cn=module{0},cn=config\n\
 changetype: modify\n\
 add: olcModuleLoad\n\
 olcModuleLoad: syncprov\n\
-\n\
+\n");
+	fprintf(consumer, "\
 # syncrepl specific indices\n\
 dn: olcDatabase={%s}hdb,cn=config\n\
 changetype: modify\n\
@@ -181,9 +202,8 @@ olcSyncRepl: rid=0 provider=ldap://%s bindmethod=simple binddn=\"cn=%s,%s\" \
 credentials=%s searchbase=\"%s\" logbase=\"cn=accesslog\" \
 logfilter=\"(&(objectClass=auditWriteObject)(reqResult=0))\" \
 schemachecking=on type=refreshAndPersist retry=\"60 +\" syncdata=accesslog\n",
-data->host, data->user, dom, pass, dom);
+data->host, data->user, dom, data->pass, dom);
 	free(phash);
-	free(pass);
 	free(dom);
 
 /*
@@ -207,8 +227,14 @@ main (int argc, char *argv[])
 		clean_lcr_data_struct(data);
 		return retval;
 	}
-	print_provider(data);
-	print_consumer(data);
+	if (data->prov == 0)
+		data->pass = getPassword("Enter admin DN password: ");
+	if (data->cons == 0)
+		print_provider(data);
+	if (data->prov == 0)
+		print_consumer(data);
+	if (data->pass)
+		free(data->pass);
 	clean_lcr_data_struct(data);
 	return retval;
 }

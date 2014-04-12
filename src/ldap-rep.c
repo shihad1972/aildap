@@ -77,7 +77,7 @@ rep_usage(const char *prog)
 	fprintf(stderr, "Usage: %s ", prog);
 	if (strstr(prog, "lcr")) 
 		fprintf(stderr, "-d domain -h host -u user\
- -b db# -p db# -r db# [ -f ] [ -s | -t ] [ -c ca-cert]\n");
+ -b db# -p db# -r db# [ -f ] [ -s | -t ] [ -C | -P ] [ -M ] [ -c ca-cert]\n");
 	else if (strstr(prog, "lcg"))
 		fprintf(stderr, " -d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
