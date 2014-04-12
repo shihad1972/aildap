@@ -3,6 +3,7 @@ AM_LDFLAGS =
 
 bin_PROGRAMS = lcs lcc lcg
 shared_SOURCES = ldap-rep.c
+noinst_HEADERS = base-sha.h ldap-col.h
 lcs_SOURCES = ssl-config.c
 lcc_SOURCES = containers.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)

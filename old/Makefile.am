@@ -5,6 +5,7 @@ AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
 
 shared_SOURCES = ldap-rep.c
+noinst_HEADERS = base-sha.h ldap-col.h
 lct_SOURCES = test-ldap-connection.c
 lct_CFLAGS = $(AM_CFLAGS)
 lct_LDFLAGS = $(AM_LDFLAGS)
