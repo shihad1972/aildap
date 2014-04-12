@@ -1,0 +1,34 @@
+#
+#
+# Makefile.am for ldap-utils c programs
+#
+#
+RM = rm -f
+ECHO = echo
+DIR = src
+OLD = old
+SUBDIRS = src
+bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb
+
+all:	$(bin_PROGRAMS)
+
+lcs:
+	cd $(DIR); make $(MFLAGS) $@
+
+lcc:
+	cd $(DIR); make $(MFLAGS) $@
+
+lcg:
+	cd $(DIR); make $(MFLAGS) $@
+
+lcu:
+	cd $(DIR); make $(MFLAGS) $@
+
+lcr:
+	cd $(DIR); make $(MFLAGS) $@
+
+lcdb:
+	cd $(DIR); make $(MFLAGS) $@
+
+clean:
+	cd $(DIR); make $@; cd ../$(OLD); make $@

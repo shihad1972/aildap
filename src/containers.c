@@ -2,59 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "ldap-col.h"
 
-typedef struct cont_s {
-	char *domain, *dc, *dn;
-	short int action, sudo;
-} cont_s;
-
-enum {
-	NONE = 0,
-	ONE,
-	INSERT,
-	REMOVE,
-	MALLOC,
-	WARG,
-	NODOM,
-	DC = 64,
-	DNL = 67,
-	DOMAIN = 256,
-	DN = 512
-};
-
-void
-report_error(const char *error)
-{
-	fprintf(stderr, "Cannot allocate memory for %s\n", error);
-	exit(MALLOC);
-}
-
-void
-init_data_struct(cont_s *data)
-{
-	data->domain = '\0';
-	data->dc = '\0';
-	data->dn = '\0';
-	data->action = 0;
-	if (!(data->domain = calloc(ONE, DOMAIN)))
-		report_error("domain in data");
-	if (!(data->dc = calloc(ONE, DC)))
-		report_error("dc in data");
-	if (!(data->dn = calloc(ONE, DN)))
-		report_error("dn in data");
-}
 int
 parse_command_line(int argc, char *argv[], cont_s *data)
 {
 	int retval = NONE, opt = NONE;
 
-	while ((opt = getopt(argc, argv, "d:irs")) != -1) {
+	while ((opt = getopt(argc, argv, "d:firs")) != -1) {
 		if (opt == 'd') {
 			if ((retval = snprintf(data->domain, DOMAIN, "%s", optarg)) > DOMAIN) {
 				fprintf(stderr, "Domain truncated!\n");
 				fprintf(stderr, "Max 255 characters in a domain name\n");
 			}
 			retval = NONE;
+		} else if (opt == 'f') {
+			data->file = ONE;
 		} else if (opt == 'i') {
 			data->action = INSERT;
 		} else if (opt == 'r') {
@@ -72,19 +35,6 @@ parse_command_line(int argc, char *argv[], cont_s *data)
 		retval = NODOM;
 	}
 	return retval;
-}
-
-void
-clean_data(cont_s *data)
-{
-	if (data->domain)
-		free(data->domain);
-	if (data->dc)
-		free(data->dc);
-	if (data->dn)
-		free(data->dn);
-	if (data)
-		free(data);
 }
 
 void
@@ -115,9 +65,19 @@ convert_to_dn(cont_s *data)
 void
 output_insert_cont(cont_s *data)
 {
+	FILE *out;
 	char *dom = data->domain, *dc = data->dc, *dn = data->dn;
+	const char *file = "containers.ldif";
 	convert_to_dn(data);
-	printf("\
+	if (data->file > 0) {
+		if (!(out = fopen(file, "w"))) {
+			fprintf(stderr, "Cannot open %s for writing!\n", file);
+			exit(FILE_O_FAIL);
+		}
+	} else {
+		out = stdout;
+	}
+	fprintf(out, "\
 # %s\n\
 dn: %s\n\
 dc: %s\n\
@@ -139,13 +99,15 @@ objectClass: organizationalUnit\n\
 ou: group\n\
 \n", dom, dn, dc, dom, dom, dn, dom, dn);
 	if (data->sudo > NONE)
-		printf("\
+		fprintf(out, "\
 # ou=SUDOers %s\n\
 dn: ou=SUDOers,%s\n\
 objectClass: top\n\
 objectClass: organizationalUnit\n\
 ou: SUDOers\n\
 \n", dom, dn);
+	if (data->file > 0)
+		fclose(out);
 }
 
 void
@@ -162,10 +124,10 @@ main(int argc, char *argv[])
 	cont_s *data;
 
 	if (!(data = calloc(ONE, sizeof(cont_s))))
-		report_error("data");
-	init_data_struct(data);
+		rep_error("data");
+	init_lcc_data_struct(data);
 	if ((retval = parse_command_line(argc, argv, data)) != 0) {
-		clean_data(data);
+		clean_lcc_data(data);
 		return retval;
 	}
 	if (data->action == NONE) {
@@ -178,6 +140,6 @@ main(int argc, char *argv[])
 	} else {
 		fprintf(stderr, "Unknown action %d\n", data->action);
 	}
-	clean_data(data);
+	clean_lcc_data(data);
 	return retval;
 }

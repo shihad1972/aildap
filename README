@@ -29,21 +29,6 @@ should have their name as the domain name.
 
 lsc [ -i | -r ] -d <domain-name> (-a CA-file-name)
 
-ltc
-  This will test a connection to the ldap database and will search for the
-user you specify on the command line.
-
--d	base domain in the directory
--u	user you want to search for
--h	host name of the ldap server
-
-ltc -d <domain-name> -u user -h host
-
-ssha
-  Test program to output sha1 and ssha1 hashes of password
-
-ssha
-
 lgc
   This will create an ldif for a new group to insert into the LDAP directory.
 You can also specify users on the command line that will part of this group.
@@ -69,4 +54,19 @@ password associated with the user.
 -p	do not prompt for password
 
 lcu -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid
+
+lrc
+  This will create an ldif configuration for replication a directory from
+another server. This will create 2 ldif configuration files; one for the
+provider (or source) and one for the consumer (or destination). You will have
+to know the database number of the specific part of the directory you wish to
+replicate.
+
+-h host
+-d domain
+-u user
+-b database number
+-t | -s Start Tls or use Ssl encryption.
+-c certificate path (Can add this or we will add tls_reqcert=never)
+
 

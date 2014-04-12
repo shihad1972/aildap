@@ -1,0 +1,14 @@
+These are various ldap utilities the can aid an administrator of user accounts
+in an LDAP directory. There are programs to add the main ou containers, add
+users, add the main database for a domain and add users and groups. These
+create the ldif outputs that can be directly added to the directory using
+the standard ldapadd command, or you can create ldif files to add on another
+host.
+
+lcc	ldap create containers
+lcs	ldap create ssl-config
+lcr	ldap create replication
+lcg	ldap create group
+lcu	ldap create user
+lcdb	ldap create database config
+lct	ldap test connection

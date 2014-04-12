@@ -7,14 +7,14 @@
 void
 rep_err(const char *msg)
 {
-	fprintf(stderr, "Cannot malloc %s\n");
+	fprintf(stderr, "Cannot malloc %s\n", msg);
 	exit(1);
 }
 
 void
 sha_err(const char *msg)
 {
-	fprintf(stderr, "Problem with %s\n");
+	fprintf(stderr, "Problem with %s\n", msg);
 	exit(2);
 }
 int
