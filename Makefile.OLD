@@ -6,7 +6,7 @@
 RM = rm -f
 ECHO = echo
 DIR = src
-OLD = old
+OLDDIR = old
 SUBDIRS = src
 bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb
 
@@ -29,6 +29,10 @@ lcr:
 
 lcdb:
 	cd $(DIR); make $(MFLAGS) $@
+	
+old-all:
+	cd $(OLDDIR); make all
 
 clean:
-	cd $(DIR); make $@; cd ../$(OLD); make $@
+	cd $(DIR); make $@; cd ../$(OLDDIR); make $@
+
