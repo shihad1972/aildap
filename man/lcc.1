@@ -1,0 +1,37 @@
+.TH LCC 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcc \- LDAP create container.
+.SH SYNOPSIS
+.B lcc
+.B "-d domain"
+[
+.B -s
+] [
+.B "-i | -r"
+]
+.SH DESCRIPTION
+\fBlcc\fP will create a new container for \fI RFC 2307\fP authorisation
+directory. This will create the ou=group and ou=people containers, as well as 
+the top level ou for the base branch of the directory. You can optionally
+create a sudo container, which provided you have the sudo schema installed in
+your directory, can be used to hold sudo authorisations for users within the
+directory.
+.SH OPTIONS
+.IP "-d domain"
+Specify the domain name of the container.
+.IP -s
+Create a sudo container.
+.IP -i
+Create an insert ldif.
+.IP -r
+Create a remove ldif.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcu(1)
+.BR lcr(1)
+.BR lcg(1)
+.BR lcs(1)
+.BR lcdb(1)

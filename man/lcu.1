@@ -14,12 +14,14 @@ lcu \- LDAP create user.
 .B -p
 ]
 .SH DESCRIPTION
-\fBlcu\fP will create ldif suitable for an \fIRFC 2307\fP user. You must specify
-the base domain for the branch of the directory, the full name of the user,
-and the uid. You can optionally specify a gid. You may also create a long
-username, where the first initial and the surname are combined into a username,
-although the default is to use the first or given name of the user. By default,
-\fBlcu\fP will ask for a password. This can be overwritten.
+\fBlcu\fP will create ldif suitable for an \fIRFC 2307\fP user. You must
+specify the base domain for the branch of the directory, the full name of the
+user, and the uid. You can optionally create a gid that is identical to the
+uid, and also shares it's name. Otherwise the gid of the user is set to 100.
+You may also create a long username, where the first initial and the surname
+are combined into a username, although the default is to use the first or given
+name of the user. By default, \fBlcu\fP will ask for a password. This can be
+overwritten.
 .SH OPTIONS
 .IP "-d domain"
 Specify the base DN of the branch of the directory.
@@ -29,7 +31,7 @@ Specify the full name of the user.
 Specify the uid of the user.
 .IP "-g gid"
 Specify the gid of the user.
-.IP "-l"
+.IP -l
 Create the long version of the username.
 .IP -p
 Do not ask for a password.
@@ -38,7 +40,7 @@ There are no environment variables used in this program.
 .SH AUTHOR
 Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
 .SH "SEE ALSO"
-.BR lcu(1)
+.BR lcg(1)
 .BR lcr(1)
 .BR lcc(1)
 .BR lcs(1)
