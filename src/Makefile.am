@@ -13,7 +13,7 @@ lcdb_LDFLAGS = $(AM_LDFLAGS)
 lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 lcr_CFLAGS = $(AM_CFLAGS)
 lcr_LDFLAGS = $(AM_LDFLAGS)
-lcu_SOURCES = user.c $(shared_SOURCES) base-sha.c
+lcu_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 lcu_CFLAGS = $(AM_CFLAGS)
 lcu_LDFLAGS = $(AM_LDFLAGS)
 
