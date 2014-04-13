@@ -6,4 +6,4 @@
 RM = rm -f
 ECHO = echo
 DIR = src
-SUBDIRS = src old
+SUBDIRS = src man
