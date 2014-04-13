@@ -16,7 +16,7 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- *  ssl-config.c
+ *  lcs.c
  * 
  *  Program to create the configuration for slapd
  *  to have SSL and TLS connections. This is based
