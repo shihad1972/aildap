@@ -60,7 +60,10 @@ parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)
 void
 output_db_ldif(lcdb_s *data)
 {
-	char *ldf, *dir, *dom, *adm, *hsh;
+	char *ldf, *dir, *dom, *adm, *pass;
+#ifdef HAVE_LIBCRYPTO
+	char *hsh;
+#endif /* HAVE_LIBCRYPTO */
 	size_t len;
 	FILE *out;
 
@@ -71,7 +74,10 @@ output_db_ldif(lcdb_s *data)
 	dom = data->domain;
 	dir = data->dir;
 	adm = data->admin;
+#ifdef HAVE_LIBCRYPTO
 	hsh = data->phash;
+#endif /* HAVE_LIBCRYPTO */
+	pass = data->pass;
 	len = strlen(data->dir);
 	ldf = get_ldif_domain(dom);
 	if (len == 0)
@@ -84,6 +90,7 @@ output_db_ldif(lcdb_s *data)
 	} else {
 		out = stdout;
 	}
+#ifdef HAVE_LIBCRYPTO
 	fprintf(out, "\
 # %s domain, hdb, config\n\
 dn: olcDatabase=hdb,cn=config\n\
@@ -97,7 +104,26 @@ anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
 olcAccess: to dn.base="" by * read\n\
 olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
 olcRootDN: cn=%s,%s\n\
-olcRootPW: {SSHA}%s\n\
+olcRootPW: {SSHA}%s\n",
+dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, hsh);
+#else
+	fprintf(out, "\
+# %s domain, hdb, config\n\
+dn: olcDatabase=hdb,cn=config\n\
+objectClass: olcDatabaseConfig\n\
+objectClass: olcHdbConfig\n\
+olcDatabase: hdb\n\
+olcDbDirectory: %s\n\
+olcSuffix: %s\n\
+olcAccess: to attrs=userPassword,shadowLastChange by self write by \
+anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
+olcAccess: to dn.base="" by * read\n\
+olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
+olcRootDN: cn=%s,%s\n\
+olcRootPW: %s\n",
+dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, pass);
+#endif /* HAVE_LIBCRYPTO */
+	fprintf(out, "\
 olcDbCheckpoint: 512 30\n\
 olcDbConfig: set_cachesize 0 2097152 0\n\
 olcDbConfig: set_lk_max_objects 1500\n\
@@ -108,8 +134,7 @@ olcDbIndex: uid\n\
 olcDbIndex: cn,sn pres,eq,sub\n\
 olcDbIndex: objectClass eq\n\
 olcDbIndex: uniqueMember eq\n\
-olcDbIndex: uidNumber,gidNumber pres,eq\n",
-dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, hsh);
+olcDbIndex: uidNumber,gidNumber pres,eq\n");
 	if (out != stdout)
 		fclose(out);
 }
@@ -129,7 +154,9 @@ main (int argc, char *argv[])
 	}
 	data->pass = getPassword("Enter password for admin DN: ");
 	if (strlen(data->pass) > 0) {
+#ifdef HAVE_LIBCRYPTO
 		data->phash = get_ldif_pass_hash(data->pass);
+#endif /* HAVE_LIBCRYPTO */
 		output_db_ldif(data);
 	} else {
 		fprintf(stderr, "Empty password!\n");

@@ -168,7 +168,7 @@ int
 print_consumer(lcr_t *data)
 {
 	FILE *consumer;
-	char *dom, *phash;
+	char *dom, *phash = '\0';
 	const char *file = "consumer.ldif";
 
 	if (data->file > 0) {
@@ -179,7 +179,10 @@ print_consumer(lcr_t *data)
 		printf("\n");
 	}
 	dom = get_ldif_domain(data->domain);
+	/* This is not actually used. When I do, I will need a fallback */
+#ifdef HAVE_LIBCRYPTO
 	phash = get_ldif_pass_hash(data->pass);
+#endif /* HAVE_LIBCRYPTO */
 	if (data->mod == 0)
 		fprintf(consumer, "\
 #Load the syncprov module.\n\

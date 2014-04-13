@@ -41,8 +41,10 @@ split_name(inp_data_s *data);
 void
 output_ldif(inp_data_s *data);
 
+# ifdef HAVE_LIBCRYPTO
 char *
 get_ldif_pass_hash(char *pass);
+# endif /* HAVE_LIBCRYPTO */
 
 int
 hex_conv(const char *pass, guchar *out);

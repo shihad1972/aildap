@@ -149,8 +149,10 @@ output_ldif(inp_data_s *data)
 	ldom = get_ldif_domain(data->dom);
 /*	name = get_ldif_user(data); */
 	name = data->uname;
+#ifdef HAVE_LIBCRYPTO
 	if (data->np ==  0)
 		phash = get_ldif_pass_hash(data->pass);
+#endif /* HAVE_LIBCRYPTO */
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
@@ -171,8 +173,13 @@ uidNumber: %hd\n\
 homeDirectory: /home/%s\n\
 ", name, data->dom, name, ldom, name, data->sur, data->fname, data->name, 
 data->user, name);
+#ifdef HAVE_LIBCRYPTO
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
+#else
+	if (data->np == 0)
+		printf("userPassword: %s\n", data->pass);
+#endif /* HAVE_LIBCRYPTO */
 	*(data->name) = toupper(*(data->name));
 	printf("gecos: %s\n", data->name);
 	*(data->name) = tolower(*(data->name));
@@ -199,6 +206,7 @@ gidNumber: 100\n\
 		free(phash);
 }
 
+#ifdef HAVE_LIBCRYPTO
 char *
 get_ldif_pass_hash(char *pass)
 {
@@ -236,6 +244,7 @@ get_ldif_pass_hash(char *pass)
 	return npass;
 }
 
+#endif /* HAVE_LIBCRYPTO */
 /*
 int
 hex_conv(const char *pass, guchar *out)
