@@ -2,3 +2,6 @@
 Too many double negatives (-M do NOT add module config, -p do NOT ask for a
 password). These options should CREATE the module and password. Make sure to
 update documentation!
+
+Also update lcs so the -d argurment is -h as this is the ldap server hostname
+not a domain name!

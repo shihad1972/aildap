@@ -1,0 +1,45 @@
+.TH LCDB 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcdb \- LDAP create database.
+.SH SYNOPSIS
+.B lcdb
+.B "-d domain"
+.B "-a admin-user"
+[
+.B "-p path"
+] [
+.B -f
+]
+.SH DESCRIPTION
+\fBlcdb\fP will create and ldif configuration for a new branch of the
+directory, based on the domain name you provide. You must also supply the name
+of the admin user for the root DN. LDAP convention is for this user to be
+\fIManager\fP, although you can use any single work name you choose. By default
+\fBlcdb\fP will create the database in \fI/var/lib/slapd/<domain-name>/domain\fP.
+This is to allow you to create a replication database in
+\fI/var/lib/slapd/<domain-name>/accesslog\fP. See \fBlcr (1)\fP for more
+details.
+
+\fBlcdb\fP will also ask you for the root DN password, and you will not be
+allowed to provide an empty password.
+.SH OPTIONS
+.IP "-d domain"
+Specify the DNS name of the domain to be the base DN for the directory.
+.IP "-a admin-user"
+Specify the username of the admin user who will be the root DN for this branch
+of the directory.
+.IP "-p path"
+Specify an alternative path for the database files to reside. This directory
+must exist and be writable be the openldap user.
+.IP -f
+Create an output file called \fIdb.ldif\fP in the current working directory.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcc(1)
+.BR lcg(1)
+.BR lcr(1)
+.BR lcs(1)
+.BR lcu(1)
