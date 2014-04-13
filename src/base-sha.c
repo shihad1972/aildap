@@ -142,16 +142,6 @@ getPassword(const char *message)
 }
 
 void
-comm_line_err(char *prog)
-{
-	fprintf(stderr, "\
-Usage: %s -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid\n\
--g: create group for the user (same name and id)\n\
--l: create long user name (first initial plus surname)\n\
--p: do not ask for a password\n", prog);
-}
-
-void
 output_ldif(inp_data_s *data)
 {
 	char *name, *ldom, *phash = '\0';

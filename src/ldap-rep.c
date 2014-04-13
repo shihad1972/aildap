@@ -79,12 +79,18 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-d domain -h host -u user\
  -b db# -p db# -r db# [ -f ] [ -s | -t ] [ -C | -P ] [ -M ] [ -c ca-cert]\n");
 	else if (strstr(prog, "lcg"))
-		fprintf(stderr, " -d domain-name -g gid -n group\
+		fprintf(stderr, "-d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
 	else if (strstr(prog, "lcdb"))
-		fprintf(stderr, " -a admin-user -d domain [ -p path ] [ -f ]\n");
+		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
-		fprintf(stderr, " -h hostname [ -a CA-cert ] [ -i | r ]\n");
+		fprintf(stderr, "-h hostname [ -a CA-cert ] [ -i | r ]\n");
+	else if (strstr(prog, "lcu"))
+		fprintf(stderr, "\
+-d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid\n\
+-g: create group for the user (same name and id)\n\
+-l: create long user name (first initial plus surname)\n\
+-p: do not ask for a password\n");
 }
 
 void

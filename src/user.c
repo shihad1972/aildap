@@ -1,8 +1,26 @@
 /*
- * user.c: (C) 2013 Iain M Conochie
+ *
+ *  ldap-col: collection of ldap utilities
+ *  Copyright (C) 2013-2014  Iain M Conochie <iain-AT-thargoid.co.uk>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ *  user.c:
  * 
- * Main function for the program to create user entries in the ldap
- * directory
+ *  Main function for the program to create user entries in the ldap
+ *  directory
  * 
  */
 
@@ -35,21 +53,21 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 			else
 				fprintf(stderr, "No userid specified\n");
 		} else {
-			comm_line_err(argv[0]);
+			rep_usage(argv[0]);
 			return ONE;
 		}
 	}
 	if (strlen(data->dom) == 0) {
 		fprintf(stderr, "No domain specified\n");
-		comm_line_err(argv[0]);
+		rep_usage(argv[0]);
 		exit (1);
 	} else if (strlen(data->name) == 0) {
 		fprintf(stderr, "No name specified\n");
-		comm_line_err(argv[0]);
+		rep_usage(argv[0]);
 		exit (1);
 	} else if (data->user == 0) {
 		fprintf(stderr, "No userid specified\n");
-		comm_line_err(argv[0]);
+		rep_usage(argv[0]);
 		exit (1);
 	}
 	return NONE;

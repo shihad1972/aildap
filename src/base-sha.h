@@ -39,9 +39,6 @@ void
 split_name(inp_data_s *data);
 
 void
-comm_line_err(char *prog);
-
-void
 output_ldif(inp_data_s *data);
 
 char *
