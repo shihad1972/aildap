@@ -83,6 +83,8 @@ rep_usage(const char *prog)
  [ -u user1,user2,...,userN ]\n");
 	else if (strstr(prog, "lcdb"))
 		fprintf(stderr, " -a admin-user -d domain [ -p path ] [ -f ]\n");
+	else if (strstr(prog, "lcs"))
+		fprintf(stderr, " -h hostname [ -a CA-cert ] [ -i | r ]\n");
 }
 
 void
@@ -232,6 +234,28 @@ clean_lcc_data(cont_s *data)
 		CLEAN_DATA_MEMBER(domain);
 		CLEAN_DATA_MEMBER(dc);
 		CLEAN_DATA_MEMBER(dn);
+		free(data);
+	}
+}
+
+void
+init_lcs_data_struct(cert_s *data)
+{
+	if (data) {
+		memset(data, 0, sizeof(cert_s));
+		MALLOC_DATA_MEMBER(hostname, DOMAIN);
+		MALLOC_DATA_MEMBER(ca, CANAME);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lcs_data_struct");
+	}
+}
+
+void
+clean_lcs_data(cert_s *data)
+{
+	if (data) {
+		CLEAN_DATA_MEMBER(hostname);
+		CLEAN_DATA_MEMBER(ca);
 		free(data);
 	}
 }

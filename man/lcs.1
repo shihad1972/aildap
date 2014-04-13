@@ -3,9 +3,10 @@
 lcs \- LDAP create ssl-config.
 .SH SYNOPSIS
 .B lcs
-.B "-a CA-cert"
-.B "-d domain"
+.B "-h hostname"
 [
+.B "-a CA-cert"
+] [
 .B "-i | -r"
 ]
 .SH DESCRIPTION
@@ -15,8 +16,8 @@ with the directory. You should place the certificate for the server in
 \fI/etc/ldap/ssl.crt\fP and name it \fI<domain-name>.crt\fP where <domain-name>
 is the name of your base DN domain, which in most circumstances is your DNS
 domain. You must also place the key in \fI/etc/ldap/ssl.key/<domain-name>.pem.\fP
-The root CA certificate must be available at \fI/etc/ssl/certs/<ca-name>.crt\fP
-where ca-name is the name of the ca-cert file.
+The root CA certificate, if required, should be available at
+\fI/etc/ssl/certs/<ca-name>.crt\fP where ca-name is the name of the ca-cert file.
 
 .B NOTE:
 The CA-cert file is essential for you to be able to verify the certificate
@@ -29,8 +30,8 @@ and specify \fBca-certificates\fP as the argument for the CA-cert. If you using
 self-signed certs, you will have to disable certificate verification in your
 \fIldap.conf\fP file, using the \fBTLS_REQCERT\fP option.
 .SH OPTIONS
-.IP "-d domain"
-Specify the base DN of the branch of the directory.
+.IP "-h hostname"
+Specify the hostname of the ldap server.
 .IP "-a CA-cert"
 Specify the name of the CA-cert file (minus the .crt postfix)
 .IP -i

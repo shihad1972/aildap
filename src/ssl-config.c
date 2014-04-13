@@ -11,27 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-typedef struct cert_s {
-	char *domain, *ca;
-	short int action;
-} cert_s;
-
-enum {
-	DOMLONG = 1,
-	CALONG = 2,
-	ARG_UNKNOWN = 3,
-	NODOM = 4,
-	MALLOC = 5
-};
-
-enum {
-	NONE = 0,
-	INSERT = 1,
-	REMOVE = 2,
-	CANAME = 64,
-	DOMAIN = 256
-};
+#include "ldap-col.h"
 
 int
 parse_command_line(int argc, char *argv[], cert_s *data)
@@ -39,14 +19,15 @@ parse_command_line(int argc, char *argv[], cert_s *data)
 	int retval = NONE, opt = NONE;
 	size_t alen = NONE, dlen = NONE;
 
-	while ((opt = getopt(argc, argv, "a:d:ir")) != -1) {
-		if (opt == 'd') {
+	data->action = INSERT;
+	while ((opt = getopt(argc, argv, "a:h:ir")) != -1) {
+		if (opt == 'h') {
 			if ((dlen = strlen(optarg)) > (DOMAIN - 1)) {
 				fprintf(stderr, "\
-Domain name too large ( > 255)\n");
+Host name too large ( > 255)\n");
 				retval = DOMLONG;
 			}
-			snprintf(data->domain, DOMAIN, "%s", optarg);
+			snprintf(data->hostname, DOMAIN, "%s", optarg);
 		} else if (opt == 'a') {
 			if ((alen = strlen(optarg)) > (CANAME - 1)) {
 				fprintf(stderr, "\
@@ -59,17 +40,15 @@ CA cert name too large ( > 63 )\n");
 		} else if (opt == 'r') {
 			data->action = REMOVE;
 		} else {
-			fprintf(stderr, "Usage: %s -a CA-cert -d domain [ -i | r ]\n",
-				argv[0]);
-			retval = ARG_UNKNOWN;
+			rep_usage(argv[0]);
+			retval = WARG;
 		}
 	}
 	if (retval != NONE)
 		return (retval);
 	if ((dlen == NONE) && (data->action == INSERT)) {
-		fprintf(stderr, "No domain provided\n");
-		fprintf(stderr, "Usage: %s -a CA-cert -d domain [ -i | r ]\n",
-			argv[0]);
+		fprintf(stderr, "No hostname provided\n");
+		rep_usage(argv[0]);
 		retval = NODOM;
 	}
 	if ((alen == NONE) && (data->action == REMOVE)) {
@@ -77,36 +56,6 @@ CA cert name too large ( > 63 )\n");
 		fprintf(stderr, "Assuming self certified certificate\n--\n\n");
 	}
 	return retval;
-}
-
-void
-report_error(const char *name)
-{
-	printf("Var %s malloc() failed\n", name);
-	exit (MALLOC);
-}
-
-void
-init_data_struct(cert_s *data)
-{
-	data->domain = '\0';
-	data->ca = '\0';
-	data->action = 0;
-	if (!(data->domain = malloc(DOMAIN)))
-		report_error("data->domain");
-	if (!(data->ca = malloc(CANAME)))
-		report_error("data->ca");
-}
-
-void
-clean_data(cert_s *data)
-{
-	if (data->domain)
-		free(data->domain);
-	if (data->ca)
-		free(data->ca);
-	if (data)
-		free(data);
 }
 
 void
@@ -130,7 +79,7 @@ olcTLSCRLCheck: none\n\
 -\n\
 add: olcTLSVerifyClient\n\
 olcTLSVerifyClient: never\n\n\
-", data->ca, data->domain, data->domain);
+", data->ca, data->hostname, data->hostname);
 	else
 		printf("\
 dn: cn=config\n\
@@ -146,7 +95,7 @@ olcTLSCRLCheck: none\n\
 -\n\
 add: olcTLSVerifyClient\n\
 olcTLSVerifyClient: never\n\n\
-", data->domain, data->domain);
+", data->hostname, data->hostname);
 
 }
 
@@ -188,20 +137,17 @@ main (int argc, char *argv[])
 	cert_s *data = NONE;
 
 	if (!(data = malloc(sizeof(cert_s))))
-		report_error("data");
-	init_data_struct(data);
+		rep_error("data");
+	init_lcs_data_struct(data);
 	if ((retval = parse_command_line(argc, argv, data)) != NONE) {
-		clean_data(data);
+		clean_lcs_data(data);
 		exit (retval);
 	}
-	if (data->action == INSERT)
-		output_insert_ssl(data);
-	else if (data->action == REMOVE)
+	if (data->action == REMOVE)
 		output_remove_ssl(data);
 	else {
-		fprintf(stderr, "No action specified\n");
-		fprintf(stderr, "Usage: %s -a CA-cert -d domain [ -i | r ]\n",
-			argv[0]);
+		output_insert_ssl(data);
 	}
+	clean_lcs_data(data);
 	return (retval);
 }

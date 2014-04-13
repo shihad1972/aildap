@@ -47,6 +47,11 @@ typedef struct lcdb_s {
 	short int file;
 } lcdb_s;
 
+typedef struct cert_s {
+	char *hostname, *ca;
+	short int action;
+} cert_s;
+
 typedef struct string_len_s {
 	char *string;
 	size_t len;
@@ -75,9 +80,12 @@ enum {
 	DB = 8,
 	INSERT,
 	REMOVE,
+	DOMLONG,
+	CALONG,
 	FILE_O_FAIL = 16,
 	NAME = 32,
 	DC = 64,
+	CANAME = 64,
 	DNL = 67,
 	DOMAIN = 256,
 	DN = 512,
@@ -151,6 +159,12 @@ init_lgc_data_struct(lgc_s *data);
 
 void
 clean_lgc_data(lgc_s *data);
+
+void
+init_lcs_data_struct(cert_s *data);
+
+void
+clean_lcs_data(cert_s *data);
 
 int
 init_lcu_data(inp_data_s *data);
