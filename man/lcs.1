@@ -13,22 +13,11 @@ lcs \- LDAP create ssl-config.
 \fBlcs\fP will create an ldif configuration for an SSL and TLS enable
 directory. This will modify the base cn=config to allow encypted communications
 with the directory. You should place the certificate for the server in
-\fI/etc/ldap/ssl.crt\fP and name it \fI<domain-name>.crt\fP where <domain-name>
-is the name of your base DN domain, which in most circumstances is your DNS
-domain. You must also place the key in \fI/etc/ldap/ssl.key/<domain-name>.pem.\fP
-The root CA certificate, if required, should be available at
-\fI/etc/ssl/certs/<ca-name>.crt\fP where ca-name is the name of the ca-cert file.
-
-.B NOTE:
-The CA-cert file is essential for you to be able to verify the certificate
-chain of trust accurately. If you have purchased you certificate from a
-commercial vendor, their certificate will most likely be found under
-\fI/etc/ssl/certs\fP. However, if you have your own CA, it is necessary to
-install your CA certificate into this directory, and if you are using GNUtls
-you will have to add it to the \fI/etc/ssl/certs/ca-certificates.crt\fP file
-and specify \fBca-certificates\fP as the argument for the CA-cert. If you using
-self-signed certs, you will have to disable certificate verification in your
-\fIldap.conf\fP file, using the \fBTLS_REQCERT\fP option.
+\fI/etc/ldap/ssl.crt\fP and name it \fI<hostname>.crt\fP where <hostname>
+is the hostname of the ldap server. You must also place the key in 
+\fI/etc/ldap/ssl.key/<hostname>.pem\fP. The root CA certificate, if required,
+should be available at\fI/etc/ssl/certs/<ca-name>.crt\fP where ca-name is the
+name of the ca-cert file.
 .SH OPTIONS
 .IP "-h hostname"
 Specify the hostname of the ldap server.
