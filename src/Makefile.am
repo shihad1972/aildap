@@ -7,6 +7,10 @@ noinst_HEADERS = base-sha.h ldap-col.h
 lcs_SOURCES = lcs.c $(shared_SOURCES)
 lcc_SOURCES = lcc.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
+
+if HAVE_LIBCRYPTO
+if HAVE_GLIBS
+LIBS += -lglib-2.0
 lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcdb_CFLAGS = $(AM_CFLAGS)
 lcdb_LDFLAGS = $(AM_LDFLAGS)
@@ -16,10 +20,6 @@ lcr_LDFLAGS = $(AM_LDFLAGS)
 lcu_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 lcu_CFLAGS = $(AM_CFLAGS)
 lcu_LDFLAGS = $(AM_LDFLAGS)
-
-if HAVE_LIBCRYPTO
-if HAVE_GLIBS
-LIBS += -lglib-2.0
 lcdb_CFLAGS += $(GLIB_CFLAGS)
 lcdb_LDFLAGS += $(GLIB_LDFLAGS)
 lcr_CFLAGS += $(GLIB_CFLAGS)
