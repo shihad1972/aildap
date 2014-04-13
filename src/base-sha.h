@@ -26,7 +26,6 @@
 
 #ifndef HAVE_BASE_H
 # define HAVE_BASE_H
-# include <glib.h>
 # include "ldap-col.h"
 
 char *
@@ -42,11 +41,12 @@ void
 output_ldif(inp_data_s *data);
 
 # ifdef HAVE_LIBCRYPTO
+#  include <glib.h>
 char *
 get_ldif_pass_hash(char *pass);
-# endif /* HAVE_LIBCRYPTO */
 
 int
 hex_conv(const char *pass, guchar *out);
+# endif /* HAVE_LIBCRYPTO */
 
 #endif /* HAVE_BASE_H */

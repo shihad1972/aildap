@@ -33,9 +33,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h> 
-#include <glib.h>
-#include <openssl/evp.h>
-#include <openssl/sha.h>
+#ifdef HAVE_LIBCRYPTO
+# include <glib.h>
+# include <openssl/evp.h>
+# include <openssl/sha.h>
+#endif
 #include "ldap-col.h"
 #include "base-sha.h"
 
@@ -50,7 +52,7 @@ rep_err(const char *error)
 void
 split_name(inp_data_s *data)
 {
-	char *work, *tmp, *pos;
+	char *work, *tmp, *pos = 0;
 	int c = NONE, len = NONE; /* c counts names */
 	unsigned char f = NONE, s = NONE; /* first letter of (f)irst and (s)urname */
 
