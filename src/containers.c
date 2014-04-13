@@ -84,7 +84,7 @@ dc: %s\n\
 objectClass: dcObject\n\
 objectClass: top\n\
 objectClass: organizationalUnit\n\
-ou: %s authentication\n\
+ou: %s\n\
 \n\
 # ou=people %s\n\
 dn: ou=people,%s\n\
