@@ -19,7 +19,7 @@ lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcs_SOURCES = lcs.c $(shared_SOURCES)
 lcc_SOURCES = lcc.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
-lcr_SOURCES = ldap-replication.c $(shared_SOURCES) base-sha.c
+lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 user_SOURCES = user.c $(shared_SOURCES) base-sha.c
 
 
