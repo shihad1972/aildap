@@ -5,3 +5,6 @@ update documentation!
 
 Also update lcs so the -d argurment is -h as this is the ldap server hostname
 not a domain name!
+*** Fixed 13/04/2014 ***
+
+add lck to create the kerberos / GSSAPI addition to the directory
