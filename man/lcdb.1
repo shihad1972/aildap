@@ -12,14 +12,15 @@ lcdb \- LDAP create database.
 ]
 .SH DESCRIPTION
 \fBlcdb\fP will create and ldif configuration for a new branch of the
-directory, based on the domain name you provide. You must also supply the name
-of the admin user for the root DN. LDAP convention is for this user to be
-\fIManager\fP, although you can use any single work name you choose. By default
-\fBlcdb\fP will create the database in \fI/var/lib/slapd/<domain-name>/domain\fP.
+directory, based on the domain name you provide.
+You must also supply the name of the admin user for the root DN.
+LDAP convention is for this user to be \fIManager\fP, although you can use any
+single work name you choose.
+By default \fBlcdb\fP will create the database in \fI/var/lib/slapd/<domain-name>/domain\fP.
 This is to allow you to create a replication database in
-\fI/var/lib/slapd/<domain-name>/accesslog\fP. See \fBlcr(1)\fP for more
-details.
-
+\fI/var/lib/slapd/<domain-name>/accesslog\fP.
+See \fBlcr(1)\fP for more details.
+.PP
 \fBlcdb\fP will also ask you for the root DN password, and you will not be
 allowed to provide an empty password.
 .SH OPTIONS

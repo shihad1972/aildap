@@ -22,24 +22,26 @@ lcr \- LDAP create replication.
 ]
 .SH DESCRIPTION
 \fBlcr\fP will create the configuration needed for ldap replication in
-\fIopenldap\fP 2.4. This will create a \fIcn=config\fP style configuration
-which you can add using \fBldapadd\fP on the ldap server. You can output
-to \fIstdout\fP or use the \fB-f\fP switch to write to separate files,
-\fBconsumer.ldif\fP and \fBprovider.ldif\fP. \fIOpenldap\fP uses the terms
-\fIprovider\fP and \fIconsumer\fP instead of \fImaster\fP and \fIslave\fP,
-where the \fIprovider\fP holds the authoratative records, and the
-\fIconsumer\fP gets updates from the \fIprovider\fP
-
-With the cn=config style, each database has a unique number. You will need
-to know the number of the database you wish to replicate on the provider,
-the last database number on the provider so you can add one to it for the
-new accesslog database, and also the last database number on the consumer
+\fIopenldap\fP 2.4.
+This will create a \fIcn=config\fP style configuration which you can add using
+\fBldapadd\fP on the ldap server.
+You can output to \fIstdout\fP or use the \fB-f\fP switch to write to separate
+files, \fBconsumer.ldif\fP and \fBprovider.ldif\fP.
+\fIOpenldap\fP uses the terms \fIprovider\fP and \fIconsumer\fP instead of
+\fImaster\fP and \fIslave\fP, where the \fIprovider\fP holds the authoratative
+records, and the \fIconsumer\fP gets updates from the \fIprovider\fP.
+.PP
+With the cn=config style, each database has a unique number.
+You will need to know the number of the database you wish to replicate on the
+provider, the last database number on the provider so you can add one to it for
+the new accesslog database, and also the last database number on the consumer
 so you can add one to it for the new replicated database.
-
+.PP
 \fBNOTE\fP The directories for the databases must exist on the provider and
 consumer before adding the replication, and they must be writable by the
-openldap user. It is advisable that they are not world readable for security
-purposes. Permissions of \fI750\fI are acceptable.
+openldap user.
+It is advisable that they are not world readable for security purposes.
+Permissions of \fI750\fP are acceptable.
 .SH OPTIONS
 .IP "-d domain"
 Specify the base DN of the branch of the directory.

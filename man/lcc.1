@@ -11,11 +11,12 @@ lcc \- LDAP create container.
 ]
 .SH DESCRIPTION
 \fBlcc\fP will create a new container for \fI RFC 2307\fP authorisation
-directory. This will create the ou=group and ou=people containers, as well as 
-the top level ou for the base branch of the directory. You can optionally
-create a sudo container, which provided you have the sudo schema installed in
-your directory, can be used to hold sudo authorisations for users within the
 directory.
+This will create the ou=group and ou=people containers, as well as 
+the top level ou for the base branch of the directory.
+You can optionally create a sudo container, which provided you have the sudo
+schema installed in your directory, can be used to hold sudo authorisations for
+users within the directory.
 .SH OPTIONS
 .IP "-d domain"
 Specify the domain name of the container.

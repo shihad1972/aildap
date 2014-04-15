@@ -11,13 +11,16 @@ lcs \- LDAP create ssl-config.
 ]
 .SH DESCRIPTION
 \fBlcs\fP will create an ldif configuration for an SSL and TLS enable
-directory. This will modify the base cn=config to allow encypted communications
-with the directory. You should place the certificate for the server in
-\fI/etc/ldap/ssl.crt\fP and name it \fI<hostname>.crt\fP where <hostname>
-is the hostname of the ldap server. You must also place the key in 
-\fI/etc/ldap/ssl.key/<hostname>.pem\fP. The root CA certificate, if required,
-should be available at\fI/etc/ssl/certs/<ca-name>.crt\fP where ca-name is the
-name of the ca-cert file.
+directory.
+This will modify the base cn=config to allow encypted communications with the
+directory.
+You should place the certificate for the server in \fI/etc/ldap/ssl.crt\fP and
+name it \fI<hostname>.crt\fP where <hostname> is the hostname of the ldap
+server.
+You must also place the key in \fI/etc/ldap/ssl.key/<hostname>.pem\fP.
+The root CA certificate, if required, should be made available at 
+\fI/etc/ssl/certs/<ca-name>.crt\fP where ca-name is the name of the ca-cert
+file.
 .SH OPTIONS
 .IP "-h hostname"
 Specify the hostname of the ldap server.
