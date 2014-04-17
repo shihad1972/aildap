@@ -81,6 +81,8 @@ rep_usage(const char *prog)
 	else if (strstr(prog, "lcg"))
 		fprintf(stderr, "-d domain-name -g gid -n group\
  [ -u user1,user2,...,userN ]\n");
+	else if (strstr(prog, "lck"))
+		fprintf(stderr, "-h hostname -r realm\n");
 	else if (strstr(prog, "lcdb"))
 		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
@@ -171,9 +173,32 @@ init_lgc_data_struct(lgc_s *data)
 		MALLOC_DATA_MEMBER(dn, DN);
 		MALLOC_DATA_MEMBER(name, NAME);
 		MALLOC_DATA_MEMBER(user, DN);
-	}else {
+	} else {
 		fprintf(stderr, "null pointer passed to init_lgc_data_struct\n");
 		exit(1);
+	}
+}
+
+
+void
+init_lck_data_struct(lck_s *data)
+{
+	if (data) {
+		memset(data, 0, sizeof(lck_s));
+		MALLOC_DATA_MEMBER(host, DOMAIN);
+		MALLOC_DATA_MEMBER(realm, DOMAIN);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lck_data_struct\n");
+		exit(1);
+	}
+}
+
+void
+clean_lck_data_struct(lck_s *data)
+{
+	if (data) {
+		CLEAN_DATA_MEMBER(host);
+		CLEAN_DATA_MEMBER(realm);
 	}
 }
 

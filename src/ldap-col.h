@@ -42,6 +42,11 @@ typedef struct lcg_s {
 	short int group;
 } lgc_s;
 
+typedef struct lck_s {
+	char *host, *realm;
+	short int file;
+} lck_s;
+
 typedef struct lcdb_s {
 	char *domain, *admin, *pass, *phash, *dir;
 	short int file;
@@ -159,6 +164,12 @@ init_lgc_data_struct(lgc_s *data);
 
 void
 clean_lgc_data(lgc_s *data);
+
+void
+init_lck_data_struct(lck_s *data);
+
+void
+clean_lck_data_struct(lck_s *data);
 
 void
 init_lcs_data_struct(cert_s *data);

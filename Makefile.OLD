@@ -8,7 +8,7 @@ ECHO = echo
 DIR = src
 OLDDIR = old
 SUBDIRS = src
-bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb
+bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb
 
 all:	$(bin_PROGRAMS)
 
@@ -19,6 +19,9 @@ lcc:
 	cd $(DIR); make $(MFLAGS) $@
 
 lcg:
+	cd $(DIR); make $(MFLAGS) $@
+
+lck:
 	cd $(DIR); make $(MFLAGS) $@
 
 lcu:

@@ -1,12 +1,13 @@
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
 
-bin_PROGRAMS = lcs lcc lcg
+bin_PROGRAMS = lcs lcc lcg lck
 shared_SOURCES = ldap-rep.c
 noinst_HEADERS = base-sha.h ldap-col.h
 lcs_SOURCES = lcs.c $(shared_SOURCES)
 lcc_SOURCES = lcc.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
+lck_SOURCES = lck.c $(shared_SOURCES)
 
 if HAVE_LIBCRYPTO
 if HAVE_GLIBS

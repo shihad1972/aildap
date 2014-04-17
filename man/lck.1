@@ -1,0 +1,45 @@
+.TH LCK 1 "Version 0.1: April 17 2014" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lck \- ldap create kerberos.
+.SH SYNOPSIS
+.B lck
+.B "-h hostname"
+.B "-r realm"
+[
+.B -f
+]
+.SH DESCRIPTION
+\fBlck\fP will create an ldif modify statement that can be used to add
+\fBkerberos\fP authentication via the \fBSASL GSSAPI\fP mechanism to an
+\fIopenldap\fP server.
+This ldif statement will configure the \fIhostname\fP and \fIrealm\fP for the
+ldap server.
+For this to function correctly, you should have already created a principle for
+the LDAP server on your kdc, stored this principle in a keytab file that is
+accessible to the ldap server, and configured it's location via the \fBslapd\fP
+environment variable \fBKRB5_KTNAME\fP.
+.PP
+\fBPlease Note:\fP You will need to have fully fuctioning forward are reverse
+\fIDNS\fP for both the server and client. This means that the client and the
+server must be able to resolve both the forward and reverse records for each
+other.
+.SH OPTIONS
+.IP "-h hostname"
+Specify the FQDN DNS hostname used to connect to the ldap server. This does not
+have to be the server hostname, but forward and reverse DNS entries must be
+available. 
+.IP "-r realm"
+Specify the kerberos realm this ldap server will participate in.
+.IP "-f"
+Output the ldif to the output file sasl.ldif in the current working directory.
+.SH ENVIRONMENT
+There are no environment variables used in this program.
+.SH AUTHOR
+Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+.SH "SEE ALSO"
+.BR lcdb(1)
+.BR lcc(1)
+.BR lcg(1)
+.BR lcr(1)
+.BR lcs(1)
+.BR lcu(1)
