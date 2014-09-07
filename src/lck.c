@@ -69,7 +69,7 @@ print_lck_ldif(lck_s *data)
 		out = stdout;
 	}
 	fprintf(out, "\
-dc: cn=config\n\
+dn: cn=config\n\
 changeType: modify\n\
 add: olcSaslHost\n\
 olcSaslHost: %s\n\
