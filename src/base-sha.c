@@ -41,7 +41,6 @@
 #include "ldap-col.h"
 #include "base-sha.h"
 
-
 void
 rep_err(const char *error)
 {
