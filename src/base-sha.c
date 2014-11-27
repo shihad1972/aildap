@@ -107,6 +107,7 @@ split_name(inp_data_s *data)
 			fprintf(stderr, "Username truncated by %d!\n",
 				(len - SURNAME) + 1);
 	}
+	*(data->fname) = toupper(*(data->fname));
 	free(work);
 }
 
@@ -181,9 +182,7 @@ data->user, name);
 	if (data->np == 0)
 		printf("userPassword: %s\n", data->pass);
 #endif /* HAVE_LIBCRYPTO */
-	*(data->name) = toupper(*(data->name));
-	printf("gecos: %s\n", data->name);
-	*(data->name) = tolower(*(data->name));
+	printf("gecos: %s %s\n", data->fname, data->sur);
 	printf("mail: %s@%s\n", name, data->dom);
 	if (data->gr > NONE)
 		printf("\
