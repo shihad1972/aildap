@@ -15,7 +15,7 @@ AC_PROG_MAKE_SET
 AC_CONFIG_MACRO_DIRS([m4])
 # Checks for libraries.
 AC_CHECK_LIB([crypto], [EVP_MD_CTX_create],
-  [AC_DEFINE([HAVE_LIBCRYPTO, [1], libcrypto found])
+  [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])
 ])
 
 # Checks for header files.
