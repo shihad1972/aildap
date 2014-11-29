@@ -16,7 +16,7 @@ AC_PROG_MKDIR_P
 AC_PROG_MAKE_SET
 
 # Add m4 macros
-AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h termios.h unistd.h])
