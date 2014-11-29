@@ -26,10 +26,9 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
 
 AX_LIB_LDAP
-AX_CHECK_OPENSSL([
-  [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])],
-  [AC_DEFINE([HAVE_LIBCRYPTO], [0], [libcrypto not found])]
-])
+AX_CHECK_OPENSSL(
+  [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])]
+)
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0],
   [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])

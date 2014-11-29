@@ -7,7 +7,9 @@ AM_LDFLAGS =
 noinst_HEADERS = base-sha.h ldap-col.h
 
 if HAVE_LIBCRYPTO
-LIBS += -lcrypto
+AM_CFLAGS += $(OPENSSL_INCLUDES)
+AM_LDFLAGS += $(OPENSSL_LDFLAGS)
+LIBS += $(OPENSSL_LIBS)
 bin_PROGRAMS += sha1 sha
 sha_SOURCES = sha.c
 sha1_SOURCES = sha1.c
