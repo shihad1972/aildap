@@ -16,6 +16,7 @@ lcd_SOURCES = domains.c
 gsha2_SOURCES = glib-sha1-2.c base-sha.c $(shared_SOURCES)
 ssha_SOURCES = ssha1.c
 lct_SOURCES = test-ldap-connection.c
+lct_CFLAGS =
 noinst_HEADERS = base-sha.h ldap-col.h
 
 if HAVE_LIBCRYPTO
