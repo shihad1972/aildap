@@ -15,6 +15,10 @@ lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 lcu_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 
+if HAVE_GLIB
+LIBS += -lglib-2.0
+endif
+
 if HAVE_LIBCRYPTO
 bin_PROGRAMS += lcu lcr lcdb
 AM_CFLAGS += $(OPENSSL_INCLUDES)
