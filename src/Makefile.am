@@ -11,7 +11,7 @@ lck_SOURCES = lck.c $(shared_SOURCES)
 
 if HAVE_LIBCRYPTO
 if HAVE_GLIB
-LIBS += -lglib-2.0
+LIBS += -lglib-2.0 -lcrypto
 lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcdb_CFLAGS = $(AM_CFLAGS)
 lcdb_LDFLAGS = $(AM_LDFLAGS)
