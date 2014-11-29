@@ -29,7 +29,7 @@ gsha2_LDFLAGS = $(AM_LDFLAGS)
 
 if HAVE_LIBCRYPTO
 bin_PROGRAMS += sha1 sha
-if HAVE_GLIBS
+if HAVE_GLIB
 LIBS += -lglib-2.0
 tsha_CFLAGS += $(GLIB_CFLAGS)
 tsha_LDFLAGS += $(GLIB_LDFLAGS)

@@ -10,7 +10,7 @@ lcg_SOURCES = lcg.c $(shared_SOURCES)
 lck_SOURCES = lck.c $(shared_SOURCES)
 
 if HAVE_LIBCRYPTO
-if HAVE_GLIBS
+if HAVE_GLIB
 LIBS += -lglib-2.0
 lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcdb_CFLAGS = $(AM_CFLAGS)
