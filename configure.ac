@@ -28,7 +28,9 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
 
 AX_LIB_LDAP
-PKG_CHECK_MODULES([GLIB], [glib-2.0])
+PKG_CHECK_MODULES([GLIB], [glib-2.0],
+  [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
+])
 
 AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
