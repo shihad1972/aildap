@@ -5,15 +5,16 @@ AC_PREREQ([2.69])
 AC_INIT([Ldap Collection], [1.0], [iain@thargoid.co.uk])
 AC_CONFIG_SRCDIR([src/lcc.c])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
+# Add m4 macros
+AC_CONFIG_MACRO_DIRS([m4])
 # Checks for libraries.
 AC_CHECK_LIB([crypto], [EVP_MD_CTX_create])
-AC_CHECK_LIB([ldap], [ldap_initialize])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h termios.h unistd.h])
@@ -26,8 +27,10 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
 
+AX_LIB_LDAP
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
-AM_CONDITIONAL([HAVE_GLIBS], [$HAVE_GLIBS])
+
+AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
 AM_CONDITIONAL([HAVE_LIBCRYPTO], [$HAVE_LIBCRYPTO])
 AC_CONFIG_FILES([Makefile
