@@ -7,6 +7,7 @@ PCFLAGS = -DLDAP_DEPRECATED
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
 
+shared_SOURCES = ldap-rep.c
 sha_SOURCES = sha.c
 sha1_SOURCES = sha1.c
 tsha_SOURCES = sha1.c base-sha.c $(shared_SOURCES)
@@ -22,26 +23,14 @@ bin_PROGRAMS += sha1 sha
 AM_CFLAGS += $(OPENSSL_INCLUDES)
 AM_LDFLAGS += $(OPENSSL_LDFLAGS)
 LIBS += $(OPENSSL_LIBS)
+endif
+
 if HAVE_GLIB
 bin_PROGRAMS += tsha gsha lcd gsha2 ssha
 LIBS += -lglib-2.0
-shared_SOURCES = ldap-rep.c
-tsha_CFLAGS = $(AM_CFLAGS) $(GLIB_CFLAGS)
-tsha_LDFLAGS = $(AM_LDFLAGS) $(GLIB_LDFLAGS)
-gsha_CFLAGS = $(AM_CFLAGS) $(GLIB_CFLAGS)
-gsha_LDFLAGS = $(AM_LDFLAGS) $(GLIB_LDFLAGS)
-lcd_CFLAGS = $(AM_CFLAGS) $(GLIB_CFLAGS)
-lcd_LDFLAGS = $(AM_LDFLAGS) $(GLIB_LDFLAGS)
-gsha2_CFLAGS = $(AM_CFLAGS) $(GLIB_CFLAGS)
-gsha2_LDFLAGS = $(AM_LDFLAGS) $(GLIB_LDFLAGS)
-ssha_CFLAGS = $(AM_CFLAGS) $(GLIB_CFLAGS)
-ssha_LDFLAGS = $(AM_LDFLAGS) $(GLIB_LDFLAGS)
-endif
 endif
 
 if HAVE_LIBLDAP
 bin_PROGRAMS += lct
-lct_CFLAGS = $(AM_CFLAGS)
-lct_LDFLAGS = $(AM_LDFLAGS)
 lct_CFLAGS += $(PCFLAGS)
 endif
