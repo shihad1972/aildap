@@ -1,3 +1,6 @@
+## Process this file with automake to produce Makefile.in
+#
+
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
 
