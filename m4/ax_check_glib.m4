@@ -42,7 +42,7 @@ AC_DEFUN([AX_CHECK_GLIB], [
     LIBS="$LIBS $GLIB_LIBS"
     CPPFLAGS="$CPPFLAGS $GLIB_CPPFLAGS"
     AC_LINK_IFELSE(
-        [AC_LANG_PROGRAM([#include <glib.h>], [g_base64_encode("filter", 6)])],
+        [AC_LANG_PROGRAM([#include <glib.h>], [g_rand_new_with_seed(152436)])],
             [
                 AC_MSG_RESULT([yes])
                 HAVE_GLIB="true"

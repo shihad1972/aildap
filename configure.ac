@@ -38,6 +38,10 @@ AX_CHECK_GLIB
 #PKG_CHECK_MODULES([GLIB], [glib-2.0],
 #  [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
 #])
+#PKG_CHECK_MODULES([OPENSSL], [openssl],
+#  [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])],
+#  [echo "Cannot find libcrypto"
+#])
 
 AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
