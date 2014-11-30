@@ -16,6 +16,8 @@ lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 lcu_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 
 if HAVE_GLIB
+AM_CPPFLAGS += $(GLIB_CPPFLAGS)
+AM_LDFLAGS += $(GLIB_LDFLAGS)
 LIBS += -lglib-2.0
 endif
 
