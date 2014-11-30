@@ -61,9 +61,9 @@ void
 output_db_ldif(lcdb_s *data)
 {
 	char *ldf, *dir, *dom, *adm, *pass;
-#ifdef HAVE_LIBCRYPTO
+#ifdef HAVE_OPENSSL
 	char *hsh;
-#endif /* HAVE_LIBCRYPTO */
+#endif /* HAVE_OPENSSL */
 	size_t len;
 	FILE *out;
 
@@ -74,9 +74,9 @@ output_db_ldif(lcdb_s *data)
 	dom = data->domain;
 	dir = data->dir;
 	adm = data->admin;
-#ifdef HAVE_LIBCRYPTO
+#ifdef HAVE_OPENSSL
 	hsh = data->phash;
-#endif /* HAVE_LIBCRYPTO */
+#endif /* HAVE_OPENSSL */
 	pass = data->pass;
 	len = strlen(data->dir);
 	ldf = get_ldif_domain(dom);
@@ -90,7 +90,7 @@ output_db_ldif(lcdb_s *data)
 	} else {
 		out = stdout;
 	}
-#ifdef HAVE_LIBCRYPTO
+#ifdef HAVE_OPENSSL
 	fprintf(out, "\
 # %s domain, hdb, config\n\
 dn: olcDatabase=hdb,cn=config\n\
@@ -122,7 +122,7 @@ olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
 olcRootDN: cn=%s,%s\n\
 olcRootPW: %s\n",
 dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, pass);
-#endif /* HAVE_LIBCRYPTO */
+#endif /* HAVE_OPENSSL */
 	fprintf(out, "\
 olcDbCheckpoint: 512 30\n\
 olcDbConfig: set_cachesize 0 2097152 0\n\
@@ -154,9 +154,9 @@ main (int argc, char *argv[])
 	}
 	data->pass = getPassword("Enter password for admin DN: ");
 	if (strlen(data->pass) > 0) {
-#ifdef HAVE_LIBCRYPTO
+#ifdef HAVE_OPENSSL
 		data->phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_LIBCRYPTO */
+#endif /* HAVE_OPENSSL */
 		output_db_ldif(data);
 	} else {
 		fprintf(stderr, "Empty password!\n");
