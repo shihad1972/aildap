@@ -58,6 +58,7 @@ AC_DEFUN([AX_CHECK_OPENSSL], [
                     OPENSSL_LIBS=`$PKG_CONFIG openssl --libs-only-l 2>/dev/null`
                     OPENSSL_INCLUDES=`$PKG_CONFIG openssl --cflags-only-I 2>/dev/null`
                     found=true
+                    HAVE_OPENSSL=true
                 fi
             fi
 
@@ -80,6 +81,7 @@ AC_DEFUN([AX_CHECK_OPENSSL], [
                 OPENSSL_INCLUDES="-I$ssldir/include"
                 OPENSSL_LDFLAGS="-L$ssldir/lib"
                 OPENSSL_LIBS="-lssl -lcrypto"
+                HAVE_OPENSSL=true
                 found=true
                 AC_MSG_RESULT([yes])
                 break
@@ -112,6 +114,7 @@ AC_DEFUN([AX_CHECK_OPENSSL], [
             $1
         ], [
             AC_MSG_RESULT([no])
+            HAVE_OPENSSL=false
             $2
         ])
     CPPFLAGS="$save_CPPFLAGS"

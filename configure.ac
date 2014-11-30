@@ -33,11 +33,11 @@ AX_LIB_LDAP
 AX_CHECK_OPENSSL(
   [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])]
 )
-AX_CHECK_GLIB
+#AX_CHECK_GLIB
 
-#PKG_CHECK_MODULES([GLIB], [glib-2.0],
-#  [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
-#])
+PKG_CHECK_MODULES([GLIB], [glib-2.0],
+  [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
+])
 #PKG_CHECK_MODULES([OPENSSL], [openssl],
 #  [AC_DEFINE([HAVE_LIBCRYPTO], [1], [libcrypto found])],
 #  [echo "Cannot find libcrypto"
@@ -45,7 +45,7 @@ AX_CHECK_GLIB
 
 AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
-AM_CONDITIONAL([HAVE_LIBCRYPTO], [$HAVE_LIBCRYPTO])
+AM_CONDITIONAL([HAVE_OPENSSL], [$HAVE_OPENSSL])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
