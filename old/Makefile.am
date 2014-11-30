@@ -22,7 +22,7 @@ noinst_HEADERS = base-sha.h ldap-col.h
 
 if HAVE_GLIB
 bin_PROGRAMS += gsha lcd gsha2 ssha
-AM_CPPFLAGS += $(GLIB_CPPFLAGS)
+AM_CFLAGS += $(GLIB_CFLAGS)
 AM_LDFLAGS += $(GLIB_LDFLAGS)
 LIBS += -lglib-2.0
 endif
