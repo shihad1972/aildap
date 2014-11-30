@@ -87,12 +87,16 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
 		fprintf(stderr, "-h hostname [ -a CA-cert ] [ -i | r ]\n");
-	else if (strstr(prog, "lcu"))
+	else if (strstr(prog, "lcu")) {
 		fprintf(stderr, "\
 -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid\n\
 -g: create group for the user (same name and id)\n\
--l: create long user name (first initial plus surname)\n\
+-l: create long user name (first initial plus surname)\n");
+#ifdef HAVE_OPENSSL
+		fprintf(stderr, "\
 -p: do not ask for a password\n");
+#endif /* HAVE_OPENSSL */
+	}
 }
 
 void
