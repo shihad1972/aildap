@@ -20,13 +20,6 @@ lct_SOURCES = test-ldap-connection.c
 lct_CFLAGS =
 noinst_HEADERS = base-sha.h ldap-col.h
 
-if HAVE_GLIB
-bin_PROGRAMS += gsha lcd gsha2 ssha
-AM_CFLAGS += $(GLIB_CFLAGS)
-AM_LDFLAGS += $(GLIB_LDFLAGS)
-LIBS += -lglib-2.0
-endif
-
 if HAVE_LIBLDAP
 bin_PROGRAMS += lct
 lct_CFLAGS += $(PCFLAGS)
@@ -38,5 +31,13 @@ bin_PROGRAMS += sha1 tsha sha
 AM_CFLAGS += $(OPENSSL_INCLUDES)
 AM_LDFLAGS += $(OPENSSL_LDFLAGS)
 LIBS += $(OPENSSL_LIBS)
+
+if HAVE_GLIB
+bin_PROGRAMS += gsha lcd gsha2 ssha
+AM_CFLAGS += $(GLIB_CFLAGS)
+AM_LDFLAGS += $(GLIB_LDFLAGS)
+LIBS += -lglib-2.0
+endif
+
 endif
 
