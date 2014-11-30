@@ -23,8 +23,9 @@ Otherwise the gid of the user is set to 100.
 You may also create a long username, where the first initial and the surname
 are combined into a username, although the default is to use the first or given
 name of the user.
-By default, \fBlcu\fP will ask for a password.
-This can be overridden by using the \fB-p\fP option.
+If compiled with openssl support, by default, \fBlcu\fP will ask for a password.
+This can be overridden by using the \fB-p\fP option. You can test this by runnig
+lcu with no arguments. If the -p option is visible, it will ask for a password.
 .SH OPTIONS
 .IP "-d domain"
 Specify the base DN of the branch of the directory.

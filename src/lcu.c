@@ -43,8 +43,10 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 			data->gr = ONE;
 		} else if (opt == 'l') {
 			data->lu = ONE;
+#ifdef HAVE_OPENSSL
 		} else if (opt == 'p') {
 			data->np = ONE;
+#endif /* HAVE_OPENSSL */
 		} else if (opt == 'n') {
 			GET_OPT_ARG(name, USER, Name)
 		} else if (opt == 'u') {
@@ -76,7 +78,9 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 int
 main (int argc, char *argv[])
 {
-	char *pass/*, *npass */;
+#ifdef HAVE_OPENSSL
+	char *pass;
+#endif /* HAVE_OPENSSL */
 	int retval = 0;
 	inp_data_s *data;
 
@@ -85,11 +89,13 @@ main (int argc, char *argv[])
 	init_lcu_data(data);
 	parse_command_line(argc, argv, data);
 	split_name(data);
+#ifdef HAVE_OPENSSL
 	if (data->np == 0) {
 		pass = getPassword("Enter password for user: ");
 		snprintf(data->pass, DOMAIN, "%s", pass);
 		free(pass);
 	}
+#endif /* HAVE_OPENSSL */
 	output_ldif(data);
 	clean_lcu_data(data);
 	return retval;

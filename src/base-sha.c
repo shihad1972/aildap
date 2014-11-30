@@ -33,8 +33,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h> 
+#include <glib.h>
 #ifdef HAVE_OPENSSL
-# include <glib.h>
 # include <openssl/evp.h>
 # include <openssl/sha.h>
 #endif
@@ -178,9 +178,6 @@ data->user, name);
 #ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
-#else
-	if (data->np == 0)
-		printf("userPassword: %s\n", data->pass);
 #endif /* HAVE_OPENSSL */
 	printf("gecos: %s %s\n", data->fname, data->sur);
 	printf("mail: %s@%s\n", name, data->dom);
