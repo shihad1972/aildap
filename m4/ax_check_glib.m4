@@ -37,7 +37,7 @@ AC_DEFUN([AX_CHECK_GLIB], [
     AC_MSG_CHECKING([whether compiling and linking against glib works])
     old_LIBS="$LIBS"
     old_LDFLAGS="$LDFLAGS"
-    old_CPPFLAGS="CPPFLAGS"
+    old_CPPFLAGS="$CPPFLAGS"
     LDFLAGS="$LDFLAGS $GLIB_LDFLAGS"
     LIBS="$LIBS $GLIB_LIBS"
     CPPFLAGS="$CPPFLAGS $GLIB_CPPFLAGS"
