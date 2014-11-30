@@ -6,7 +6,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <glib.h>
-#include <openssl/sha.h>
+#ifdef HAVE_OPENSSL
+# include <openssl/sha.h>
+#endif /* HAVE_OPENSSL */
 
 int
 main ()
