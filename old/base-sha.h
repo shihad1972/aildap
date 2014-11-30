@@ -40,13 +40,13 @@ split_name(inp_data_s *data);
 void
 output_ldif(inp_data_s *data);
 
-# ifdef HAVE_OPENSSL
+# ifdef HAVE_LIBCRYPTO
 #  include <glib.h>
 char *
 get_ldif_pass_hash(char *pass);
 
 int
 hex_conv(const char *pass, guchar *out);
-# endif /* HAVE_OPENSSL */
+# endif /* HAVE_LIBCRYPTO */
 
 #endif /* HAVE_BASE_H */

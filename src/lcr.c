@@ -180,9 +180,9 @@ print_consumer(lcr_t *data)
 	}
 	dom = get_ldif_domain(data->domain);
 	/* This is not actually used. When I do, I will need a fallback */
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_LIBCRYPTO
 	phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+#endif /* HAVE_LIBCRYPTO */
 	if (data->mod == 0)
 		fprintf(consumer, "\
 #Load the syncprov module.\n\
