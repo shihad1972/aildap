@@ -21,7 +21,7 @@ lct_CFLAGS =
 noinst_HEADERS = base-sha.h ldap-col.h
 
 if HAVE_GLIB
-bin_PROGRAMS += tsha gsha lcd gsha2 ssha
+bin_PROGRAMS += gsha lcd gsha2 ssha
 AM_CPPFLAGS += $(GLIB_CPPFLAGS)
 AM_LDFLAGS += $(GLIB_LDFLAGS)
 LIBS += -lglib-2.0
@@ -34,7 +34,7 @@ LIBS += -lldap
 endif
 
 if HAVE_OPENSSL
-bin_PROGRAMS += sha1 sha
+bin_PROGRAMS += sha1 tsha sha
 AM_CFLAGS += $(OPENSSL_INCLUDES)
 AM_LDFLAGS += $(OPENSSL_LDFLAGS)
 LIBS += $(OPENSSL_LIBS)
