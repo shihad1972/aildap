@@ -12,27 +12,11 @@ bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb
 
 all:	$(bin_PROGRAMS)
 
-lcs:
-	cd $(DIR); make $(MFLAGS) $@
+.PHONY:	clean $(bin_PROGRAMS) old-all
 
-lcc:
-	cd $(DIR); make $(MFLAGS) $@
+$(bin_PROGRAMS):
+	$(MAKE) -C $(DIR) $@
 
-lcg:
-	cd $(DIR); make $(MFLAGS) $@
-
-lck:
-	cd $(DIR); make $(MFLAGS) $@
-
-lcu:
-	cd $(DIR); make $(MFLAGS) $@
-
-lcr:
-	cd $(DIR); make $(MFLAGS) $@
-
-lcdb:
-	cd $(DIR); make $(MFLAGS) $@
-	
 old-all:
 	cd $(OLDDIR); make all
 
