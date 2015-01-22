@@ -30,7 +30,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
 
 AX_LIB_LDAP
-AX_CHECK_OPENSSL
+AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0],
   [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])

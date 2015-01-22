@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include "ldap-col.h"
 #include "base-sha.h"
+#include "../config.h"
 
 int
 parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)

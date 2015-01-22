@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include "ldap-col.h"
+#include "../config.h"
 
 void
 rep_error(const char *error)
