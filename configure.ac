@@ -36,9 +36,12 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0],
   [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
 ])
 
+AX_CHECK_OLD
+
 AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
 AM_CONDITIONAL([HAVE_OPENSSL], [$HAVE_OPENSSL])
+AM_CONDITIONAL([HAVE_OLD], [test "$enable_old" = yes])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
