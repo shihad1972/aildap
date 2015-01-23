@@ -61,9 +61,11 @@ parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)
 void
 output_db_ldif(lcdb_s *data)
 {
-	char *ldf, *dir, *dom, *adm, *pass;
+	char *ldf, *dir, *dom, *adm;
 #ifdef HAVE_OPENSSL
 	char *hsh;
+#else
+	char *pass;
 #endif /* HAVE_OPENSSL */
 	size_t len;
 	FILE *out;
@@ -77,8 +79,9 @@ output_db_ldif(lcdb_s *data)
 	adm = data->admin;
 #ifdef HAVE_OPENSSL
 	hsh = data->phash;
-#endif /* HAVE_OPENSSL */
+#else
 	pass = data->pass;
+#endif /* HAVE_OPENSSL */
 	len = strlen(data->dir);
 	ldf = get_ldif_domain(dom);
 	if (len == 0)
