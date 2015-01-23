@@ -9,16 +9,17 @@ DIR = src
 OLDDIR = old
 SUBDIRS = src
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb
+old_PROGRAMS = lcd tsha gsha gsha2 sha1 lct ssha
 
 all:	$(bin_PROGRAMS)
 
-.PHONY:	clean $(bin_PROGRAMS) old-all
+.PHONY:	clean $(bin_PROGRAMS) $(old_PROGRAMS)
 
 $(bin_PROGRAMS):
 	$(MAKE) -C $(DIR) $@
 
-old-all:
-	cd $(OLDDIR); make all
+$(old_PROGRAMS):
+	$(MAKE) -C $(OLDDIR) $@
 
 clean:
 	cd $(DIR); make $@; cd ../$(OLDDIR); make $@
