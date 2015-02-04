@@ -132,6 +132,8 @@ main(int argc, char *argv[])
 		if (!(dn = convert_to_dn(data)))
 			goto cleanup;
 		output_ou(dn, data->newou, data->file);
+	} else {
+		rep_usage(argv[0]);
 	}
 	goto cleanup;
 	cleanup:

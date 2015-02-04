@@ -1,0 +1,43 @@
+.TH LCOU 1 "Version 0.1: February 04 2015" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcou \- LDAP create organisational unit.
+.SH SYNOPSIS
+.B lcou
+.B "-d <domain>"
+.B "-n <new-ou>"
+(
+.B "-o <comma separated ou list>"
+)
+(
+.B "-f <filename>"
+)
+(
+-i | -r
+)
+.SH DESCRIPTION
+\fBlcou\fP will create ldif compatible output to add a new \fBou\fP to an ldap
+directory. You can optionally specify a list of ou's that are superior to the
+one you wish to create, using the \fB-o\fP argument.
+.SH OPTIONS
+.IP "-d <domain>"
+Specify the domain name of the container
+.IP "-n <new-ou>"
+Specify the name of the ou you wish to add
+.IP "-f <filename>
+Specify a filename to save the output to
+.IP -i
+Sepcify you wish to add the ou
+.IP -r
+Specify you wish to remove the ou
+.SH ENVIRONMENT
+Currently, there are no environment variables.
+.SH AUTHOR
+Iain M Conochie <iain-AT-thargoid-dot-co-dot-uk>
+.SH SEE ALSO
+.BR lcdb(1)
+.BR lcg(1)
+.BR lcr(1)
+.BR lcs(1)
+.BR lcu(1)
+.BR lck(1)
+
