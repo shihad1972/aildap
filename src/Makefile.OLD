@@ -20,6 +20,7 @@ lcs_SOURCES = lcs.c $(shared_SOURCES)
 lcc_SOURCES = lcc.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
 lck_SOURCES = lck.c $(shared_SOURCES)
+lcou_SOURCES = lcou.c $(shared_SOURCES)
 lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 user_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 
@@ -40,6 +41,9 @@ lcg:	$(lcg_SOURCES)
 
 lck:	$(lck_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lck_SOURCES)
+
+lcou:	$(lcou_SOURCES)
+	$(CC) $(CFLAGS) -o $@ $(lcou_SOURCES)
 
 lcu:	$(user_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)

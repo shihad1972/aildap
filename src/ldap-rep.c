@@ -88,6 +88,8 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
 		fprintf(stderr, "-h hostname [ -a CA-cert ] [ -i | r ]\n");
+	else if (strstr(prog, "lcou"))
+		fprintf(stderr, "-d domain -n newou ( -o comma seperated list of ou's) ( -i | -r )\n");
 	else if (strstr(prog, "lcu")) {
 		fprintf(stderr, "\
 -d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid\n\
@@ -204,6 +206,32 @@ clean_lck_data_struct(lck_s *data)
 	if (data) {
 		CLEAN_DATA_MEMBER(host);
 		CLEAN_DATA_MEMBER(realm);
+		free(data);
+	}
+}
+
+void
+init_lcou_data_struct(lcou_s *data)
+{
+	if (data) {
+		memset(data, 0, sizeof(lcou_s));
+		MALLOC_DATA_MEMBER(domain, DOMAIN);
+		MALLOC_DATA_MEMBER(newou, CANAME);
+		MALLOC_DATA_MEMBER(ou, CANAME);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lcu_data_struct\n");
+		exit(1);
+	}
+}
+
+void
+clean_lcou_data_struct(lcou_s *data)
+{
+	if (data) {
+		CLEAN_DATA_MEMBER(domain);
+		CLEAN_DATA_MEMBER(newou);
+		CLEAN_DATA_MEMBER(ou);
+		free(data);
 	}
 }
 
@@ -337,6 +365,48 @@ get_ldif_domain(char *dom)
 }
 
 char *
+get_ldif_format(char *form, const char *type, const char *delim)
+{
+/*
+ * Take comma separated string (form), and turn into an ldif farmat string.
+ * Base on type (dc, ou , o etc) so can have multiple elements.
+ *
+ * e.g. foo,bar,you,me ou -> ou=foo,ou=bar,ou=you,ou=me
+ */
+	char *ldom, *tmp, *save, *empty = '\0', *buff, *work;
+	int i = 1, c;
+	size_t len = NONE;
+
+	if (!(form) || !(type))
+		return empty;
+	if ((c = get_delim(delim)) == 0)
+		return empty;
+	if ((len = strlen(form)) == 0)
+		return empty;
+	work = strndup(form, len);
+	tmp = work;
+	while ((tmp = strchr(tmp, c))) {
+		i++;
+		tmp++;
+	}
+	len = len + (size_t)(i * 3) + 1;
+	if (!(ldom = calloc(len, sizeof(char))))
+		rep_error("ldom in get_ldif_format");
+	if (!(buff = malloc(BUFF)))
+		rep_error("buff in get_ldif_format");
+	tmp = strtok_r(work, delim, &save);
+	sprintf(ldom, "%s=%s", type, tmp);
+	while ((tmp = strtok_r(empty, delim, &save))) {
+		sprintf(buff, ",%s=%s", type, tmp);
+		strcat(ldom, buff);
+	}
+	free(buff);
+	free(work);
+	return ldom;
+}
+
+
+char *
 get_ldif_user(inp_data_s *data)
 {
 	char *name;
@@ -349,6 +419,21 @@ get_ldif_user(inp_data_s *data)
 	else
 		sprintf(name, "%s", data->name);
 	return name;
+}
+
+int
+get_delim(const char *delim)
+{
+	if (strncmp(".", delim, 2) == 0)
+		return '.';
+	else if (strncmp(",", delim, 2) == 0)
+		return ',';
+	else if (strncmp(":", delim, 2) == 0)
+		return ':';
+	else if (strncmp(";", delim, 2) == 0)
+		return ';';
+	else
+		return 0;
 }
 
 void

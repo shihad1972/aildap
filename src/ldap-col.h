@@ -47,6 +47,11 @@ typedef struct lck_s {
 	short int file;
 } lck_s;
 
+typedef struct lcou_s {
+	char *domain, *newou, *ou;
+	short int file, action;
+} lcou_s;
+
 typedef struct lcdb_s {
 	char *domain, *admin, *pass, *phash, *dir;
 	short int file;
@@ -87,6 +92,7 @@ enum {
 	REMOVE,
 	DOMLONG,
 	CALONG,
+	NOOU,
 	FILE_O_FAIL = 16,
 	NAME = 32,
 	DC = 64,
@@ -172,6 +178,12 @@ void
 clean_lck_data_struct(lck_s *data);
 
 void
+init_lcou_data_struct(lcou_s *data);
+
+void
+clean_lcou_data_struct(lcou_s *data);
+
+void
 init_lcs_data_struct(cert_s *data);
 
 void
@@ -199,7 +211,13 @@ char *
 get_ldif_domain(char *domain);
 
 char *
+get_ldif_format(char *ou, const char *type, const char *delim);
+
+char *
 get_ldif_user(inp_data_s *data);
+
+int
+get_delim(const char *delim);
 
 void
 check_snprintf(char *target, int max, const char *string, const char *what);

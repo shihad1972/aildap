@@ -8,7 +8,7 @@ ECHO = echo
 DIR = src
 OLDDIR = old
 SUBDIRS = src
-bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb
+bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou
 old_PROGRAMS = lcd tsha gsha gsha2 sha1 lct ssha
 
 all:	$(bin_PROGRAMS)
