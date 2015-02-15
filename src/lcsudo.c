@@ -235,7 +235,7 @@ sudoRunAsGroup: %s\n\
 void
 output_ldif(lcsudo_s *sudo)
 {
-	char *dn;
+	char *dn = 0;
 	FILE *out;
 	const char *file = "sudo.ldif";
 
