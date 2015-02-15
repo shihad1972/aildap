@@ -1,0 +1,68 @@
+.TH LCSUDO 1 "Version 1.0: February 15 2015" "Collection of ldap utilities" "ldap collection"
+.SH NAME
+lcsudo \- LDAP create sudoers.
+.SH SYNOPSIS
+.B lcsudo
+.B "-d <domain-name>"
+(
+.B "-u <user> | -g <group>"
+)
+.B "-o command"
+.B "-h host"
+(
+.B "-i | -m | -r"
+)
+[
+.B "-e RunAsUser | -p RunAsGroup"
+]
+[
+.B -f
+]
+.SH DESCRIPTION
+\fBlcsudo\fP creates and ldif compatible output to insert, modify or remove
+\fIsudoers\fP rules in and LDAP directory. \flcsudo\fP assumes that the \fIou\fP
+for the sudoers rules is called SUDOers, and that this ou is placed in the
+top level of the directory, for the domain specified with the \fB-d\fP option.
+.SH OPTIONS
+.IP "-d <domain-name>"
+Specify the domain name of the top level of the directory.
+.IP "-u user"
+Specify the username which will run the sudo commands. This will also be the
+\fBcn\fP in the ldif output.
+.IP "-g group"
+Specify the group name which will run the sudo commands. This will also be the
+\fBcn\fP in the ldif output. \fBNOTE\fP \fB-u\fP and \fB-g\fP are mutually
+exclusive options.
+.IP "-o command"
+Specify the command to be run with sudo.
+.IP "-h host"
+Specify the host on which the sudo commands will be run.
+.IP "-i"
+Specify an insert action. This will create a new entry in the directory
+.IP "-m"
+Specify the modify action. This will add attributes to and existing entry in
+the directory
+.IP "-r"
+Specify the remove action. This will either remove the attributes specified or
+remove the entry completely if only the \fB-d\fP and either \fB-u\fP or
+\fB-g\fP options are spcified.
+.IP "-e <RunAsUser>"
+Specify the user to run the sudo command as. If none specified, the default
+will be \fBALL\fP.
+.IP "-p <RunAsGroup>"
+Specify the group to run the sudo command as. If none specified, the default
+will be \fBALL\fP.
+.IP "-f"
+Write the output to the file \fIsudo.ldif\fP in the current directory.
+.SH ENVIRONMENT
+Currently, there are no environment variables used.
+.SH AUTHOR
+Iain M Conochie <iain-AT-thargoid-dot-co-dot-uk>
+.SH SEE ALSO
+.BR lcdb(1)
+.BR lcg(1)
+.BR lcr(1)
+.BR lcs(1)
+.BR lcu(1)
+.BR lck(1)
+

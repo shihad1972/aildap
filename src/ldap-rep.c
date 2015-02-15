@@ -88,7 +88,7 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcsudo"))
 		fprintf(stderr, "\
--d domain -g group -h host -o command -u user\n\
+-d domain ( -g group | -u user ) -o command -h host\n\
 ( -i | -m | -r ) [ -e RunAsUser | -p RunAsGroup ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
 		fprintf(stderr, "-h hostname [ -a CA-cert ] [ -i | r ]\n");
