@@ -86,6 +86,10 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-h hostname -r realm\n");
 	else if (strstr(prog, "lcdb"))
 		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
+	else if (strstr(prog, "lcsudo"))
+		fprintf(stderr, "\
+-d domain -g group -h host -o command -u user\n\
+( -i | -m | -r ) [ -e RunAsUser | -p RunAsGroup ] [ -f ]\n");
 	else if (strstr(prog, "lcs"))
 		fprintf(stderr, "-h hostname [ -a CA-cert ] [ -i | r ]\n");
 	else if (strstr(prog, "lcou"))
@@ -311,6 +315,7 @@ init_lcs_data_struct(cert_s *data)
 		MALLOC_DATA_MEMBER(ca, CANAME);
 	} else {
 		fprintf(stderr, "null pointer passed to init_lcs_data_struct");
+		exit(1);
 	}
 }
 
@@ -320,6 +325,39 @@ clean_lcs_data(cert_s *data)
 	if (data) {
 		CLEAN_DATA_MEMBER(hostname);
 		CLEAN_DATA_MEMBER(ca);
+		free(data);
+	}
+}
+
+void
+init_lcsudo_data_struct(lcsudo_s *data)
+{
+	if (data) {
+		memset(data, 0, sizeof(lcsudo_s));
+		MALLOC_DATA_MEMBER(com, DOMAIN);
+		MALLOC_DATA_MEMBER(domain, DOMAIN);
+		MALLOC_DATA_MEMBER(group, GROUP);
+		MALLOC_DATA_MEMBER(host, CANAME);
+		MALLOC_DATA_MEMBER(rgroup, GROUP);
+		MALLOC_DATA_MEMBER(ruser, NAME);
+		MALLOC_DATA_MEMBER(user, NAME);
+	} else {
+		fprintf(stderr, "null pointer passed to init_lcsudo_data_struct");
+		exit(1);
+	}
+}
+
+void
+clean_lcsudo_data(lcsudo_s *data)
+{
+	if (data) {
+		CLEAN_DATA_MEMBER(com);
+		CLEAN_DATA_MEMBER(domain);
+		CLEAN_DATA_MEMBER(group);
+		CLEAN_DATA_MEMBER(host);
+		CLEAN_DATA_MEMBER(rgroup);
+		CLEAN_DATA_MEMBER(ruser);
+		CLEAN_DATA_MEMBER(user);
 		free(data);
 	}
 }
@@ -368,10 +406,11 @@ char *
 get_ldif_format(char *form, const char *type, const char *delim)
 {
 /*
- * Take comma separated string (form), and turn into an ldif farmat string.
+ * Take delim separated string (form), and turn into an ldif farmat string.
  * Base on type (dc, ou , o etc) so can have multiple elements.
  *
  * e.g. foo,bar,you,me ou -> ou=foo,ou=bar,ou=you,ou=me
+ * or my.sub.domain.com dc -> dc=my,dc=sub,dc=domain,dc=com
  */
 	char *ldom, *tmp, *save, *empty = '\0', *buff, *work;
 	int i = 1, c;

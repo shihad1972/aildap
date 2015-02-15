@@ -13,6 +13,7 @@ lcc_SOURCES = lcc.c $(shared_SOURCES)
 lcg_SOURCES = lcg.c $(shared_SOURCES)
 lck_SOURCES = lck.c $(shared_SOURCES)
 lcou_SOURCES = lcou.c $(shared_SOURCES)
+lcsudo_SOURCES = lcsudo.c $(shared_SOURCES)
 lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
 lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
 lcu_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
