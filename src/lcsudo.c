@@ -66,13 +66,17 @@ parse_command_line(int argc, char *argv[], lcsudo_s *data)
 		goto cleanup;
 	if (data->action == 0)
 		goto cleanup;
-	if ((data->action == INSERT || data->action == MODIFY) &&
-	    (strlen(data->domain) == 0 ||
-	    (strlen(data->user) == 0 && strlen(data->group) == 0) ||
-	     strlen(data->com) == 0 || strlen(data->host) == 0))
+	if (data->action == INSERT && (strlen(data->domain) == 0 ||
+	   (strlen(data->user) == 0 && strlen(data->group) == 0) ||
+	    strlen(data->com) == 0 || strlen(data->host) == 0))
+		goto cleanup;
+	if (data->action == MODIFY && (strlen(data->domain) == 0 ||
+	   (strlen(data->user) == 0 && strlen(data->group) == 0) ||
+	   (strlen(data->com) == 0 && strlen(data->host) == 0 &&
+	    strlen(data->ruser) == 0 && strlen(data->rgroup) == 0)))
 		goto cleanup;
 	if (data->action == REMOVE && (strlen(data->domain) == 0 ||
-	    (strlen(data->user) == 0 && strlen(data->group) == 0)))
+	   (strlen(data->user) == 0 && strlen(data->group) == 0)))
 		goto cleanup;
 	if (strlen(data->user) > 0 && strlen(data->group) > 0) {
 		fprintf(stderr, "Both user and group supplied\n");
@@ -152,11 +156,80 @@ sudoRunAsGroup: ALL\n");
 void
 output_remove_sudoers_ldif(lcsudo_s *sudo, char *dn, FILE *out)
 {
+	int i = 0;
+
+	if (strlen(sudo->com) == 0 && strlen(sudo->host) == 0) {
+		fprintf(out, "\
+# %s\n\
+dn: %s\n\
+changeType: delete\n\
+", dn, dn);
+	} else {
+		fprintf(out, "\
+# %s\n\
+dn: %s\n\
+changeType: modify\n\
+", dn, dn);
+		if (strlen(sudo->com) > 0) {
+			fprintf(out, "\
+delete: sudoCommand\n\
+sudoCommand: %s\n\
+", sudo->com);
+			i++;
+		}
+		if (strlen(sudo->host) > 0) {
+			if (i > 0)
+				fprintf(out, "--\n");
+			fprintf(out, "\
+delete: sudoHost\n\
+sudoHost: %s\n\
+", sudo->host);
+		}
+	}
 }
 
 void
 output_modify_sudoers_ldif(lcsudo_s *sudo, char *dn, FILE *out)
 {
+	int i = 0;
+	fprintf(out, "\
+# %s\n\
+dn: %s\n\
+changeType: modify\n\
+", dn, dn);
+	if (strlen(sudo->com) > 0) {
+		fprintf(out, "\
+add: sudoCommand\n\
+sudoCommand: %s\n\
+", sudo->com);
+		i++;
+	}
+	if (strlen(sudo->host) > 0) {
+		if (i > 0)
+			fprintf(out, "--\n");
+		fprintf(out, "\
+add: sudoHost\n\
+sudoHost: %s\n\
+", sudo->host);
+		i++;
+	}
+	if (strlen(sudo->ruser) > 0) {
+		if (i > 0)
+			fprintf(out, "--\n");
+		fprintf(out, "\
+add: sudoRunAsUser\n\
+sudoRunAsUser: %s\n\
+", sudo->ruser);
+		i++;
+	}
+	if (strlen(sudo->rgroup) > 0) {
+		if (i > 0)
+			fprintf(out, "--\n");
+		fprintf(out, "\
+add: sudoRunAsGroup\n\
+sudoRunAsGroup: %s\n\
+", sudo->rgroup);
+	}
 }
 
 void
@@ -184,7 +257,7 @@ output_ldif(lcsudo_s *sudo)
 	else if (sudo->action == MODIFY)
 		output_modify_sudoers_ldif(sudo, dn, out);
 	else if (sudo->action == REMOVE)
-		output_modify_sudoers_ldif(sudo, dn, out);
+		output_remove_sudoers_ldif(sudo, dn, out);
 	else  // Fall through
 		goto cleanup;
 	if (sudo->file > 0)

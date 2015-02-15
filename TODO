@@ -1,3 +1,6 @@
+15/02/2015
+lcsudo should also be able to add / remove sudoOptions (such as !authenticate)
+
 13/04/2014
 Too many double negatives (-M do NOT add module config, -p do NOT ask for a
 password). These options should CREATE the module and password. Make sure to
@@ -8,3 +11,4 @@ not a domain name!
 *** Fixed 13/04/2014 ***
 
 add lck to create the kerberos / GSSAPI addition to the directory
+*** Fixed in commit e470daeb22e0b42770cca26a08457a6bf64997fc ***
