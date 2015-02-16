@@ -47,6 +47,16 @@ typedef struct lck_s {
 	short int file;
 } lck_s;
 
+typedef struct lcou_s {
+	char *domain, *newou, *ou;
+	short int file, action;
+} lcou_s;
+
+typedef struct lcsudo_s {
+	char *domain, *user, *group, *host, *com, *ruser, *rgroup;
+	short int file, action;
+} lcsudo_s;
+
 typedef struct lcdb_s {
 	char *domain, *admin, *pass, *phash, *dir;
 	short int file;
@@ -87,7 +97,10 @@ enum {
 	REMOVE,
 	DOMLONG,
 	CALONG,
+	NOOU,
+	MODIFY,
 	FILE_O_FAIL = 16,
+	GROUP = 16,
 	NAME = 32,
 	DC = 64,
 	CANAME = 64,
@@ -104,7 +117,8 @@ enum {
 	USERL = 127,
 	USER = 128,
 	MEM = 300,
-	BUFF = 512
+	BUFF = 512,
+	BBUFF = 1024
 };
 
 #ifndef MALLOC_DATA_MEMBER
@@ -172,6 +186,12 @@ void
 clean_lck_data_struct(lck_s *data);
 
 void
+init_lcou_data_struct(lcou_s *data);
+
+void
+clean_lcou_data_struct(lcou_s *data);
+
+void
 init_lcs_data_struct(cert_s *data);
 
 void
@@ -195,11 +215,23 @@ init_lcc_data_struct(cont_s *data);
 void
 clean_lcc_data(cont_s *data);
 
+void
+init_lcsudo_data_struct(lcsudo_s *data);
+
+void
+clean_lcsudo_data(lcsudo_s *data);
+
 char *
 get_ldif_domain(char *domain);
 
 char *
+get_ldif_format(char *ou, const char *type, const char *delim);
+
+char *
 get_ldif_user(inp_data_s *data);
+
+int
+get_delim(const char *delim);
 
 void
 check_snprintf(char *target, int max, const char *string, const char *what);
