@@ -8,3 +8,6 @@ not a domain name!
 *** Fixed 13/04/2014 ***
 
 add lck to create the kerberos / GSSAPI addition to the directory
+
+22/01/2015
+Add program to create a generic ou.
