@@ -1,6 +1,6 @@
 /*
  *  ldap-col: collection of ldap utilities
- *  Copyright (C) 2013-2014  Iain M Conochie <iain-AT-thargoid.co.uk>
+ *  Copyright (C) 2013-2015 Iain M Conochie <iain-AT-thargoid.co.uk>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include "ldap-col.h"
 
 int
@@ -154,7 +156,7 @@ main (int argc, char *argv[])
 	cert_s *data = NONE;
 
 	if (!(data = malloc(sizeof(cert_s))))
-		rep_error("data");
+		error(MALLOC, errno, "data in main");
 	init_lcs_data_struct(data);
 	if ((retval = parse_command_line(argc, argv, data)) != NONE) {
 		clean_lcs_data(data);

@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include "ldap-col.h"
 
 int
@@ -280,7 +282,7 @@ main(int argc, char *argv[])
 	lcsudo_s *sudo = 0;
 
 	if (!(sudo = malloc(sizeof(lcsudo_s))))
-		rep_error("sudo");
+		error(MALLOC, errno, "sudo in main");
 	init_lcsudo_data_struct(sudo);
 	if ((retval = parse_command_line(argc, argv, sudo)) != 0)
 		return retval;

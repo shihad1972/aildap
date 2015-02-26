@@ -1,7 +1,7 @@
 /*
  *
  *  ldap-col: collection of ldap utilities
- *  Copyright (C) 2014  Iain M Conochie <iain-AT-thargoid.co.uk>
+ *  Copyright (C) 2014-2015 Iain M Conochie <iain-AT-thargoid.co.uk>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,12 +23,14 @@
  *
  *  Part of the ldap collection suite of program
  *
- *  (C) Iain M Conochie 2014 */
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include "ldap-col.h"
 #include "base-sha.h"
 #include "../config.h"
@@ -225,7 +227,7 @@ main (int argc, char *argv[])
 	int retval = NONE;
 	lcr_t *data = '\0';
 	if (!(data = malloc(sizeof(lcr_t))))
-		rep_error("data");
+		error(MALLOC, errno, "data in main");
 	init_lcr_data_struct(data);
 	if ((retval = parse_lcr_command_line(argc, argv, data)) > 0) {
 		clean_lcr_data_struct(data);

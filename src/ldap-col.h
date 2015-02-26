@@ -1,7 +1,7 @@
 /*
  *
  *  ldap-col: collection of ldap utilities
- *  Copyright (C) 2014  Iain M Conochie <iain-AT-thargoid.co.uk>
+ *  Copyright (C) 2014-2015  Iain M Conochie <iain-AT-thargoid.co.uk>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,13 +24,10 @@
  *
  *  Part of the ldap collection suite of program
  *
- *  (C) Iain M Conochie 2014 */
+ */
 
 #ifndef HAVE_LDAP_COL_H
 # define HAVE_LDAP_COL_H
-
-void
-rep_error(const char *error);
 
 typedef struct lcr_t {
 	char *host, *domain, *user, *pass, *db, *cdb, *pdb, *ca;
@@ -124,7 +121,7 @@ enum {
 #ifndef MALLOC_DATA_MEMBER
 # define MALLOC_DATA_MEMBER(mem, SIZE) {                            \
 	if (!(data->mem = calloc(ONE, SIZE)))                       \
-		rep_error("Cannot malloc data->mem");               \
+		error(MALLOC, errno, "data->mem");                  \
 }
 #endif /* MALLOC_DATA_MEMBER */
 
@@ -148,9 +145,6 @@ enum {
 #endif /* GET_OPT_ARG */
 
 #define PASS_SIZE 100
-
-void
-rep_error(const char *error);
 
 void
 resize_string_buff(string_len_s *build);

@@ -1,7 +1,7 @@
 /*
  *
  *  ldap-col: collection of ldap utilities
- *  Copyright (C) 2014  Iain M Conochie <iain-AT-thargoid.co.uk>
+ *  Copyright (C) 2014-2015  Iain M Conochie <iain-AT-thargoid.co.uk>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,22 +23,17 @@
  *
  *  Part of the ldap collection suite of program
  *
- *  (C) Iain M Conochie 2014 */
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <error.h>
 #include <ctype.h>
 #include "ldap-col.h"
 #include "../config.h"
-
-void
-rep_error(const char *error)
-{
-	fprintf(stderr, "Cannot allocate memory for %s\n", error);
-	exit(MALLOC);
-}
 
 void
 resize_string_buff(string_len_s *build)
@@ -48,7 +43,7 @@ resize_string_buff(string_len_s *build)
 	build->len *=2;
 	tmp = realloc(build->string, build->len * sizeof(char));
 	if (!tmp)
-		rep_error("tmp in resize_string_buff");
+		error(MALLOC, errno, "tmp in resize_string_buff");
 	else
 		build->string = tmp;
 }
@@ -59,7 +54,7 @@ init_string_len(string_len_s *build)
 	build->len = FILES;
 	build->size = NONE;
 	if (!(build->string = calloc(build->len, sizeof(char))))
-		rep_error("build->string in init_string_len");
+		error(MALLOC, errno, "build->string in init_string_len");
 }
 
 void
@@ -371,10 +366,10 @@ get_ldif_domain(char *dom)
 	size_t len = NONE;
 
 	if (!(buff = malloc(DOMAIN)))
-		rep_error("buff in get_ldif_domain");
+		error(MALLOC, errno, "buff in get_ldif_domain");
 	len = strlen(dom);
 	if (!(domain = calloc((len + 1), sizeof(char))))
-		rep_error("domain in get_ldif_domain");
+		error(MALLOC, errno, "domain in get_ldif_domain");
 	strncpy(domain, dom, len);
 	tmp = domain;
 	while ((tmp = strchr(tmp, '.'))) {
@@ -384,11 +379,11 @@ get_ldif_domain(char *dom)
 	len = strlen(dom) + (size_t)(c * 3);
 	if (len >= DOMAIN) {
 		if(!(ldom = malloc(BUFF))) {
-			rep_error("ldom in get_ldif_domain");
+			error(MALLOC, errno, "ldom in get_ldif_domain");
 		}
 	} else {
 		if (!(ldom = malloc(DOMAIN))) {
-			rep_error("ldom in get_ldif_domain");
+			error(MALLOC, errno, "ldom in get_ldif_domain");
 		}
 	}
 	tmp = strtok_r(domain, delim, &save);
@@ -430,9 +425,9 @@ get_ldif_format(char *form, const char *type, const char *delim)
 	}
 	len = len + (size_t)(i * 3) + 1;
 	if (!(ldom = calloc(len, sizeof(char))))
-		rep_error("ldom in get_ldif_format");
+		error(MALLOC, errno, "ldom in get_ldif_format");
 	if (!(buff = malloc(BUFF)))
-		rep_error("buff in get_ldif_format");
+		error(MALLOC, errno, "buff in get_ldif_format");
 	tmp = strtok_r(work, delim, &save);
 	sprintf(ldom, "%s=%s", type, tmp);
 	while ((tmp = strtok_r(empty, delim, &save))) {
@@ -451,7 +446,7 @@ get_ldif_user(inp_data_s *data)
 	char *name;
 
 	if (!(name = malloc(USER)))
-		rep_error("name in get_ldif_user");
+		error(MALLOC, errno, "name in get_ldif_user");
 	*(data->sur) = tolower(*(data->sur));
 	if (data->lu > 0)
 		sprintf(name, "%c%s", *(data->name), data->sur);
