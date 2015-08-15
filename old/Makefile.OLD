@@ -7,7 +7,10 @@ CC = gcc
 RM = rm -f
 ECHO = echo
 CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
+
+# Add this as CPPFLAGS if you want to have bind authentication
 PCFLAGS = -DLDAP_DEPRECATED
+
 GCFLAGS = `pkg-config --cflags glib-2.0`
 GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
 GLIBS = `pkg-config --libs-only-l glib-2.0`
