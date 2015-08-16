@@ -38,11 +38,13 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0],
 ])
 
 AX_CHECK_OLD
+AX_CHECK_DAM
 
 AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
 AM_CONDITIONAL([HAVE_LIBLDAP], [$HAVE_LIBLDAP])
 AM_CONDITIONAL([HAVE_OPENSSL], [$HAVE_OPENSSL])
 AM_CONDITIONAL([HAVE_OLD], [test "$enable_old" = yes])
+AM_CONDITIONAL([HAVE_DAM], [test "$enable_dam" = yes])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
