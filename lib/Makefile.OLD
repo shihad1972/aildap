@@ -20,6 +20,8 @@ LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 shared_SOURCES =
 
+libs:	libailsaldap.a
+
 libailsaldap.a:	libailsaldap.a(common.o)
 
 libailsaldap.a(common.o):	common.o

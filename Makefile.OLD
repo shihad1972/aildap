@@ -43,6 +43,9 @@ $(dam_PROGRAMS):
 $(sdam_PROGRAMS):
 	$(MAKE) -C $(DAMDIR) $@
 
+$(lib_LIBRARIES):
+	$(MAKE) -C $(LIBDIR) $@
+
 clean:
 	cd $(DIR); make $@; \
 	cd ../$(OLDDIR); make $@; \
