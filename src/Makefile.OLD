@@ -28,6 +28,8 @@ user_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 
 all:	$(bin_PROGRAMS)
 
+bin:	$(bin_PROGRAMS)
+
 lcc:	$(lcc_SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(lcc_SOURCES)
 

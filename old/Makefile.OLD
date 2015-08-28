@@ -33,6 +33,8 @@ gsha3_SOURCES = glib-sha1-3.c $(shared_SOURCES)
 
 all:	$(bin_PROGRAMS)
 
+old:	$(bin_PROGRAMS)
+
 tsha:	$(tsha_SOURCES)
 	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(tsha_SOURCES) $(SLDFLAGS) $(GLIBS)
 

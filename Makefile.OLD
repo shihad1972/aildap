@@ -8,12 +8,23 @@ ECHO = echo
 DIR = src
 OLDDIR = old
 SUBDIRS = src
+DAMDIR = dam
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
+dam_PROGRAMS = 
+sdam_PROGRAMS = 
 old_PROGRAMS = lcd tsha gsha gsha2 sha1 lct ssha
 
-all:	$(bin_PROGRAMS)
+all:	$(bin_PROGRAMS) $(dam_PROGRAMS) $(sdam_PROGRAMS)
 
-.PHONY:	clean $(bin_PROGRAMS) $(old_PROGRAMS)
+.PHONY:	clean $(bin_PROGRAMS) $(old_PROGRAMS) $(dam_PROGRAMS) $(sdam_PROGRAMS)
+
+dam:	$(dam_PROGRAMS)
+
+sdam:	$(sdam_PROGRAMS)
+
+bin:	$(bin_PROGRAMS)
+
+old:	$(old_PROGRAMS)
 
 $(bin_PROGRAMS):
 	$(MAKE) -C $(DIR) $@
@@ -21,6 +32,12 @@ $(bin_PROGRAMS):
 $(old_PROGRAMS):
 	$(MAKE) -C $(OLDDIR) $@
 
+$(dam_PROGRAMS):
+	$(MAKE) -C $(DAMDIR) $@
+
+$(sdam_PROGRAMS):
+	$(MAKE) -C $(DAMDIR) $@
+
 clean:
-	cd $(DIR); make $@; cd ../$(OLDDIR); make $@
+	cd $(DIR); make $@; cd ../$(OLDDIR); make $@; cd ../$(DAMDIR); make $@;
 

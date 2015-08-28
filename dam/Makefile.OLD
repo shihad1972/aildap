@@ -17,9 +17,14 @@ GLIBS = `pkg-config --libs-only-l glib-2.0`
 LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 bin_PROGRAMS =
+sbin_PROGRAMS =
 shared_SOURCES =
 
-all:	$(bin_PROGRAMS)
+all:	$(bin_PROGRAMS) $(sbin_PROGRAMS)
+
+dam:	$(bin_PROGRAMS)
+
+sdam:	$(sbin_PROGRAMS)
 
 clean:
-	$(RM) *.o $(bin_PROGRAMS)
+	$(RM) *.o $(bin_PROGRAMS) $(sbin_PROGRAMS)
