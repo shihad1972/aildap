@@ -3,7 +3,7 @@
 
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
-AM_CPPFLAGS =
+AM_CPPFLAGS = -I../include/
 
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
 shared_SOURCES = ldap-rep.c base-sha.h ldap-col.h

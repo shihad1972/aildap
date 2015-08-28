@@ -25,6 +25,7 @@
  *
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +34,6 @@
 #include <error.h>
 #include <ctype.h>
 #include "ldap-col.h"
-#include "../config.h"
 
 void
 resize_string_buff(string_len_s *build)

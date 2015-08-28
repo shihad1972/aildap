@@ -7,6 +7,7 @@ CC = gcc
 RM = rm -f
 ECHO = echo
 CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
+CPPFLAGS += -I../include/
 PCFLAGS = -DLDAP_DEPRECATED
 GCFLAGS = `pkg-config --cflags glib-2.0`
 GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
@@ -31,31 +32,31 @@ all:	$(bin_PROGRAMS)
 bin:	$(bin_PROGRAMS)
 
 lcc:	$(lcc_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcc_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcc_SOURCES)
 
 lcs:	$(lcs_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcs_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcs_SOURCES)
 
 lcr:	$(lcr_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcr_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(lcr_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 lcg:	$(lcg_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcg_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcg_SOURCES)
 
 lck:	$(lck_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lck_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lck_SOURCES)
 
 lcou:	$(lcou_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcou_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcou_SOURCES)
 
 lcu:	$(user_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 lcsudo:	$(lcsudo_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(lcsudo_SOURCES)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcsudo_SOURCES)
 
 lcdb:	$(lcdb_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 clean:
 	$(RM) *.o $(bin_PROGRAMS) *.ldif ../*.ldif

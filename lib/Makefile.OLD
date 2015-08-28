@@ -1,0 +1,31 @@
+#
+#
+# Makefile for various ldap c libraries
+#
+#
+CC = gcc
+RM = rm -f
+ECHO = echo
+CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
+CPPFLAGS += -I../include/
+lib_LIBRARIES = libailsaldap.a
+
+# Add this as CPPFLAGS if you want to have bind authentication
+PCFLAGS = -DLDAP_DEPRECATED
+
+GCFLAGS = `pkg-config --cflags glib-2.0`
+GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
+GLIBS = `pkg-config --libs-only-l glib-2.0`
+LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
+SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
+shared_SOURCES =
+
+libailsaldap.a:	libailsaldap.a(common.o)
+
+libailsaldap.a(common.o):	common.o
+	$(AR) $(ARFLAGS) $@ $<
+
+.PHONY:	clean
+
+clean:
+	$(RM) *.o *.a

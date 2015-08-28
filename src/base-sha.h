@@ -26,8 +26,8 @@
 
 #ifndef HAVE_BASE_H
 # define HAVE_BASE_H
+# include <config.h>
 # include "ldap-col.h"
-# include "../config.h"
 
 char *
 getPassword(const char *message);

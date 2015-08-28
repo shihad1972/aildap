@@ -7,6 +7,7 @@ CC = gcc
 RM = rm -f
 ECHO = echo
 CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
+CPPFLAGS += -I../include/
 
 # Add this as CPPFLAGS if you want to have bind authentication
 PCFLAGS = -DLDAP_DEPRECATED
@@ -36,28 +37,28 @@ all:	$(bin_PROGRAMS)
 old:	$(bin_PROGRAMS)
 
 tsha:	$(tsha_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(tsha_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(tsha_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 gsha:	$(gsha_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(gsha_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(gsha_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 gsha2:	$(gsha2_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(gsha2_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(gsha2_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 lcd:	$(lcd_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(lcd_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 sha1:	$(sha1_SOURCES)
-	$(CC) $(CFLAGS) -o $@ $(sha1_SOURCES) $(SLDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(sha1_SOURCES) $(SLDFLAGS)
 
 sha:	$(sha_SOURCES)
-	$(CC) $(CFLAGS) -s $@ $(sha_SOURCES) $(SLDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -s $@ $(sha_SOURCES) $(SLDFLAGS)
 
 lct:	$(lct_SOURCES)
-	$(CC) $(CFLAGS) $(PCFLAGS) -o $@ $(lct_SOURCES) $(LLDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(PCFLAGS) -o $@ $(lct_SOURCES) $(LLDFLAGS)
 
 ssha:	$(ssha_SOURCES)
-	$(CC) $(CFLAGS) $(GCFLAGS) -o $@ $(ssha_SOURCES) $(GLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(ssha_SOURCES) $(GLIBS)
 	
 clean:
 	$(RM) *.o $(bin_PROGRAMS)

@@ -24,6 +24,7 @@
  * 
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +35,6 @@
 #include <fcntl.h>
 #include <termios.h> 
 #include <glib.h>
-#include "../config.h"
 #ifdef HAVE_OPENSSL
 # include <openssl/evp.h>
 # include <openssl/sha.h>
