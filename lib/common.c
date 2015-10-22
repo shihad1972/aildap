@@ -476,7 +476,7 @@ check_snprintf(char *target, int max, const char *string, const char *what)
 	int retval;
 
 	retval = snprintf(target, max, "%s", string);
-	if (retval > max)
+	if (retval >= max)
 		rep_truncate(what, max);
 	else if (retval < 0)
 		fprintf(stderr, "Output error for %s\n", what);
