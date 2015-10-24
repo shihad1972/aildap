@@ -4,7 +4,7 @@
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I../include/
 AM_LDFLAGS = -L../lib
-
+LIBS += -lailsaldap
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
 
 if HAVE_GLIB
