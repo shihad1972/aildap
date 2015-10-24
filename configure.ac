@@ -15,6 +15,10 @@ AC_PROG_AWK
 AC_PROG_CPP
 AC_PROG_MKDIR_P
 AC_PROG_MAKE_SET
+AM_PROG_AR
+
+# Initialize libtool
+LT_INIT
 
 # Add m4 macros
 AC_CONFIG_MACRO_DIR([m4])
@@ -49,5 +53,6 @@ AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
 		 dam/Makefile
+		 lib/Makefile
                  src/Makefile])
 AC_OUTPUT

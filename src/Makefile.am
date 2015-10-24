@@ -6,7 +6,6 @@ AM_CPPFLAGS = -I../include/
 AM_LDFLAGS = -L../lib
 
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
-shared_SOURCES = ldap-rep.c base-sha.h ldap-col.h
 
 if HAVE_GLIB
 AM_CFLAGS += $(GLIB_CFLAGS)

@@ -4,6 +4,7 @@
 bin_PROGRAMS = 
 sbin_PROGRAMS = 
 # Add this to AM_CPPFLAGS if you want to have bind authentication
+lct_CFLAGS =
 PCFLAGS = -DLDAP_DEPRECATED
 
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700

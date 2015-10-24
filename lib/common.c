@@ -33,7 +33,7 @@
 #include <errno.h>
 #include <error.h>
 #include <ctype.h>
-#include "ailsaldap.h"
+#include <ailsaldap.h>
 
 void
 resize_string_buff(string_len_s *build)
