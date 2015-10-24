@@ -29,8 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "ldap-col.h"
-#include "base-sha.h"
+#include <ailsaldap.h>
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data)
