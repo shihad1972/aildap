@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <error.h>
-#include "ldap-col.h"
+#include <ailsaldap.h>
 
 int
 parse_lgc_command_line(int argc, char *argv[], lgc_s *data)

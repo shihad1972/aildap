@@ -31,7 +31,7 @@ old:	$(old_PROGRAMS)
 
 libs:	$(lib_LIBRARIES)
 
-$(bin_PROGRAMS):
+$(bin_PROGRAMS):	$(lib_LIBRARIES)
 	$(MAKE) -C $(DIR) $@
 
 $(old_PROGRAMS):

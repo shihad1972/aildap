@@ -48,5 +48,6 @@ AM_CONDITIONAL([HAVE_DAM], [test "$enable_dam" = yes])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
+		 dam/Makefile
                  src/Makefile])
 AC_OUTPUT

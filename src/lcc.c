@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <error.h>
 #include <errno.h>
-#include "ldap-col.h"
+#include <ailsaldap.h>
 
 int
 parse_command_line(int argc, char *argv[], cont_s *data)

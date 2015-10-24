@@ -148,61 +148,97 @@ enum {
 
 void
 resize_string_buff(string_len_s *build);
+
 void
 init_string_len(string_len_s *build);
+
 void
 clean_string_len(string_len_s *string);
+
 void
 rep_usage(const char *prog);
+
 void
 rep_truncate(const char *what, int max);
+
 int
 init_lcu_data(inp_data_s *data);
+
 void
 clean_lcu_data(inp_data_s *data);
+
 void
 init_lcr_data_struct(lcr_t *data);
+
 void
 clean_lcr_data_struct(lcr_t *data);
+
 void
 init_lgc_data_struct(lgc_s *data);
+
 void
 init_lck_data_struct(lck_s *data);
+
 void
 clean_lck_data_struct(lck_s *data);
+
 void
 init_lcou_data_struct(lcou_s *data);
+
 void
 clean_lcou_data_struct(lcou_s *data);
+
 void
 clean_lgc_data(lgc_s *data);
+
 void
 init_lcdb_data_struct(lcdb_s *data);
+
 void
 clean_lcdb_data(lcdb_s *data);
+
 void
 init_lcc_data_struct(cont_s *data);
+
 void
 clean_lcc_data(cont_s *data);
+
 void
 init_lcs_data_struct(cert_s *data);
+
 void
 clean_lcs_data(cert_s *data);
+
 void
 init_lcsudo_data_struct(lcsudo_s *data);
+
 void
 clean_lcsudo_data(lcsudo_s *data);
+
 char *
 get_ldif_domain(char *dom);
+
 char *
 get_ldif_format(char *form, const char *type, const char *delim);
+
 char *
 get_ldif_user(inp_data_s *data);
+
 int
 get_delim(const char *delim);
+
 void
 check_snprintf(char *target, int max, const char *string, const char *what);
+
 int
 add_trailing_slash(char *member);
 
+char *
+getPassword(const char *message);
+
+# ifdef HAVE_OPENSSL
+char *
+get_ldif_pass_hash(char *pass);
+
+# endif //HAVE_OPENSSL
 #endif // HAVE_AILSA_LDAP_H

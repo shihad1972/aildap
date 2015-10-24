@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <error.h>
-#include "ldap-col.h"
+#include <ailsaldap.h>
 
 int
 parse_command_line(int argc, char *argv[], cert_s *data)
@@ -85,7 +85,7 @@ output_insert_ssl(cert_s *data)
 dn: cn=config\n\
 changeType: modify\n\
 add: olcTLSCACertificateFile\n\
-olcTLSCACertificateFile: /etc/ssl/certs/%s.pem\n\
+olcTLSCACertificateFile: /etc/ssl/certs/%s\n\
 -\n\
 add: olcTLSCertificateFile\n\
 olcTLSCertificateFile: /etc/ldap/ssl.crt/%s.crt\n\

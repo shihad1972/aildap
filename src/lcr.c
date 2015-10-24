@@ -32,8 +32,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <error.h>
-#include "ldap-col.h"
-#include "base-sha.h"
+#include <ailsaldap.h>
 
 int
 parse_lcr_command_line(int argc, char *argv[], lcr_t *data)

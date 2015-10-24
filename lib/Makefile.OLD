@@ -13,18 +13,21 @@ lib_LIBRARIES = libailsaldap.a
 # Add this as CPPFLAGS if you want to have bind authentication
 PCFLAGS = -DLDAP_DEPRECATED
 
-GCFLAGS = `pkg-config --cflags glib-2.0`
-GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
-GLIBS = `pkg-config --libs-only-l glib-2.0`
-LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
-SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
+CPPFLAGS += `pkg-config --cflags glib-2.0`
+LDFLAGS += `pkg-config --libs-only-L glib-2.0` -lldap -lcrypto
+LDLIBS += `pkg-config --libs-only-l glib-2.0`
+#LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
+#SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
 shared_SOURCES =
 
 libs:	libailsaldap.a
 
-libailsaldap.a:	libailsaldap.a(common.o)
+libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o)
 
 libailsaldap.a(common.o):	common.o
+	$(AR) $(ARFLAGS) $@ $<
+
+libailsaldap.a(password.o):	password.o
 	$(AR) $(ARFLAGS) $@ $<
 
 .PHONY:	clean

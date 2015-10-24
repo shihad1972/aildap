@@ -6,57 +6,16 @@
 CC = gcc
 RM = rm -f
 ECHO = echo
-CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
-CPPFLAGS += -I../include/
-PCFLAGS = -DLDAP_DEPRECATED
-GCFLAGS = `pkg-config --cflags glib-2.0`
-GLDFLAGS = `pkg-config --libs-only-L glib-2.0`
-GLIBS = `pkg-config --libs-only-l glib-2.0`
-LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
-SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
+CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g -DLDAP_DEPRECATED
+CPPFLAGS += -I../include/ `pkg-config --cflags glib-2.0`
+LDFLAGS = -L../lib `pkg-config --libs-only-L glib-2.0`
+LDLIBS = -lailsaldap -lldap -lcrypto `pkg-config --libs-only-l glib-2.0`
 bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb lck lcou lcsudo
-shared_SOURCES = ldap-rep.c
-lcdb_SOURCES = lcdb.c $(shared_SOURCES) base-sha.c
-lcs_SOURCES = lcs.c $(shared_SOURCES)
-lcc_SOURCES = lcc.c $(shared_SOURCES)
-lcg_SOURCES = lcg.c $(shared_SOURCES)
-lck_SOURCES = lck.c $(shared_SOURCES)
-lcou_SOURCES = lcou.c $(shared_SOURCES)
-lcsudo_SOURCES = lcsudo.c $(shared_SOURCES)
-lcr_SOURCES = lcr.c $(shared_SOURCES) base-sha.c
-user_SOURCES = lcu.c $(shared_SOURCES) base-sha.c
 
 
 all:	$(bin_PROGRAMS)
 
 bin:	$(bin_PROGRAMS)
-
-lcc:	$(lcc_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcc_SOURCES)
-
-lcs:	$(lcs_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcs_SOURCES)
-
-lcr:	$(lcr_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(lcr_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-lcg:	$(lcg_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcg_SOURCES)
-
-lck:	$(lck_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lck_SOURCES)
-
-lcou:	$(lcou_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcou_SOURCES)
-
-lcu:	$(user_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(user_SOURCES) $(SLDFLAGS) $(GLIBS)
-
-lcsudo:	$(lcsudo_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(lcsudo_SOURCES)
-
-lcdb:	$(lcdb_SOURCES)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(GCFLAGS) -o $@ $(lcdb_SOURCES) $(SLDFLAGS) $(GLIBS)
 
 clean:
 	$(RM) *.o $(bin_PROGRAMS) *.ldif ../*.ldif
