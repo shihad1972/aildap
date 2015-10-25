@@ -236,6 +236,15 @@ add_trailing_slash(char *member);
 char *
 getPassword(const char *message);
 
+void
+rep_err(const char *error);
+
+void
+split_name(inp_data_s *data);
+
+void
+output_ldif(inp_data_s *data);
+
 # ifdef HAVE_OPENSSL
 char *
 get_ldif_pass_hash(char *pass);

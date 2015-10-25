@@ -235,7 +235,7 @@ sudoRunAsGroup: %s\n\
 }
 
 void
-output_ldif(lcsudo_s *sudo)
+output_sudo_ldif(lcsudo_s *sudo)
 {
 	char *dn = 0;
 	FILE *out;
@@ -286,7 +286,7 @@ main(int argc, char *argv[])
 	init_lcsudo_data_struct(sudo);
 	if ((retval = parse_command_line(argc, argv, sudo)) != 0)
 		return retval;
-	output_ldif(sudo);
+	output_sudo_ldif(sudo);
 	clean_lcsudo_data(sudo);
 	return 0;
 }
