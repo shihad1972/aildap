@@ -17,10 +17,10 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- *  base-sha.c
+ *  password.c
  * 
  *  Contains the sha function for generating passwords for slapd
- *  and also various other functions
+ *  and also various other functions. Part fo the ailsaldap library
  * 
  */
 
