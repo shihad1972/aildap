@@ -10,5 +10,5 @@ if HAVE_OLD
   OLD_DIR = old
 endif
 SUBDIRS = lib src man $(OLD_DIR)
-DIST_SUBDIRS = lib src man old
+EXTRA_DIST = lib src man old
 ACLOCAL_AMFLAGS = -I m4
