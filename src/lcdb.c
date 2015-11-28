@@ -133,12 +133,10 @@ olcDbConfig: set_cachesize 0 2097152 0\n\
 olcDbConfig: set_lk_max_objects 1500\n\
 olcDbConfig: set_lk_max_locks 1500\n\
 olcDbConfig: set_lk_max_lockers 1500\n\
-olcDbIndex: default pres,eq\n\
-olcDbIndex: uid\n\
-olcDbIndex: cn,sn pres,eq,sub\n\
-olcDbIndex: objectClass eq\n\
-olcDbIndex: uniqueMember eq\n\
-olcDbIndex: uidNumber,gidNumber pres,eq\n");
+olcDbIndex: default sub\n\
+olcDbIndex: uidNumber,gidNumber pres,eq\n\
+olcDbIndex: uid,cn,sn pres,eq,sub\n\
+olcDbIndex: memberUid,uniqueMember,objectClass eq\n");
 	if (out != stdout)
 		fclose(out);
 }
