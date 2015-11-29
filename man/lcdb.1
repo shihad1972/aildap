@@ -1,10 +1,11 @@
-.TH LCDB 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.TH LCDB 1 "Version 0.1: November 29 2015" "Collection of ldap utilities" "ldap collection"
 .SH NAME
 lcdb \- LDAP create database.
 .SH SYNOPSIS
 .B lcdb
-.B "-d domain"
 .B "-a admin-user"
+.B "-d domain"
+.B "-t db-type"
 [
 .B "-p path"
 ] [
@@ -24,11 +25,13 @@ See \fBlcr(1)\fP for more details.
 \fBlcdb\fP will also ask you for the root DN password, and you will not be
 allowed to provide an empty password.
 .SH OPTIONS
-.IP "-d domain"
-Specify the DNS name of the domain to be the base DN for the directory.
 .IP "-a admin-user"
 Specify the username of the admin user who will be the root DN for this branch
 of the directory.
+.IP "-d domain"
+Specify the DNS name of the domain to be the base DN for the directory.
+.IP "-t db-type"
+Specify the backend database type. Currently either mdb or hdb.
 .IP "-p path"
 Specify an alternative path for the database files to reside. This directory
 must exist and be writable be the openldap user.

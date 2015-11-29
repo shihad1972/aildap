@@ -56,7 +56,7 @@ typedef struct lcsudo_s {
 
 typedef struct lcdb_s {
 	char *domain, *admin, *pass, *phash, *dir;
-	short int file;
+	short int file, type;
 } lcdb_s;
 
 typedef struct cert_s {
@@ -96,6 +96,7 @@ enum {
 	CALONG,
 	NOOU,
 	MODIFY,
+	NOTYPE,
 	FILE_O_FAIL = 16,
 	GROUP = 16,
 	NAME = 32,
@@ -116,6 +117,11 @@ enum {
 	MEM = 300,
 	BUFF = 512,
 	BBUFF = 1024
+};
+
+enum {
+	HDB = 1,
+	MDB = 2
 };
 
 #ifndef MALLOC_DATA_MEMBER

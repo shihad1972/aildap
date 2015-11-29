@@ -80,7 +80,7 @@ rep_usage(const char *prog)
 	else if (strstr(prog, "lck"))
 		fprintf(stderr, "-h hostname -r realm\n");
 	else if (strstr(prog, "lcdb"))
-		fprintf(stderr, "-a admin-user -d domain [ -p path ] [ -f ]\n");
+		fprintf(stderr, "-a admin-user -d domain -t db-type [ -p path ] [ -f ]\n");
 	else if (strstr(prog, "lcsudo"))
 		fprintf(stderr, "\
 -d domain ( -g group | -u user ) -o command -h host\n\

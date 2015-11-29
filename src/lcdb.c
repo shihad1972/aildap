@@ -41,19 +41,29 @@ parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)
 
 	if (!(data))
 		return ONE;
-	while ((opt = getopt(argc, argv, "a:d:p:f")) != -1) {
-		if (opt == 'a')
+	while ((opt = getopt(argc, argv, "a:d:p:ft:")) != -1) {
+		if (opt == 'a') {
 			check_snprintf(data->admin, NAME, optarg, "data->admin");
-		else if (opt == 'd')
+		} else if (opt == 'd') {
 			check_snprintf(data->domain, DOMAIN, optarg, "data->domain");
-		else if (opt == 'p')
+		} else if (opt == 'p') {
 			check_snprintf(data->dir, DOMAIN, optarg, "data->dir");
-		else if (opt == 'f')
+		} else if (opt == 'f') {
 			data->file = 1;
+		} else if (opt == 't') {
+			if (strncmp(optarg, "hdb", DB) == 0)
+				data->type = HDB;
+			else if (strncmp(optarg, "mdb", DB) == 0)
+				data->type = MDB;
+		}
 	}
 	if ((strlen(data->admin) == 0) || (strlen(data->domain) == 0)) {
 		rep_usage(argv[0]);
 		return WARG;
+	}
+	if (data->type == 0) {
+		fprintf(stderr, "Invalid or missing database type\n");
+		retval = NOTYPE;
 	}
 	return retval;
 }
@@ -94,41 +104,38 @@ output_db_ldif(lcdb_s *data)
 	} else {
 		out = stdout;
 	}
+	if (data->type == HDB) {
+		fprintf(out, "\
+# %s domain, hdb, config\n\
+dn: olcDatabase=hdb,cn=config\n\
+objectClass: olcDatabaseConfig\n\
+objectClass: olcHdbConfig\n\
+olcDatabase: hdb\n", dom);
+	} else if (data->type == MDB) {
+		fprintf(out, "\
+# %s domain, mdb, config\n\
+dn: olcDatabase=mdb,cn=config\n\
+objectClass: olcDatabaseConfig\n\
+objectClass: olcMdbConfig\n\
+olcDatabase: mdb\n", dom);
+	}
+	fprintf(out, "\
+olcDbDirectory: %s\n\
+olcSuffix: %s\n\
+olcAccess: to attrs=userPassword,shadowLastChange by self write by \
+anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
+olcAccess: to dn.base="" by * read\n\
+olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
+olcRootDN: cn=%s,%s\n", dir, ldf, adm, ldf, adm, ldf, adm, ldf);
 #ifdef HAVE_OPENSSL
-	fprintf(out, "\
-# %s domain, hdb, config\n\
-dn: olcDatabase=hdb,cn=config\n\
-objectClass: olcDatabaseConfig\n\
-objectClass: olcHdbConfig\n\
-olcDatabase: hdb\n\
-olcDbDirectory: %s\n\
-olcSuffix: %s\n\
-olcAccess: to attrs=userPassword,shadowLastChange by self write by \
-anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
-olcAccess: to dn.base="" by * read\n\
-olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
-olcRootDN: cn=%s,%s\n\
-olcRootPW: {SSHA}%s\n",
-dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, hsh);
+	fprintf(out, "olcRootPW: {SSHA}%s\n", hsh);
 #else
-	fprintf(out, "\
-# %s domain, hdb, config\n\
-dn: olcDatabase=hdb,cn=config\n\
-objectClass: olcDatabaseConfig\n\
-objectClass: olcHdbConfig\n\
-olcDatabase: hdb\n\
-olcDbDirectory: %s\n\
-olcSuffix: %s\n\
-olcAccess: to attrs=userPassword,shadowLastChange by self write by \
-anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
-olcAccess: to dn.base="" by * read\n\
-olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
-olcRootDN: cn=%s,%s\n\
-olcRootPW: %s\n",
-dom, dir, ldf, adm, ldf, adm, ldf, adm, ldf, pass);
+	fprintf(out, "olcRootPW: %s\n", pass);
 #endif /* HAVE_OPENSSL */
 	fprintf(out, "\
-olcDbCheckpoint: 512 30\n\
+olcDbCheckpoint: 512 30\n");
+	if (data->type == HDB) {
+		fprintf(out, "\
 olcDbConfig: set_cachesize 0 2097152 0\n\
 olcDbConfig: set_lk_max_objects 1500\n\
 olcDbConfig: set_lk_max_locks 1500\n\
@@ -137,6 +144,16 @@ olcDbIndex: default sub\n\
 olcDbIndex: uidNumber,gidNumber pres,eq\n\
 olcDbIndex: uid,cn,sn pres,eq,sub\n\
 olcDbIndex: memberUid,uniqueMember,objectClass eq\n");
+	} else if (data->type == MDB) {
+		fprintf(out, "\
+olcDbIndex: default sub\n\
+olcDbIndex: uidNumber,gidNumber pres,eq\n\
+olcDbIndex: uid,cn,sn pres,eq,sub\n\
+olcDbIndex: memberUid,uniqueMember,objectClass eq\n\
+olcDbMaxSize: 1073741824\n");
+	} else {
+		fprintf(stderr, "No database type??");
+	}
 	if (out != stdout)
 		fclose(out);
 }
