@@ -124,7 +124,7 @@ olcDbDirectory: %s\n\
 olcSuffix: %s\n\
 olcAccess: to attrs=userPassword,shadowLastChange by self write by \
 anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
-olcAccess: to dn.base="" by * read\n\
+olcAccess: to dn.base=\"\" by * read\n\
 olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
 olcRootDN: cn=%s,%s\n", dir, ldf, adm, ldf, adm, ldf, adm, ldf);
 #ifdef HAVE_OPENSSL
