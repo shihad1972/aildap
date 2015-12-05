@@ -153,10 +153,12 @@ output_ldif(inp_data_s *data)
 	ldom = get_ldif_domain(data->dom);
 /*	name = get_ldif_user(data); */
 	name = data->uname;
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_GLIB
+# ifdef HAVE_OPENSSL
 	if (data->np ==  0)
 		phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
@@ -177,10 +179,12 @@ uidNumber: %hd\n\
 homeDirectory: /home/%s\n\
 ", name, data->dom, name, ldom, name, data->sur, data->fname, data->name, 
 data->user, name);
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_GLIB
+# ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
-#endif /* HAVE_OPENSSL */
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
 	printf("gecos: %s %s\n", data->fname, data->sur);
 	printf("mail: %s@%s\n", name, data->dom);
 	if (data->gr > NONE)
@@ -205,7 +209,8 @@ gidNumber: 100\n\
 		free(phash);
 }
 
-#ifdef HAVE_OPENSSL
+#ifdef HAVE_GLIB
+# ifdef HAVE_OPENSSL
 char *
 get_ldif_pass_hash(char *pass)
 {
@@ -243,7 +248,8 @@ get_ldif_pass_hash(char *pass)
 	return npass;
 }
 
-#endif /* HAVE_OPENSSL */
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
 /*
 int
 hex_conv(const char *pass, guchar *out)
