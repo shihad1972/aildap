@@ -1,6 +1,24 @@
-AM_CPPFLAGS = -I$(top_srcdir)/include/ $(LDAP_CFLAGS) $(OPENSSL_INCLUDES) $(GLIB_CFLAGS)
-AM_LDFLAGS = $(LDAP_LDFLAGS) $(OPENSSL_LDFLAGS) $(GLIB_LDFLAGS)
-LIBS = $(OPENSSL_LIBS)
+AM_CPPFLAGS = -I$(top_srcdir)/include/
+AM_LDFLAGS = 
+
+if HAVE_LDAP
+AM_CPPFLAGS += $(LDAP_CFLAGS)
+AM_LDFLAGS +=  $(LDAP_LDFLAGS)
+LIBS += $(LDAP_LIBS)
+endif
+
+if HAVE_OPENSSL 
+AM_CPPFLAGS += $(OPENSSL_INCLUDES)
+AM_LDFLAGS += $(OPENSSL_LDFLAGS)
+LIBS += $(OPENSSL_LIBS)
+endif
+
+if HAVE_GLIB 
+AM_CPPFLAGS += $(GLIB_CFLAGS)
+AM_LDFLAGS += $(GLIB_LDFLAGS)
+LIBS += $(GLIB_LIBS)
+endif
+
 lib_LTLIBRARIES = libailsaldap.la
 libailsaldap_la_SOURCES = common.c password.c
 include_HEADERS = ../include/ailsaldap.h

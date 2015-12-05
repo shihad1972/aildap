@@ -37,14 +37,12 @@ AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
 AX_LIB_LDAP
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0],
-  [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
-], [AC_MSG_RESULT([No glib-2.0])])
+PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], [AC_MSG_RESULT([No glib-2.0])])
 
 AX_CHECK_OLD
 AX_CHECK_DAM
 
-AM_CONDITIONAL([HAVE_GLIB], [$HAVE_GLIB])
+AM_CONDITIONAL([HAVE_GLIB], [test x"$HAVE_GLIB" = xtrue])
 AM_CONDITIONAL([HAVE_LIBLDAP], [test x"$HAVE_LIBLDAP" = xtrue])
 AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
 AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
