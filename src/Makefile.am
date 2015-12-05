@@ -7,7 +7,7 @@ AM_LDFLAGS = -L../lib
 LIBS += -lailsaldap
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
 
-if HAVE_LDAP
+if HAVE_LIBLDAP
 AM_CPPFLAGS += $(LDAP_CFLAGS)
 AM_LDFLAGS +=  $(LDAP_LDFLAGS)
 LIBS += $(LDAP_LIBS)
