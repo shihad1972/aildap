@@ -183,6 +183,9 @@ data->user, name);
 # ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
+# else
+	if (data->np == 0)
+		printf("userPassword: %s\n", data->pass);
 # endif /* HAVE_OPENSSL */
 #endif /* HAVE_GLIB */
 	printf("gecos: %s %s\n", data->fname, data->sur);
