@@ -10,7 +10,6 @@ bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
 if HAVE_GLIB
 AM_CFLAGS += $(GLIB_CFLAGS)
 AM_LDFLAGS += $(GLIB_LDFLAGS)
-LIBS += -lglib-2.0
 endif
 
 if HAVE_OPENSSL

@@ -34,11 +34,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h> 
-#include <glib.h>
-#ifdef HAVE_OPENSSL
-# include <openssl/evp.h>
-# include <openssl/sha.h>
-#endif
+#ifdef HAVE_GLIB
+# include <glib.h>
+# ifdef HAVE_OPENSSL
+#  include <openssl/evp.h>
+#  include <openssl/sha.h>
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
 #include <ailsaldap.h>
 
 void

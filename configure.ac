@@ -39,7 +39,7 @@ AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0],
   [AC_DEFINE([HAVE_GLIB], [1], [glib-2.0 found])
-])
+], [AC_MSG_RESULT([No glib-2.0])])
 
 AX_CHECK_OLD
 AX_CHECK_DAM
