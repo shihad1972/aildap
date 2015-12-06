@@ -21,4 +21,4 @@ endif
 
 lib_LTLIBRARIES = libailsaldap.la
 libailsaldap_la_SOURCES = common.c password.c
-include_HEADERS = ../include/ailsaldap.h
+include_HEADERS = $(top_srcdir)/include/ailsaldap.h

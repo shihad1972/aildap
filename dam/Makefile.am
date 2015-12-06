@@ -9,7 +9,7 @@ PCFLAGS = -DLDAP_DEPRECATED
 
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
-AM_CPPFLAGS = -I../include/
+AM_CPPFLAGS = -I$(top_srcdir)/include/
 
 if HAVE_LIBLDAP
 lct_CFLAGS += $(PCFLAGS)

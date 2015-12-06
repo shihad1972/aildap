@@ -3,7 +3,7 @@
 
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I$(top_srcdir)/include/
-AM_LDFLAGS = -L../lib
+AM_LDFLAGS = -L$(top_srcdir)/lib
 LIBS += -lailsaldap
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo
 

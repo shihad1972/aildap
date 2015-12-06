@@ -7,7 +7,7 @@ PCFLAGS = -DLDAP_DEPRECATED
 
 AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_LDFLAGS =
-AM_CPPFLAGS = -I../include/
+AM_CPPFLAGS = -I$(top_srcdir)/include/
 
 shared_SOURCES = ldap-rep.c
 sha_SOURCES = sha.c
