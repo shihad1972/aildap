@@ -59,6 +59,12 @@ typedef struct lcdb_s {
 	short int file, type;
 } lcdb_s;
 
+typedef struct lcdhcp_s {
+	char *basedn, *bfile, *bserver, *ether, *cont, *ddns, *dn, *domain;
+	char *gw, *ipaddr, *name, *netb, *netm, *ou, *filename;
+	short int action, boot;
+} lcdhcp_s;
+
 typedef struct cert_s {
 	char *hostname, *ca;
 	short int action;
@@ -111,7 +117,7 @@ enum {
 enum {
 	DECIMAL = 10,
 	SURNAMEL = 31,
-	SURNAME= 32,
+	SURNAME = 32,
 	USERL = 127,
 	USER = 128,
 	MEM = 300,
@@ -122,6 +128,11 @@ enum {
 enum {
 	HDB = 1,
 	MDB = 2
+};
+
+enum {
+	ACT_HELP = 1,
+	ACT_VERSION = 2
 };
 
 #ifndef MALLOC_DATA_MEMBER
@@ -135,9 +146,6 @@ enum {
 # define CLEAN_DATA_MEMBER(mem) {                                   \
 	if (data->mem) {                                            \
 		free(data->mem);                                    \
-	} else {                                                    \
-		fprintf(stderr, "data->mem does not exist??\n");    \
-		exit (MEM);                                         \
 	}                                                           \
 }
 #endif /* CLEAN_DATA_MEMBER */
@@ -221,6 +229,12 @@ init_lcsudo_data_struct(lcsudo_s *data);
 void
 clean_lcsudo_data(lcsudo_s *data);
 
+void
+init_lcdhcp_data_struct(lcdhcp_s *data);
+
+void
+clean_lcdhcp_data(lcdhcp_s *data);
+
 char *
 get_ldif_domain(char *dom);
 
@@ -250,6 +264,9 @@ split_name(inp_data_s *data);
 
 void
 output_ldif(inp_data_s *data);
+
+void
+output_version(const char *name);
 
 # ifdef HAVE_OPENSSL
 char *
