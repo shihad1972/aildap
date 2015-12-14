@@ -51,7 +51,8 @@ enum {
  *
  * These are prefixed with dp_
  */
-const char *dp_ser = "objectClass: dhcpService";
+const char *dp_service = "objectClass: dhcpService";
+const char *dp_server = "objectClass: dhcpServer";
 const char *dp_shr_net = "objectClass: dhcpSharedNetwork";
 const char *dp_opt = "objectClass: dhcpOptions";
 const char *dp_subnet = "objectClass: dhcpSubnet";
@@ -65,8 +66,11 @@ const char *dp_host = "objectClass: dhcpHost";
  * These are prefixed with dh_
  */
 const char *dh_mac = "dhcpHWAddress";
-const char *dh_stmt = "dhcpStaements";
+const char *dh_stmt = "dhcpStatements";
 const char *dh_opt = "dhcpOption";
+const char *dh_serv_dn = "dhcpServiceDN";
+const char *dh_pri_dn = "dhcpPrimaryDN";
+const char *dh_netmask = "dhcpNetMask";
 
 /*
  * Static functions in this file. Add ALL functions within this file here.
@@ -85,6 +89,12 @@ report_lcdhcp_error(const char *who, const char *what);
 
 static void
 output_dhcp_host_ldif(lcdhcp_s *data);
+
+static void
+output_dhcp_server_ldif(lcdhcp_s *data);
+
+static void
+output_dhcp_network_ldif(lcdhcp_s *data);
 
 int
 main (int argc, char *argv[])
@@ -111,6 +121,10 @@ main (int argc, char *argv[])
 		report_lcdhcp_help();
 	else if (dhcp->action == ACT_HOST)
 		output_dhcp_host_ldif(dhcp);
+	else if (dhcp->action == ACT_SERVER)
+		output_dhcp_server_ldif(dhcp);
+	else if (dhcp->action == ACT_NET)
+		output_dhcp_network_ldif(dhcp);
 	cleanup:
 		clean_lcdhcp_data(dhcp);
 		return retval;
@@ -228,6 +242,11 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		return NODATA;
 	if (data->action == ACT_HELP || data->action == ACT_VERSION)
 		return retval;
+	if (data->action == 0) {
+		who = "all";
+		what = "action";
+		goto cleanup;
+	}
 	if (!(data->basedn)) {
 		who = "all";
 		what = "basedn";
@@ -289,14 +308,22 @@ Usage: lcdhcp ACTION OPTIONS. See man page lcdhcp(1) for details\n");
 static void
 report_lcdhcp_error(const char *who, const char *what)
 {
+	const char *determiner;
+	const char *vowel;
 	if (!(who) || !(what))
 		return;
-	else if (strncmp(who, "all", 4) == 0)
+	vowel = what;
+	if (*vowel == 'a' || *vowel == 'e' || *vowel == 'i' || *vowel == 'o' ||
+	    *vowel == 'u')
+		determiner = "an";
+	else
+		determiner = "a";
+	if (strncmp(who, "all", 4) == 0)
 		fprintf(stderr, "\
-Adding any configuration needs a %s\n", what);
+Adding any configuration needs %s %s\n", determiner, what);
 	else
 		fprintf(stderr, "\
-Adding a %s configuration needs a %s\n", who, what);
+Adding a %s configuration needs %s %s\n", who, determiner, what);
 }
 
 static void
@@ -307,8 +334,10 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 	if (!(data))		// Sanity check
 		return;
 	if (data->filename) {
-		if (!(out =  fopen(data->filename, "w")))
+		if (!(out =  fopen(data->filename, "w"))) {
 			fprintf(stderr, "Cannot open %s for reading!\n", data->filename);
+			out = stdout;
+		}
 	} else {
 		out = stdout;
 	}
@@ -320,16 +349,113 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 # %s, %s, %s\n\
 dn: cn=%s,cn=%s,%s\n\
 cn: %s\n\
-objectClass: top\n\
+%s\n\
 %s\n\
 %s\n\
 %s: ethernet %s\n\
 %s: fixed-address %s\n\
 %s: domain-name \"%s\"\n",
 data->name, container, data->basedn, data->name, container, data->dn,
-data->name, dp_shr_net, dp_opt, dh_mac, data->ether, dh_stmt, data->ipaddr,
-dh_stmt, data->domain);
+data->name, obcl_top, dp_shr_net, dp_opt, dh_mac, data->ether, dh_stmt,
+data->ipaddr, dh_stmt, data->domain);
 	if (out != stdout)
 		fclose(out);
 	free(container);
 }
+
+static void
+output_dhcp_server_ldif(lcdhcp_s *data)
+{
+	FILE *out;
+	char *container;
+	if (!(data))		// Sanity check
+		return;
+	if (data->filename) {
+		if (!(out = fopen(data->filename, "w"))) {
+			fprintf(stderr, "Cannot open %s for writing!\n", data->filename);
+			out = stdout;
+		}
+	} else {
+		out = stdout;
+	}
+	if (data->cont)
+		container = strndup(data->cont, NAME - 1);
+	else
+		container = strndup("dhcp", NAME - 1);
+	fprintf(out, "\
+# %s, %s\n\
+dn: cn=%s,%s\n\
+cn: %s\n\
+%s\n\
+%s\n\
+%s: cn=%s,%s\n\n",
+data->name, data->basedn, data->name, data->dn,
+data->name, obcl_top, dp_server, dh_serv_dn, container, data->dn);
+/*
+ * Need to do some testing for booting and also ddns style
+ */
+	fprintf(out, "\
+# %s, %s\n\
+dn: cn=%s,%s\n\
+cn: %s\n\
+%s\n\
+%s\n\
+%s: cn=%s,%s\n\
+%s: allow booting\n\
+%s: allow bootp\n\
+%s: ddns-update-style none\n",
+container, data->basedn, container, data->dn, container, obcl_top, dp_service,
+dh_pri_dn, data->name, data->dn, dh_stmt, dh_stmt, dh_stmt);
+	if (out != stdout)
+		fclose(out);
+	free(container);
+}
+
+static void
+output_dhcp_network_ldif(lcdhcp_s *data)
+{
+	FILE *out;
+	char *container;
+	if (!(data))		// Sanity check
+		return;
+	if (data->filename) {
+		if (!(out = fopen(data->filename, "w"))) {
+			fprintf(stderr, "Cannot open %s for writing!\n", data->filename);
+			out = stdout;
+		}
+	} else {
+		out = stdout;
+	}
+	if (data->cont)
+		container = strndup(data->cont, NAME - 1);
+	else
+		container = strndup("dhcp", NAME - 1);
+	fprintf(out, "\
+# %s, %s, %s\n\
+dn: cn=%s,cn=%s,%s\n\
+cn: %s\n\
+%s\n\
+%s\n\
+%s\n\
+%s: domain-name-servers %s\n\
+%s: domain-search \"%s\"\n\
+%s: routers %s\n\n", data->domain, container, data->dn, data->domain,
+container, data->dn, data->domain, obcl_top, dp_shr_net, dp_opt, dh_opt,
+data->ipaddr, dh_opt, data->domain, dh_opt, data->gw);
+	fprintf(out, "\
+# %s, %s, %s, %s\n\
+dn: cn=%s,cn=%s,cn=%s,%s\n\
+cn: %s\n\
+%s\n\
+%s\n\
+%s: %s\n\
+%s: authoratative\n\
+%s: next-server %s\n\
+%s: filename \"pxelinux.0\"\n", data->netb, data->domain, container, data->dn,
+data->netb, data->domain, container, data->dn, data->netb, obcl_top, dp_subnet,
+dh_netmask, data->netm, dh_stmt, dh_stmt, data->ipaddr, dh_stmt);
+	if (out != stdout)
+		fclose(out);
+	free(container);
+}
+

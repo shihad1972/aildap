@@ -86,6 +86,17 @@ typedef struct inp_data_s {
 	char *dom, *sur, *name, *uname, *pass, *fname;
 } inp_data_s;
 
+/*
+ * Attempt to declare and define this in a header file.
+ *
+ * See:
+ * http://stackoverflow.com/questions/1433204/how-do-i-use-extern-to-share-variables-between-source-files-in-c
+ *
+ * As this is a const, should be safe that every file that includes this
+ * get's it's own copy of the variable
+ */
+static const char *obcl_top = "objectClass: top";
+
 enum {
 	NONE = 0,
 	ONE,
