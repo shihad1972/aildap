@@ -94,6 +94,9 @@ typedef struct inp_data_s {
  *
  * As this is a const, should be safe that every file that includes this
  * get's it's own copy of the variable
+ *
+ * I do, however, get unused variable warnings in all programs for source
+ * files that do not use the variable.
  */
 static const char *obcl_top = "objectClass: top";
 
