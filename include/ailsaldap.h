@@ -95,10 +95,12 @@ typedef struct inp_data_s {
  * As this is a const, should be safe that every file that includes this
  * get's it's own copy of the variable
  *
- * I do, however, get unused variable warnings in all programs for source
- * files that do not use the variable.
+ * Wrapping in a #define to ensure only programs that want it will get it
+ * exposed. Otherwise, we get unused varaible compiler warnings.
  */
+# ifdef WANT_OBCL_TOP
 static const char *obcl_top = "objectClass: top";
+# endif // WANT_OBCL_TOP
 
 enum {
 	NONE = 0,

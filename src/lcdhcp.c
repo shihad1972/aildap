@@ -35,6 +35,7 @@
 # define _GNU_SOURCE
 # include <getopt.h>
 #endif /* HAVE_GETOPT_H */
+#define WANT_OBCL_TOP	// Expose obcl_top variable
 #include <ailsaldap.h>
 
 enum {
