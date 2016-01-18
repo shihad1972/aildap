@@ -38,6 +38,7 @@ AX_LIB_LDAP
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], [AC_MSG_RESULT([No glib-2.0])])
+AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])])
 
 AX_CHECK_OLD
 AX_CHECK_DAM
