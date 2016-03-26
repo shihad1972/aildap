@@ -395,7 +395,7 @@ clean_lcdhcp_data(lcdhcp_s *data)
 char *
 get_ldif_domain(char *dom)
 {
-	char *ldom, *tmp, *save, *empty = '\0', *buff, *domain;
+	char *ldom, *tmp, *save, *buff, *domain;
 	const char *delim = ".";
 	int c = NONE;
 	size_t len = NONE;
@@ -423,7 +423,7 @@ get_ldif_domain(char *dom)
 	}
 	tmp = strtok_r(domain, delim, &save);
 	sprintf(ldom, "dc=%s", tmp);
-	while ((tmp = strtok_r(empty, delim, &save))) {
+	while ((tmp = strtok_r(NULL, delim, &save))) {
 		sprintf(buff, ",dc=%s", tmp);
 		strcat(ldom, buff);
 	}
@@ -442,16 +442,16 @@ get_ldif_format(char *form, const char *type, const char *delim)
  * e.g. foo,bar,you,me ou -> ou=foo,ou=bar,ou=you,ou=me
  * or my.sub.domain.com dc -> dc=my,dc=sub,dc=domain,dc=com
  */
-	char *ldom, *tmp, *save, *empty = '\0', *buff, *work;
+	char *ldom, *tmp, *save, *buff, *work;
 	int i = 1, c;
 	size_t len = NONE;
 
 	if (!(form) || !(type))
-		return empty;
+		return NULL;
 	if ((c = get_delim(delim)) == 0)
-		return empty;
+		return NULL;
 	if ((len = strlen(form)) == 0)
-		return empty;
+		return NULL;
 	work = strndup(form, len);
 	tmp = work;
 	while ((tmp = strchr(tmp, c))) {
@@ -465,7 +465,7 @@ get_ldif_format(char *form, const char *type, const char *delim)
 		error(MALLOC, errno, "buff in get_ldif_format");
 	tmp = strtok_r(work, delim, &save);
 	sprintf(ldom, "%s=%s", type, tmp);
-	while ((tmp = strtok_r(empty, delim, &save))) {
+	while ((tmp = strtok_r(NULL, delim, &save))) {
 		sprintf(buff, ",%s=%s", type, tmp);
 		strcat(ldom, buff);
 	}
