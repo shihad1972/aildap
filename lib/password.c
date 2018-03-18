@@ -251,6 +251,49 @@ get_ldif_pass_hash(char *pass)
 	return npass;
 }
 
+unsigned char *
+ailsa_hash_string(char *string, const char *type)
+{
+        EVP_MD_CTX *msg;
+	unsigned char *out;
+        const EVP_MD *md;
+        unsigned int md_len;
+
+	if (!(out = calloc(1, DOMAIN)))
+		rep_err("out in ailsa_hash_string");
+	OpenSSL_add_all_digests();
+	md = EVP_get_digestbyname(type);
+        if (!md) {
+                printf("Unknown digest %s!\n", type);
+		free(out);
+                return NULL;
+        }
+	msg = EVP_MD_CTX_create();
+	EVP_DigestInit_ex(msg, md, NULL);
+	EVP_DigestUpdate(msg, string, strlen(string));
+	EVP_DigestFinal_ex(msg, out, &md_len);
+	EVP_MD_CTX_destroy(msg);
+	EVP_cleanup();
+	return out;
+}
+
+int
+output_hex_conversion(unsigned char *string)
+{
+	char *output;
+	int retval = 0;
+	size_t len, i;
+
+	len = strlen((char *)string);
+	if (!(output = calloc(1, DOMAIN)))
+		rep_err("output in output_hex_conversion");
+	for (i = 0; i < len; i++)
+		printf("%x: ", string[i]);
+	printf("\n");
+	free(output);
+	return retval;
+}
+
 # endif /* HAVE_OPENSSL */
 #endif /* HAVE_GLIB */
 /*
