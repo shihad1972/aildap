@@ -98,6 +98,8 @@ rep_usage(const char *prog)
 		fprintf(stderr, "\
 -p: do not ask for a password\n");
 #endif /* HAVE_OPENSSL */
+	} else if (strstr(prog, "hh")) {
+		fprintf(stderr, "[ -n hostname ]\n");
 	}
 }
 

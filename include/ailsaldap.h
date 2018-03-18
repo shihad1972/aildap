@@ -288,5 +288,11 @@ output_version(const char *name);
 char *
 get_ldif_pass_hash(char *pass);
 
+unsigned char *
+ailsa_hash_string(char *string, const char *type);
+
+int
+output_hex_conversion(unsigned char *string);
+
 # endif //HAVE_OPENSSL
 #endif // HAVE_AILSA_LDAP_H
