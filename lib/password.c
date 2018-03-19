@@ -254,10 +254,10 @@ get_ldif_pass_hash(char *pass)
 unsigned char *
 ailsa_hash_string(char *string, const char *type)
 {
-        EVP_MD_CTX *msg;
+	EVP_MD_CTX *msg;
 	unsigned char *out;
-        const EVP_MD *md;
-        unsigned int md_len;
+	const EVP_MD *md;
+	unsigned int md_len;
 
 	if (!(out = calloc(1, DOMAIN)))
 		rep_err("out in ailsa_hash_string");

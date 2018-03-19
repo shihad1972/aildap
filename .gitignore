@@ -2,3 +2,5 @@ Makefile
 */Makefile
 include/config.h
 *.swp
+*.o
+*.a
