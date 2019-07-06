@@ -12,7 +12,11 @@ lcu \- LDAP create user.
 .B -l
 ] [
 .B -p
-]
+] [
+.B -U
+users OU ] [
+.B -G
+group OU ]
 .SH DESCRIPTION
 \fBlcu\fP will create ldif suitable for an \fIRFC 2307\fP user.
 You must specify the base domain for the branch of the directory, the full
@@ -35,6 +39,10 @@ Specify the full name of the user.
 Specify the uid of the user.
 .IP "-g gid"
 Specify the gid of the user.
+.IP "-G group OU"
+Specify the name of the group OU. This defaults to 'group'
+.IP "-U users OU"
+Specify the name of the users OU. This defaults to 'people'
 .IP -l
 Create the long version of the username.
 .IP -p

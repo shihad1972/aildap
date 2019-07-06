@@ -24,7 +24,7 @@ LT_INIT
 AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h termios.h unistd.h getopt.h])
+AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h termios.h unistd.h getopt.h error.h errno.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
