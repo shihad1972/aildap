@@ -134,6 +134,8 @@ clean_lcu_data(inp_data_s *data)
 		CLEAN_DATA_MEMBER(name)
 		CLEAN_DATA_MEMBER(uname)
 		CLEAN_DATA_MEMBER(fname)
+		CLEAN_DATA_MEMBER(gou);
+		CLEAN_DATA_MEMBER(uou);
 		free(data);
 	}
 }

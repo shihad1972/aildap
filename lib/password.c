@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <error.h>
+#include <errno.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -57,6 +59,8 @@ split_name(inp_data_s *data)
 	int c = NONE, len = NONE; /* c counts names */
 	unsigned char f = NONE, s = NONE; /* first letter of (f)irst and (s)urname */
 
+	if (!(data->uname = calloc(SURNAME, sizeof(char))))
+		error(MALLOC, errno, "data->uname in split_name");
 	work = strndup(data->name, USERL);
 	tmp = work;
 	while ((tmp = strchr(tmp, ' '))) {
@@ -73,24 +77,20 @@ split_name(inp_data_s *data)
 		tmp = strchr(tmp, ' ');
 		*tmp = '\0';
 		tmp++;
-		if ((len = snprintf(data->fname, SURNAME, "%s", work)) > SURNAME)
-			fprintf(stderr, "First name truncated by %d!\n",
-				(len - SURNAME) + 1);
-		if ((len = snprintf(data->sur, SURNAME, "%s", tmp)) > SURNAME)
-			fprintf(stderr, "Surname Truncated by %d!\n",
-				(len - SURNAME) + 1);
+		if (!(data->fname = strndup(work, SURNAME)))
+			error(MALLOC, errno, "data->fname");
+		if (!(data->sur = strndup(tmp, SURNAME)))
+			error(MALLOC, errno, "data->sur");
 	} else { /* We have a middle name */
 		tmp = strchr(tmp, ' ');
 		*tmp = '\0';
 		tmp++;
-		if ((len = snprintf(data->fname, SURNAME, "%s", work)) > SURNAME)
-			fprintf(stderr, "First name truncated by %d!\n",
-				(len - SURNAME) + 1);
+		if (!(data->fname = strndup(work, SURNAME)))
+			error(MALLOC, errno, "data->fname");
 		while ((tmp = strchr(tmp, ' ')))
 			pos = ++tmp;
-		if ((len = snprintf(data->sur, SURNAME, "%s", pos)) > SURNAME)
-			fprintf(stderr, "Surname truncated by %d\n",
-				(len = SURNAME) + 1);
+		if (!(data->sur = strndup(tmp, SURNAME)))
+			error(MALLOC, errno, "data->sur");
 	}
 	pos = data->sur;
 	pos++;
@@ -149,10 +149,14 @@ void
 output_ldif(inp_data_s *data)
 {
 	char *name, *ldom, *phash = '\0';
+	const char *uou = "people", *gou = "group";
 
 	ldom = get_ldif_domain(data->dom);
-/*	name = get_ldif_user(data); */
 	name = data->uname;
+	if (data->uou)
+		uou = data->uou;
+	if (data->gou)
+		gou = data->gou;
 #ifdef HAVE_GLIB
 # ifdef HAVE_OPENSSL
 	if (data->np ==  0)
@@ -162,7 +166,7 @@ output_ldif(inp_data_s *data)
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
-dn: uid=%s,ou=people,%s\n\
+dn: uid=%s,ou=%s,%s\n\
 uid: %s\n\
 sn: %s\n\
 gn: %s\n\
@@ -177,7 +181,7 @@ shadowWarning: 7\n\
 loginShell: /bin/bash\n\
 uidNumber: %hd\n\
 homeDirectory: /home/%s\n\
-", name, data->dom, name, ldom, name, data->sur, data->fname, data->name, 
+", name, data->dom, name, uou, ldom, name, data->sur, data->fname, data->name, 
 data->user, name);
 #ifdef HAVE_GLIB
 # ifdef HAVE_OPENSSL
@@ -195,18 +199,17 @@ data->user, name);
 gidNumber: %hd\n\
 \n\
 # %s, group, %s\n\
-dn: cn=%s,ou=group,%s\n\
+dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 gidNumber: %hd\n\
 objectClass: posixGroup\n\
 objectClass: top\n\
-", data->user, name, data->dom, name, ldom, name, data->user);
+", data->user, name, data->dom, name, gou, ldom, name, data->user);
 	else
 		printf("\
 gidNumber: 100\n\
 \n\
 ");
-	free(name);
 	free(ldom);
 	if (phash)
 		free(phash);

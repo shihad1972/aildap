@@ -32,12 +32,14 @@
 #ifdef HAVE_GETOPT_H
 # include <getopt.h>
 #endif // HAVE_GETOPT_H
+#include <errno.h>
+#include <error.h>
 #include <ailsaldap.h>
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
-	const char *optstr = "d:ghln:pu:v";
+	const char *optstr = "d:ghln:pu:vG:U:";
 	int opt, slen, retval;
 	opt = slen = retval = 0;
 
@@ -52,6 +54,8 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		{"no-password",		no_argument,		NULL,	'p'},
 		{"userid",		required_argument,	NULL,	'u'},
 		{"version", 		no_argument,		NULL,	'v'},
+		{"group-ou",		required_argument,	NULL,	'G'},
+		{"user-ou",		required_argument,	NULL,	'U'},
 		{NULL,			0,			NULL,	0}
 	};
 	while ((opt = getopt_long(argc, argv, optstr, lopts, &index)) != -1) {
@@ -59,7 +63,8 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 	while ((opt = getopt(argc, argv, optstr)) != -1) {
 #endif // HAVE_GETOPT_H
 		if (opt == 'd') {
-			GET_OPT_ARG(dom, DOMAIN, Domain)
+			if (!(data->dom = strndup(optarg, DOMAIN)))
+				error(MALLOC, errno, "data->dom");
 		} else if (opt == 'g') {
 			data->gr = ONE;
 		} else if (opt == 'l') {
@@ -67,7 +72,8 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		} else if (opt == 'p') {
 			data->np = ONE;
 		} else if (opt == 'n') {
-			GET_OPT_ARG(name, USER, Name)
+			if (!(data->name = strndup(optarg, NAME)))
+				error(MALLOC, errno, "data->name");
 		} else if (opt == 'u') {
 			if (optarg)
 				data->user = (short)strtoul(optarg, NULL, DECIMAL);
@@ -79,6 +85,12 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		} else if (opt == 'v') {
 			fprintf(stderr, "%s: %s\n", argv[0], VERSION);
 			exit (0);
+		} else if (opt == 'G') {
+			if (!(data->gou = strndup(optarg, DOMAIN)))
+				error(MALLOC, errno, "data->gou");
+		} else if (opt == 'U') {
+			if (!(data->uou = strndup(optarg, DOMAIN)))
+				error(MALLOC, errno, "data->uou");
 		} else {
 			rep_usage(argv[0]);
 			return ONE;
@@ -109,7 +121,7 @@ main (int argc, char *argv[])
 
 	if (!(data = malloc(sizeof(inp_data_s))))
 		rep_err("data in main");
-	init_lcu_data(data);
+	memset (data, 0, sizeof(inp_data_s));
 	parse_command_line(argc, argv, data);
 	split_name(data);
 	if (data->np == 0) {

@@ -83,7 +83,7 @@ typedef struct cont_s {
 
 typedef struct inp_data_s {
 	unsigned short int gr, lu, user, np;
-	char *dom, *sur, *name, *uname, *pass, *fname;
+	char *dom, *sur, *name, *uname, *pass, *fname, *gou, *uou;
 } inp_data_s;
 
 /*
@@ -162,17 +162,10 @@ enum {
 # define CLEAN_DATA_MEMBER(mem) {                                   \
 	if (data->mem) {                                            \
 		free(data->mem);                                    \
+		data->mem = NULL;                                   \
 	}                                                           \
 }
 #endif /* CLEAN_DATA_MEMBER */
-
-#ifndef GET_OPT_ARG
-# define GET_OPT_ARG(member, LEN, Name) {                                     \
-	if ((slen = snprintf(data->member, LEN, "%s", optarg)) > LEN) {       \
-		fprintf(stderr, "Name truncated by %d\n", (slen - LEN) + 1);  \
-	}                                                                     \
-}
-#endif /* GET_OPT_ARG */
 
 #define PASS_SIZE 100
 
