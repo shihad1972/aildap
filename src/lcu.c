@@ -36,7 +36,7 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
 	int opt = NONE, slen = NONE;
 
-	while ((opt = getopt(argc, argv, "d:gln:pu:")) != -1) {
+	while ((opt = getopt(argc, argv, "d:ghln:pu:v")) != -1) {
 		if (opt == 'd') {
 			GET_OPT_ARG(dom, DOMAIN, Domain)
 		} else if (opt == 'g') {
@@ -52,6 +52,12 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 				data->user = (short)strtoul(optarg, NULL, DECIMAL);
 			else
 				fprintf(stderr, "No userid specified\n");
+		} else if (opt == 'h') {
+			rep_usage(argv[0]);
+			exit (0);
+		} else if (opt == 'v') {
+			fprintf(stderr, "%s: %s\n", argv[0], VERSION);
+			exit (0);
 		} else {
 			rep_usage(argv[0]);
 			return ONE;
