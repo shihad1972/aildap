@@ -29,14 +29,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef HAVE_GETOPT_H
+# include <getopt.h>
+#endif // HAVE_GETOPT_H
 #include <ailsaldap.h>
 
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
-	int opt = NONE, slen = NONE;
+	const char *optstr = "d:ghln:pu:v";
+	int opt, slen, retval;
+	opt = slen = retval = 0;
 
-	while ((opt = getopt(argc, argv, "d:ghln:pu:v")) != -1) {
+#ifdef HAVE_GETOPT_H
+	int index;
+	struct option lopts[] = {
+		{"domain",		required_argument,	NULL,	'd'},
+		{"group",		no_argument,		NULL,	'g'},
+		{"help",		no_argument,		NULL,	'h'},
+		{"long-name",		no_argument,		NULL,	'l'},
+		{"name",		required_argument,	NULL,	'n'},
+		{"no-password",		no_argument,		NULL,	'p'},
+		{"userid",		required_argument,	NULL,	'u'},
+		{"version", 		no_argument,		NULL,	'v'},
+		{NULL,			0,			NULL,	0}
+	};
+	while ((opt = getopt_long(argc, argv, optstr, lopts, &index)) != -1) {
+# else
+	while ((opt = getopt(argc, argv, optstr)) != -1) {
+#endif // HAVE_GETOPT_H
 		if (opt == 'd') {
 			GET_OPT_ARG(dom, DOMAIN, Domain)
 		} else if (opt == 'g') {
