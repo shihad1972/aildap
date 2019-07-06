@@ -92,6 +92,8 @@ parse_hh_command_line(int argc, char *argv[], char **name)
 			retval = ACT_HELP;
 		}
 	}
+	if (!(*name))
+		retval = ACT_HELP;
 	return retval;
 }
 
@@ -114,7 +116,6 @@ output_hash_hostname(char *name)
 		return 1;
 	retval = output_hex_conversion(hash);
 	free(hash);
-	free(name);
 	return retval;
 }
 
