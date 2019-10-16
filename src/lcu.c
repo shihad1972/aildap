@@ -96,11 +96,11 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 			return ONE;
 		}
 	}
-	if (strlen(data->dom) == 0) {
+	if (!(data->dom)) {
 		fprintf(stderr, "No domain specified\n");
 		rep_usage(argv[0]);
 		exit (1);
-	} else if (strlen(data->name) == 0) {
+	} else if (!(data->name)) {
 		fprintf(stderr, "No name specified\n");
 		rep_usage(argv[0]);
 		exit (1);
@@ -126,7 +126,7 @@ main (int argc, char *argv[])
 	split_name(data);
 	if (data->np == 0) {
 		pass = getPassword("Enter password for user: ");
-		snprintf(data->pass, DOMAIN, "%s", pass);
+		data->pass = strndup(pass, DOMAIN);
 		free(pass);
 	}
 	output_ldif(data);
