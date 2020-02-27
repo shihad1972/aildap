@@ -235,7 +235,7 @@ main (int argc, char *argv[])
 		return retval;
 	}
 	if (data->prov == 0)
-		data->pass = getPassword("Enter admin DN password: ");
+		data->pass = getPassword("Enter replication user password: ");
 	if (data->cons == 0)
 		print_provider(data);
 	if (data->prov == 0)
