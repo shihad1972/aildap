@@ -4,3 +4,14 @@ include/config.h
 *.swp
 *.o
 *.a
+src/hh
+src/lcc
+src/lcdb
+src/lcdhcp
+src/lcg
+src/lck
+src/lcou
+src/lcr
+src/lcs
+src/lcsudo
+src/lcu
