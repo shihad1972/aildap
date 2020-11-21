@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            allwaysPull true
+            image 'ldap-provision'
+            registryUrl "https://docker.shihad.org:5000"
+        }
+    }
     stages {
         stage('build') {
             steps {
