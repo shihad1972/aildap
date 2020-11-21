@@ -8,7 +8,7 @@ LIBS += -lailsaldap
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp hh lds
 
 if HAVE_LIBLDAP
-AM_CPPFLAGS += $(LDAP_CFLAGS)
+AM_CPPFLAGS += $(LDAP_CFLAGS) -DLDAP_DEPRECATED
 AM_LDFLAGS +=  $(LDAP_LDFLAGS)
 LIBS += $(LDAP_LIBS)
 endif
