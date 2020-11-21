@@ -285,7 +285,7 @@ unsigned char *
 ailsa_hash_string(char *string, const char *type);
 
 int
-output_hex_conversion(unsigned char *string);
+output_hex_conversion(unsigned char *string, const char *hash);
 
 # endif //HAVE_OPENSSL
 #endif // HAVE_AILSA_LDAP_H

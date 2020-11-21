@@ -281,17 +281,20 @@ ailsa_hash_string(char *string, const char *type)
 }
 
 int
-output_hex_conversion(unsigned char *string)
+output_hex_conversion(unsigned char *string, const char *hash)
 {
 	char *output;
 	int retval = 0;
 	size_t len, i;
 
-	len = strlen((char *)string);
+	if (strncmp(hash, "sha1", 4) == 0)
+		len = 20;
+	else
+		return 1;
 	if (!(output = calloc(1, DOMAIN)))
 		rep_err("output in output_hex_conversion");
 	for (i = 0; i < len; i++)
-		printf("%x: ", string[i]);
+		printf("%02x:", string[i]);
 	printf("\n");
 	free(output);
 	return retval;

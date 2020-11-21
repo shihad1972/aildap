@@ -114,7 +114,7 @@ output_hash_hostname(char *name)
 	}
 	if (!(hash = ailsa_hash_string(name, "sha1")))
 		return 1;
-	retval = output_hex_conversion(hash);
+	retval = output_hex_conversion(hash, "sha1");
 	free(hash);
 	return retval;
 }
