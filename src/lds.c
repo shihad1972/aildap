@@ -82,7 +82,6 @@ main(int argc, char *argv[])
                 dn = NULL;
         }
         ldap_msgfree(res);
-        ldap_msgfree(e);
         ldap_unbind(shihad);
         return retval;
 }
