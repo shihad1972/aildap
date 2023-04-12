@@ -88,7 +88,7 @@ split_name(inp_data_s *data)
 		if (!(data->fname = strndup(work, SURNAME)))
 			error(MALLOC, errno, "data->fname");
 		while ((tmp = strchr(tmp, ' ')))
-			pos = ++tmp;
+			pos = ++tmp;	// This is buggy! Ends in Seg Fault :(
 		if (!(data->sur = strndup(tmp, SURNAME)))
 			error(MALLOC, errno, "data->sur");
 	}
