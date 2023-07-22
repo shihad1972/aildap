@@ -92,8 +92,6 @@ parse_hh_command_line(int argc, char *argv[], char **name)
 			retval = ACT_HELP;
 		}
 	}
-	if (!(*name))
-		retval = ACT_HELP;
 	return retval;
 }
 

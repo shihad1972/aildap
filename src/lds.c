@@ -43,11 +43,11 @@ main(int argc, char *argv[])
         int count;
         int proto = LDAP_VERSION3;
         char *dn = NULL;
-        const char *user = "uid=cmdb,ou=people,dc=shihad,dc=org";
-        const char *host = "ldap://kerberos01.shihad.org:389";
+        const char *user = "cn=cmdb,ou=admins,dc=thargoid,dc=co,dc=uk";
+        const char *host = "ldap://thaldp01.thargoid.co.uk";
         const char *pass = "aiGeeYw5S9z3mnXn8QPM";
-        const char *base_dn = "ou=people,dc=shihad,dc=org";
-        const char *filter = "(sn=Conochie)";
+        const char *base_dn = "dc=thargoid,dc=co,dc=uk";
+        const char *filter = "(ou=thapxe_dhcp)";
         LDAP *shihad = NULL;
         LDAPMessage *res = NULL;
         LDAPMessage *e = NULL;
