@@ -66,8 +66,10 @@ parse_command_line(int argc, char *argv[], lcsudo_s *data)
 	}
 	if (argc == 1)
 		goto cleanup;
-	if (data->action == 0)
+	if (data->action == 0) {
+		fprintf(stderr, "No action provided\n\n");
 		goto cleanup;
+	}
 	if (data->action == INSERT && (strlen(data->domain) == 0 ||
 	   (strlen(data->user) == 0 && strlen(data->group) == 0) ||
 	    strlen(data->com) == 0 || strlen(data->host) == 0))
@@ -81,7 +83,7 @@ parse_command_line(int argc, char *argv[], lcsudo_s *data)
 	   (strlen(data->user) == 0 && strlen(data->group) == 0)))
 		goto cleanup;
 	if (strlen(data->user) > 0 && strlen(data->group) > 0) {
-		fprintf(stderr, "Both user and group supplied\n");
+		fprintf(stderr, "Both user and group supplied\n\n");
 		goto cleanup;
 	}
 	return 0;
