@@ -410,7 +410,7 @@ get_ldif_domain(char *dom)
 	len++;
 	if (!(domain = calloc((len), sizeof(char))))
 		error(MALLOC, errno, "domain in get_ldif_domain");
-	strncpy(domain, dom, len - 1);
+	strcpy(domain, dom);
 	tmp = domain;
 	while ((tmp = strchr(tmp, '.'))) {
 		tmp++;
