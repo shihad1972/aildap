@@ -407,8 +407,7 @@ get_ldif_domain(char *dom)
 	if (!(buff = malloc(DOMAIN)))
 		error(MALLOC, errno, "buff in get_ldif_domain");
 	len = strlen(dom);
-	len++;
-	if (!(domain = calloc((len), sizeof(char))))
+	if (!(domain = calloc((len + 1), sizeof(char))))
 		error(MALLOC, errno, "domain in get_ldif_domain");
 	strcpy(domain, dom);
 	tmp = domain;
