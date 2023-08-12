@@ -16,7 +16,6 @@ AC_PROG_CPP
 AC_PROG_MKDIR_P
 AC_PROG_MAKE_SET
 AM_PROG_AR
-AM_PATH_CHECK
 
 # Initialize libtool
 LT_INIT
@@ -41,6 +40,7 @@ AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], [AC_MSG_RESULT([No glib-2.0])])
 AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])])
 
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.4])
 AX_CHECK_OLD
 AX_CHECK_DAM
 
