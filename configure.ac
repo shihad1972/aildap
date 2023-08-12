@@ -30,9 +30,10 @@ AC_CHECK_HEADERS([fcntl.h limits.h netinet/in.h stdlib.h string.h termios.h unis
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
+AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getpass memset strchr strndup strstr strtoul])
+AC_CHECK_FUNCS([gethostname getpass memset strchr strerror strndup strrchr strstr strtoul])
 
 AX_LIB_LDAP
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
