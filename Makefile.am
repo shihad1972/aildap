@@ -13,6 +13,6 @@ endif
 if HAVE_DAM
 SUBDIRS += dam
 endif
-EXTRA_DIST = lib src man old dam
+EXTRA_DIST = lib src man old dam tests
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS += tests
