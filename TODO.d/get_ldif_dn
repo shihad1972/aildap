@@ -1,0 +1,13 @@
+It would be usefule to have a function, similar to get_ldif_format, but here
+a linked list is passed in with this structure:
+
+typedef struct ailsa_ldif_s {
+	char *type, *string;
+	ailsa_ldif_s *next;
+}
+
+based on the number of members, we could then create an ldap string like so:
+
+type(1)=string(1),type(2)=string(2).....type(x)=string(x)
+
+This can be used to create the DN of an entry.
