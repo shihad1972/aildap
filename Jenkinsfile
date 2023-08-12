@@ -16,6 +16,12 @@ pipeline {
                    make distclean
                    ./configure --sysconfdir=/etc --localstatedir=/var/lib
                    make distcheck
+                '''
+            }
+        }
+        stage('check') {
+            steps {
+                sh '''
                    make
                    make check
                 '''
