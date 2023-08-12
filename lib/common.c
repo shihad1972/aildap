@@ -409,7 +409,7 @@ get_ldif_domain(char *dom)
 	len = strlen(dom);
 	if (!(domain = calloc((len + 1), sizeof(char))))
 		error(MALLOC, errno, "domain in get_ldif_domain");
-	strcpy(domain, dom);
+	strcpy(domain, dom); // should not have to do this to silence compiler warnings
 	tmp = domain;
 	while ((tmp = strchr(tmp, '.'))) {
 		tmp++;
