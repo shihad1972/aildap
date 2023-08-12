@@ -15,3 +15,4 @@ SUBDIRS += dam
 endif
 EXTRA_DIST = lib src man old dam
 ACLOCAL_AMFLAGS = -I m4
+SUBDIRS += tests

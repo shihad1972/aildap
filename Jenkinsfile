@@ -16,6 +16,8 @@ pipeline {
                    make distclean
                    ./configure --sysconfdir=/etc --localstatedir=/var/lib
                    make distcheck
+                   make
+                   make check
                 '''
             }
         }
