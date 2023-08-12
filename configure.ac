@@ -53,5 +53,6 @@ AC_CONFIG_FILES([Makefile
                  old/Makefile
 		 dam/Makefile
 		 lib/Makefile
+                 tests/Makefile
                  src/Makefile])
 AC_OUTPUT
