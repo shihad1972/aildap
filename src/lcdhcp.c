@@ -345,7 +345,7 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 	if (data->cont)
 		container = strndup(data->cont, NAME - 1);
 	else
-		container = strndup("dhcp", NAME - 1);
+		container = strndup("dhcp", 5);
 	fprintf(out, "\
 # %s, %s, %s\n\
 dn: cn=%s,cn=%s,%s\n\
@@ -382,7 +382,7 @@ output_dhcp_server_ldif(lcdhcp_s *data)
 	if (data->cont)
 		container = strndup(data->cont, NAME - 1);
 	else
-		container = strndup("dhcp", NAME - 1);
+		container = strndup("dhcp", 5);
 	fprintf(out, "\
 # %s, %s\n\
 dn: cn=%s,%s\n\
@@ -430,7 +430,7 @@ output_dhcp_network_ldif(lcdhcp_s *data)
 	if (data->cont)
 		container = strndup(data->cont, NAME - 1);
 	else
-		container = strndup("dhcp", NAME - 1);
+		container = strndup("dhcp", 5);
 	fprintf(out, "\
 # %s, %s, %s\n\
 dn: cn=%s,cn=%s,%s\n\
