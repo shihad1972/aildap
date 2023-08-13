@@ -1,0 +1,2 @@
+There are 2 convert to dn functions, 1 in lcc and 1 in lcg. This needs to
+be moved into a library function.
