@@ -67,7 +67,7 @@ convert_to_dn(cont_s *data)
 {
 	char dom[DOMAIN], *tmp = '\0', *dtmp = '\0', *dntmp = '\0';
 	int dot = '.', retval = NONE;
-	size_t len;
+	size_t len, dlen;
 
 	snprintf(dom, DOMAIN, "%s", data->domain);
 	dntmp = data->dn;
@@ -83,8 +83,9 @@ convert_to_dn(cont_s *data)
 		dtmp = tmp + 1;
 	}
 	len = strlen(data->dn);
+	dlen = strlen(dtmp);
 	dntmp = data->dn + len;
-	snprintf(dntmp, DNL, "dc=%s", dtmp);
+	snprintf(dntmp, dlen + 1, "dc=%s", dtmp);
 }
 
 void
