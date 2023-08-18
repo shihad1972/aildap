@@ -4,7 +4,7 @@
 #include "../include/ailsaldap.h"
 START_TEST(test_get_ldif_domain)
 {
-        char *domain = "ailsatech.net", *freak = "you.me.them.us.whatever.com", *dn;
+        char *domain = "ailsatech.net", *freaky = "you.me.them.us.whatever.com", *dn;
         size_t len;
 
         dn = get_ldif_domain(domain);
