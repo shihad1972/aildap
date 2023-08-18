@@ -9,7 +9,7 @@ START_TEST(test_get_ldif_domain)
 
         dn = get_ldif_domain(domain);
         ck_assert_str_eq(domain, "dc=ailsatech,dc=net");
-        len = strlen(dn):
+        len = strlen(dn);
         memset(dn, '\0', len);
         free(dn);
         dn = get_ldif_domain(freaky);
