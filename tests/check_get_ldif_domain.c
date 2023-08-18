@@ -13,7 +13,7 @@ START_TEST(test_get_ldif_domain)
         memset(dn, '\0', len);
         free(dn);
         dn = get_ldif_domain(freaky);
-        ck_assert_str_eq(domain, "dc=you,dc=me,dc=them,dc=us,dc=whatever,dc=com";
+        ck_assert_str_eq(domain, "dc=you,dc=me,dc=them,dc=us,dc=whatever,dc=com");
         len = strlen(dn);
         memset(dn, '\0', len);
         free(dn);
