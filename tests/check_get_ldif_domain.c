@@ -1,3 +1,5 @@
+#include <check.h>
+#include "../include/ailsaldap.h"
 START_TEST(test_get_ldif_domain)
 {
         char *domain = "ailsatech.net", *dn;
