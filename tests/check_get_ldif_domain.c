@@ -30,6 +30,16 @@ START_TEST(check_dn_freaky)
 }
 END_TEST
 
+START_TEST (check_dn_null)
+{
+        const char *null = '\0';
+        char *dn;
+
+        dn = get_ldif_domain(null);
+        ck_assert_pstr_eq(dn, null);
+}
+END_TEST
+
 Suite * get_ldif_domain_suite(void)
 {
         Suite *s;
@@ -39,6 +49,7 @@ Suite * get_ldif_domain_suite(void)
         ailsatech = tcase_create("Strings");
         tcase_add_test(ailsatech, check_dn_ailsatech);
         tcase_add_test(ailsatech, check_dn_freaky);
+        tcase_add_test(ailsatech, check_dn_null);
         suite_add_tcase(s, ailsatech);
 
         return s;

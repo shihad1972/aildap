@@ -404,6 +404,8 @@ get_ldif_domain(const char *dom)
 	int c = NONE;
 	size_t len = NONE;
 
+	if (!(dom))
+		return '\0';
 	if (!(buff = malloc(DOMAIN)))
 		error(MALLOC, errno, "buff in get_ldif_domain");
 	len = strlen(dom);
