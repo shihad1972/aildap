@@ -24,9 +24,3 @@ AM_CFLAGS += $(OPENSSL_INCLUDES)
 AM_LDFLAGS += $(OPENSSL_LDFLAGS)
 LIBS += $(OPENSSL_LIBS)
 endif
-
-if HAVE_GLIB
-        if HAVE_OPENSSL
-                bin_PROGRAMS += hh
-        endif
-endif
