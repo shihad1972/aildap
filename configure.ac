@@ -52,7 +52,7 @@ AM_CONDITIONAL([HAVE_LIBLDAP], [test x"$HAVE_LIBLDAP" = xtrue])
 AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
 AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
 AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
-AM_CONDITIONAL([HAVE_GLIB_OPENSSL], [test x"$HAVE_GLIB" = "xtrue" && x"$HAVE_OPENSSL" = "xtrue"])
+AM_CONDITIONAL([HAVE_GLIB_OPENSSL], [test x"$HAVE_GLIB" = "xtrue" && test x"$HAVE_OPENSSL" = "xtrue"])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
