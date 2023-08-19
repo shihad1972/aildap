@@ -5,12 +5,13 @@ AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_LDFLAGS = -L$(top_builddir)/lib
 LIBS += -lailsaldap
-bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp lds
+bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp
 
 if HAVE_LIBLDAP
 AM_CPPFLAGS += $(LDAP_CFLAGS) -DLDAP_DEPRECATED
 AM_LDFLAGS +=  $(LDAP_LDFLAGS)
 LIBS += $(LDAP_LIBS)
+bin_PROGRAMS += lds
 endif
 
 if HAVE_GLIB
