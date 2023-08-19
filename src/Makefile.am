@@ -5,7 +5,7 @@ AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_LDFLAGS = -L$(top_builddir)/lib
 LIBS += -lailsaldap
-bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp hh lds
+bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp lds
 
 if HAVE_LIBLDAP
 AM_CPPFLAGS += $(LDAP_CFLAGS) -DLDAP_DEPRECATED
@@ -23,4 +23,10 @@ if HAVE_OPENSSL
 AM_CFLAGS += $(OPENSSL_INCLUDES)
 AM_LDFLAGS += $(OPENSSL_LDFLAGS)
 LIBS += $(OPENSSL_LIBS)
+endif
+
+if HAVE_GLIB
+        if HAVE_OPENSSL
+                bin_PROGRAMS += hh
+        endif
 endif
