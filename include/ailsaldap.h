@@ -245,7 +245,7 @@ void
 clean_lcdhcp_data(lcdhcp_s *data);
 
 char *
-get_ldif_domain(char *dom);
+get_ldif_domain(const char *dom);
 
 char *
 get_ldif_format(char *form, const char *type, const char *delim);

@@ -397,7 +397,7 @@ clean_lcdhcp_data(lcdhcp_s *data)
 }
 
 char *
-get_ldif_domain(char *dom)
+get_ldif_domain(const char *dom)
 {
 	char *ldom, *tmp, *save, *buff, *domain;
 	const char *delim = ".";

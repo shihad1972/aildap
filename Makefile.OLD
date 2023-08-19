@@ -10,13 +10,15 @@ OLDDIR = old
 SUBDIRS = src
 DAMDIR = dam
 LIBDIR = lib
+TESTDIR = tests
 bin_PROGRAMS = lcs lcc lcg lck lcu lcr lcdb lcou lcsudo lcdhcp hh lds
 dam_PROGRAMS = 
 lib_LIBRARIES = libailsaldap.a
 old_PROGRAMS = lcd tsha gsha gsha2 sha1 lct ssha
 sdam_PROGRAMS = 
+test_PROGRAMS = check_get_ldif_domain
 
-all:	$(lib_LIBRARIES) $(bin_PROGRAMS) $(dam_PROGRAMS) $(sdam_PROGRAMS)
+all:	$(lib_LIBRARIES) $(bin_PROGRAMS) $(dam_PROGRAMS) $(sdam_PROGRAMS) $(test_PROGRAMS)
 
 .PHONY:	clean $(bin_PROGRAMS) $(old_PROGRAMS) $(dam_PROGRAMS) \
 	$(sdam_PROGRAMS) $(lib_LIBRARIES)
@@ -30,6 +32,8 @@ bin:	$(bin_PROGRAMS)
 old:	$(old_PROGRAMS)
 
 libs:	$(lib_LIBRARIES)
+
+tests:	$(test_PROGRAMS)
 
 $(bin_PROGRAMS):	$(lib_LIBRARIES)
 	$(MAKE) -C $(DIR) $@
@@ -46,9 +50,13 @@ $(sdam_PROGRAMS):
 $(lib_LIBRARIES):
 	$(MAKE) -C $(LIBDIR) $@
 
+$(test_PROGRAMS):	$(lib_LIBRARIES)
+	$(MAKE) -C $(TESTDIR) $@
+
 clean:
 	cd $(DIR); make $@; \
 	cd ../$(OLDDIR); make $@; \
 	cd ../$(DAMDIR); make $@; \
-	cd ../$(LIBDIR); make $@;
+	cd ../$(LIBDIR); make $@; \
+	cd ../$(TESTDIR); make $@
 
