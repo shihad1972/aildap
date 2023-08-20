@@ -108,7 +108,7 @@ print_provider(lcr_t *data)
 	} else {
 		provider = stdout;
 	}
-	dom = get_ldif_domain(data->domain);
+	dom = get_ldif_format(data->domain, "dc", ".");
 	if (data->mod == 0)
 		fprintf(provider, "\
 #Load the accesslog module\n\
@@ -180,7 +180,7 @@ print_consumer(lcr_t *data)
 		consumer = stdout;
 		printf("\n");
 	}
-	dom = get_ldif_domain(data->domain);
+	dom = get_ldif_format(data->domain, "dc", ".");
 	/* This is not actually used. When I do, I will need a fallback */
 #ifdef HAVE_GLIB
 # ifdef HAVE_OPENSSL

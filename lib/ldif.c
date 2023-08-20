@@ -54,48 +54,6 @@ get_delim(const char *delim)
 }
 
 char *
-get_ldif_domain(const char *dom)
-{
-	char *ldom, *tmp, *save, *buff, *domain;
-	const char *delim = ".";
-	int c = NONE;
-	size_t len = NONE;
-
-	if (!(dom))
-		return '\0';
-	if (!(buff = malloc(DOMAIN)))
-		error(MALLOC, errno, "buff in get_ldif_domain");
-	len = strlen(dom);
-	if (!(domain = calloc((len + 1), sizeof(char))))
-		error(MALLOC, errno, "domain in get_ldif_domain");
-	strcpy(domain, dom); // should not have to do this to silence compiler warnings
-	tmp = domain;
-	while ((tmp = strchr(tmp, '.'))) {
-		tmp++;
-		c++;
-	}
-	len = strlen(dom) + (size_t)(c * 3);
-	if (len >= DOMAIN) {
-		if(!(ldom = malloc(BUFF))) {
-			error(MALLOC, errno, "ldom in get_ldif_domain");
-		}
-	} else {
-		if (!(ldom = malloc(DOMAIN))) {
-			error(MALLOC, errno, "ldom in get_ldif_domain");
-		}
-	}
-	tmp = strtok_r(domain, delim, &save);
-	sprintf(ldom, "dc=%s", tmp);
-	while ((tmp = strtok_r(NULL, delim, &save))) {
-		sprintf(buff, ",dc=%s", tmp);
-		strcat(ldom, buff);
-	}
-	free(buff);
-	free(domain);
-	return ldom;
-}
-
-char *
 get_ldif_format(const char *form, const char *type, const char *delim)
 {
 /*

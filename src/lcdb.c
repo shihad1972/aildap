@@ -93,7 +93,7 @@ output_db_ldif(lcdb_s *data)
 	pass = data->pass;
 #endif /* HAVE_OPENSSL */
 	len = strlen(data->dir);
-	ldf = get_ldif_domain(dom);
+	ldf = get_ldif_format(dom, "dc", ".");
 	if (len == 0)
 		snprintf(data->dir, DN, "/var/lib/slapd/%s/domain", dom);
 	if (data->file > 0) {
