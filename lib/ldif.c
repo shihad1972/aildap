@@ -96,7 +96,7 @@ get_ldif_domain(const char *dom)
 }
 
 char *
-get_ldif_format(char *form, const char *type, const char *delim)
+get_ldif_format(const char *form, const char *type, const char *delim)
 {
 /*
  * Take delim separated string (form), and turn into an ldif farmat string.
