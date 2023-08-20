@@ -253,9 +253,6 @@ get_ldif_format(char *form, const char *type, const char *delim);
 char *
 get_ldif_user(inp_data_s *data);
 
-int
-get_delim(const char *delim);
-
 void
 check_snprintf(char *target, int max, const char *string, const char *what);
 

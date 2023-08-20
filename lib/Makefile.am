@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_LDFLAGS = 
 
 lib_LTLIBRARIES = libailsaldap.la
-libailsaldap_la_SOURCES = common.c password.c
+libailsaldap_la_SOURCES = common.c password.c ldif.c
 include_HEADERS = $(top_srcdir)/include/ailsaldap.h
 
 if HAVE_LIBLDAP
