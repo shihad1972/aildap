@@ -151,7 +151,7 @@ output_ldif(inp_data_s *data)
 	char *name, *ldom, *phash = '\0';
 	const char *uou = "people", *gou = "group";
 
-	ldom = get_ldif_domain(data->dom);
+	ldom = get_ldif_format(data->dom, "dc", ".");
 	name = data->uname;
 	if (data->uou)
 		uou = data->uou;
