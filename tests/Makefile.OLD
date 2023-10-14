@@ -13,9 +13,9 @@ LDLIBS = -lailsaldap -lcrypto `pkg-config --libs-only-l glib-2.0` -lldap `pkg-co
 test_PROGRAMS = check_get_ldif_format
 
 
-all:	$(bin_PROGRAMS)
+all:	$(test_PROGRAMS)
 
-bin:	$(bin_PROGRAMS)
+bin:	$(test_PROGRAMS)
 
 clean:
-	$(RM) *.o $(bin_PROGRAMS)
+	$(RM) *.o $(test_PROGRAMS)

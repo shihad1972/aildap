@@ -16,7 +16,7 @@ dam_PROGRAMS =
 lib_LIBRARIES = libailsaldap.a
 old_PROGRAMS = lcd tsha gsha gsha2 sha1 lct ssha
 sdam_PROGRAMS = 
-test_PROGRAMS = check_get_ldif_domain
+test_PROGRAMS = check_get_ldif_format
 
 all:	$(lib_LIBRARIES) $(bin_PROGRAMS) $(dam_PROGRAMS) $(sdam_PROGRAMS) $(test_PROGRAMS)
 
