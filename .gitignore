@@ -1,6 +1,7 @@
 Makefile
 */Makefile
 include/config.h
+docker/ldap-provision/*deb
 *.swp
 *.o
 *.a
