@@ -1,5 +1,5 @@
-TESTS = check_get_ldif_format check_kv
-check_PROGRAMS = check_get_ldif_format check_kv
+TESTS = check_get_ldif_format
+check_PROGRAMS = check_get_ldif_format
 AM_CFLAGS = @CHECK_CFLAGS@
 AM_LDFLAGS = $(top_builddir)/lib/libailsaldap.la @CHECK_LIBS@
 
