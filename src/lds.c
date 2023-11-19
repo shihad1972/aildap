@@ -40,7 +40,6 @@ int
 main(int argc, char *argv[])
 {
         int retval = 0;
-        int count;
         int proto = LDAP_VERSION3;
         char *dn = NULL;
         const char *user = "cn=cmdb,ou=admins,dc=thargoid,dc=co,dc=uk";

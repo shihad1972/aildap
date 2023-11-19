@@ -34,9 +34,6 @@ libailsaldap.a(password.o):	password.o
 libailsaldap.a(ldif.o):	ldif.o
 	$(AR) $(ARFLAGS) $@ $<
 
-libailsaldap.a(ailsa_kv_s.o):	ailsa_kv_s.o
-	$(AR) $(ARFLAGS) $@ $<
-
 .PHONY:	clean
 
 clean:

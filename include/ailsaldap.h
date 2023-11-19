@@ -86,8 +86,6 @@ typedef struct inp_data_s {
 	char *dom, *sur, *name, *uname, *pass, *fname, *gou, *uou;
 } inp_data_s;
 
-typedef struct ailsa_kv_s ailsa_kv_s;
-
 /*
  * Attempt to declare and define this in a header file.
  *
@@ -273,28 +271,6 @@ output_ldif(inp_data_s *data);
 
 void
 output_version(const char *name);
-
-// KV Functions
-
-void
-init_kv_s(ailsa_kv_s **kv);
-
-void
-clean_kv_s(ailsa_kv_s **kv);
-
-int
-put_kv_value(ailsa_kv_s *kv, const char *value);
-
-int
-put_kv_key(ailsa_kv_s *kv, const char *name);
-
-const char *
-get_kv_key(ailsa_kv_s *kv);
-
-const char *
-get_kv_value(ailsa_kv_s *kv);
-
-// End KV Functions
 
 # ifdef HAVE_OPENSSL
 char *
