@@ -10,7 +10,7 @@ CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=
 CPPFLAGS += -I../include/ `pkg-config --cflags glib-2.0` `pkg-config --cflags check`
 LDFLAGS = -L../lib `pkg-config --libs-only-L glib-2.0` `pkg-config --libs check`
 LDLIBS = -lailsaldap -lcrypto `pkg-config --libs-only-l glib-2.0` -lldap `pkg-config --libs check`
-test_PROGRAMS = check_get_ldif_format check_kv
+test_PROGRAMS = check_get_ldif_format
 
 
 all:	$(test_PROGRAMS)
