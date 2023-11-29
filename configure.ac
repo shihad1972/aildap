@@ -38,7 +38,10 @@ AC_CHECK_FUNCS([gethostname getpass memset strchr strerror strndup strrchr strst
 AX_LIB_LDAP
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
-PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], [AC_MSG_RESULT([No glib-2.0])])
+# PKG_CHECK_MODULES test needed for automake
+# AS_IF test needed for pre-processor
+PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], )
+AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])])
 
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], )
 
