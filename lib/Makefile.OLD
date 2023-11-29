@@ -23,7 +23,7 @@ shared_SOURCES =
 
 libs:	libailsaldap.a
 
-libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o) libailsaldap.a(ldif.o) libailsaldap.a(ailsa_kv_s.o)
+libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o) libailsaldap.a(ldif.o)
 
 libailsaldap.a(common.o):	common.o
 	$(AR) $(ARFLAGS) $@ $<
