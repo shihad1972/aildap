@@ -1,0 +1,23 @@
+name: ldap-col build
+
+on:
+  push:
+    branches: [ "feature/*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Create ChangeLog
+      run: git log --stat --name-only --date=short --abbrev-commit > ChangeLog
+    - name: Setup up build
+      run: autoreconf -iv
+    - name: Start configuration
+      run: ./configure
+    - name: Run distbuild
+      run: make distcheck
