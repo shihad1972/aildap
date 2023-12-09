@@ -1,9 +1,9 @@
 FROM debian:bookworm
 
 USER root
-COPY libailsa_0.1-2_amd64.deb .
 
+RUN apt-get update -y && apt-get install -y wget
+COPY ailsatech.list /etc/apt/sources.list.d/ailsatech.list
+RUN wget -O - http://debian.shihad.org/debian/ailsatech.gpg  | tee /etc/apt/trusted.gpg.d/ailsatech.asc
 RUN apt-get update -y
-RUN apt-get install -y build-essential autoconf automake git libtool
-RUN apt-get install -y libglib2.0-dev libssl-dev libldap2-dev check
-RUN dpkg -i libailsa_0.1-2_amd64.deb
+RUN apt-get install -y build-essential autoconf automake git libtool libglib2.0-dev libssl-dev libldap2-dev check libailsa
