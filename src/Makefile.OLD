@@ -9,7 +9,7 @@ ECHO = echo
 CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g -DLDAP_DEPRECATED
 CPPFLAGS += -I../include/ `pkg-config --cflags glib-2.0`
 LDFLAGS = -L../lib `pkg-config --libs-only-L glib-2.0`
-LDLIBS = -lailsaldap -lcrypto `pkg-config --libs-only-l glib-2.0` -lldap
+LDLIBS = -lailsaldap -lailsa -lcrypto `pkg-config --libs-only-l glib-2.0` -lldap
 bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb lck lcou lcsudo lcdhcp hh lds
 
 

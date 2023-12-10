@@ -171,15 +171,6 @@ enum {
 #define PASS_SIZE 100
 
 void
-resize_string_buff(string_len_s *build);
-
-void
-init_string_len(string_len_s *build);
-
-void
-clean_string_len(string_len_s *string);
-
-void
 rep_usage(const char *prog);
 
 void

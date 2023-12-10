@@ -43,7 +43,7 @@ main(int argc, char *argv[])
         int proto = LDAP_VERSION3;
         char *dn = NULL;
         const char *user = "cn=cmdb,ou=admins,dc=thargoid,dc=co,dc=uk";
-        const char *host = "ldap://thaldp01.thargoid.co.uk";
+        const char *host = "ldaps://thaldp01.thargoid.co.uk";
         const char *pass = "aiGeeYw5S9z3mnXn8QPM";
         const char *base_dn = "dc=thargoid,dc=co,dc=uk";
         const char *filter = "(ou=thapxe_dhcp)";

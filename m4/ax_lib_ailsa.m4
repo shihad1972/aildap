@@ -29,8 +29,8 @@ else
         AC_CHECK_LIB([alisa], [ailsa_list_init])
         if test "$ac_cv_lib_ailsa_ailsa_list_init" = "yes"; then
                 AILSA_LIBS="-L$with_libailsa/lib -lailsa"
-                HAVE_LDAP="true"
-                test -f "$with_libldap/include/ailsa.h" && LDAP_CFLAGS="-I$with_libailsa/include"
+                HAVE_AILSA="true"
+                test -f "$with_libailsa/include/ailsa.h" && AILSA_CFLAGS="-I$with_libailsa/include"
                 AC_MSG_CHECKING([libailsa])
                 AC_MSG_RESULT([$AILSA_LIBS])
                 m4_ifval($1,$1)
@@ -39,6 +39,6 @@ else
                 AC_MSG_WARN([libailsa not found])
         fi
 fi
-AC_SUBST([AILSA_CFLAGS])
-AC_SUBST([LDAP_LDFLAGS])
+AC_SUBST([AILSA_LIBS])
+AC_SUBST([AILSA_LDFLAGS])
 ])

@@ -1,20 +1,41 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
+/* include/config.h.  Generated from config.h.in by configure.  */
+/* include/config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Compile dam programs */
+/* #undef HAVE_DAM */
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#define HAVE_DLFCN_H 1
+
+/* Define to 1 if you have the <errno.h> header file. */
+#define HAVE_ERRNO_H 1
+
+/* Define to 1 if you have the <error.h> header file. */
+#define HAVE_ERROR_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
-/* Define to 1 if you have the `getpass' function. */
-#define HAVE_GETPASS 1
-
-/* glib-2.0 found */
-#define HAVE_GLIB 1
+/* Define to 1 if you have the `gethostname' function. */
+#define HAVE_GETHOSTNAME 1
 
 /* Define to 1 if you have the <getopt.h> header file. */
 #define HAVE_GETOPT_H 1
 
+/* Define to 1 if you have the `getpass' function. */
+#define HAVE_GETPASS 1
+
+/* Have Glib */
+#define HAVE_GLIB 1
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
+
+/* Define to 1 if you have the `ailsa' library (-lailsa). */
+#define HAVE_LIBAILSA 1
+
+/* Define to 1 if you have the `alisa' library (-lalisa). */
+/* #undef HAVE_LIBALISA */
 
 /* Define to 1 if you have the `ldap' library (-lldap). */
 #define HAVE_LIBLDAP 1
@@ -26,11 +47,14 @@
    to 0 otherwise. */
 #define HAVE_MALLOC 1
 
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
-
 /* Define to 1 if you have the `memset' function. */
 #define HAVE_MEMSET 1
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#define HAVE_NETINET_IN_H 1
+
+/* Compile old programs */
+/* #undef HAVE_OLD */
 
 /* Have openssl */
 #define HAVE_OPENSSL 1
@@ -48,6 +72,9 @@
 /* Define to 1 if you have the `strchr' function. */
 #define HAVE_STRCHR 1
 
+/* Define to 1 if you have the `strerror' function. */
+#define HAVE_STRERROR 1
+
 /* Define to 1 if you have the <strings.h> header file. */
 #define HAVE_STRINGS_H 1
 
@@ -56,6 +83,9 @@
 
 /* Define to 1 if you have the `strndup' function. */
 #define HAVE_STRNDUP 1
+
+/* Define to 1 if you have the `strrchr' function. */
+#define HAVE_STRRCHR 1
 
 /* Define to 1 if you have the `strstr' function. */
 #define HAVE_STRSTR 1
@@ -75,11 +105,14 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#define LT_OBJDIR ".libs/"
+
 /* Name of package */
 #define PACKAGE "aildap"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "iain@thargoid.co.uk"
+#define PACKAGE_BUGREPORT "iain@ailsatech.net"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "aildap"
@@ -96,7 +129,9 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.4.3"
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
 
 /* Version number of package */

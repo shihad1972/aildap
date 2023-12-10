@@ -36,38 +36,6 @@
 #include <ailsaldap.h>
 
 void
-resize_string_buff(string_len_s *build)
-{
-	char *tmp;
-
-	build->len *=2;
-	tmp = realloc(build->string, build->len * sizeof(char));
-	if (!tmp)
-		error(MALLOC, errno, "tmp in resize_string_buff");
-	else
-		build->string = tmp;
-}
-
-void
-init_string_len(string_len_s *build)
-{
-	build->len = FILES;
-	build->size = NONE;
-	if (!(build->string = calloc(build->len, sizeof(char))))
-		error(MALLOC, errno, "build->string in init_string_len");
-}
-
-void
-clean_string_len(string_len_s *string)
-{
-	if (string) {
-		if (string->string)
-			free(string->string);
-		free(string);
-	}
-}
-
-void
 rep_usage(const char *prog)
 {
 	fprintf(stderr, "Usage: %s ", prog);
