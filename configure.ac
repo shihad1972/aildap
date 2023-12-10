@@ -36,6 +36,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([gethostname getpass memset strchr strerror strndup strrchr strstr strtoul])
 
 AX_LIB_LDAP
+AX_LIB_AILSA
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 
 # PKG_CHECK_MODULES test needed for automake
