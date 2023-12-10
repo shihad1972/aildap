@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([ldap-collection], [0.4.2], [iain@thargoid.co.uk])
+AC_INIT([aildap], [0.4.3], [iain@ailsatech.net])
 AC_CONFIG_SRCDIR([src/lcc.c])
 AC_CONFIG_HEADERS([include/config.h])
 AM_INIT_AUTOMAKE
