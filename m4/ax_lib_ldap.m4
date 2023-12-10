@@ -8,8 +8,7 @@
 
 AC_DEFUN([AX_LIB_LDAP],[dnl
 AC_ARG_WITH([libldap],
-[  --with-libldap[[=prefix]] compile using libldap],,
-     with_libldap="yes")
+[  --with-libldap[[=prefix]] compile using libldap])
 if test ".$with_libldap" = ".no"; then
 	AC_MSG_RESULT([disabled])
 	m4_ifval($2,$2)
