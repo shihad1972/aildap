@@ -26,6 +26,8 @@
  *
  */
 
+#include <ailsa.h>
+
 #ifndef HAVE_AILSA_LDAP_H
 # define HAVE_AILSA_LDAP_H
 
@@ -262,6 +264,9 @@ output_ldif(inp_data_s *data);
 
 void
 output_version(const char *name);
+
+void
+aildap_parse_config(AILSA_LIST *config, const char *prog);
 
 # ifdef HAVE_OPENSSL
 char *

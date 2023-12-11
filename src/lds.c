@@ -34,6 +34,7 @@
 #include <errno.h>
 #include <error.h>
 #include <ldap.h>
+#include <ailsa.h>
 #include <ailsaldap.h>
 
 int
@@ -50,7 +51,11 @@ main(int argc, char *argv[])
         LDAP *shihad = NULL;
         LDAPMessage *res = NULL;
         LDAPMessage *e = NULL;
+        AILSA_LIST *list = ailsa_calloc(sizeof(AILSA_LIST), "AILSA_LIST in main of lds.c");
 
+        ailsa_list_init(list, clean_kv_s, compare_kv);
+        if (argc >= 0)  // Silence compiler warnings *sigh*
+                aildap_parse_config(list, argv[0]);
         if ((retval = ldap_initialize(&shihad, host)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
                 fprintf(stderr, "ldap uri was %s\n", host);
@@ -82,5 +87,7 @@ main(int argc, char *argv[])
         }
         ldap_msgfree(res);
         ldap_unbind(shihad);
+        ailsa_list_destroy(list);
+        my_free(list);
         return retval;
 }

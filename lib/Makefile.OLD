@@ -23,7 +23,7 @@ shared_SOURCES =
 
 libs:	libailsaldap.a
 
-libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o) libailsaldap.a(ldif.o)
+libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o) libailsaldap.a(ldif.o) libailsaldap.a(config.o)
 
 libailsaldap.a(common.o):	common.o
 	$(AR) $(ARFLAGS) $@ $<
@@ -32,6 +32,9 @@ libailsaldap.a(password.o):	password.o
 	$(AR) $(ARFLAGS) $@ $<
 
 libailsaldap.a(ldif.o):	ldif.o
+	$(AR) $(ARFLAGS) $@ $<
+
+libailsaldap.a(config.o):	config.o
 	$(AR) $(ARFLAGS) $@ $<
 
 .PHONY:	clean
