@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 #ifdef HAVE_GETOPT_H
 # include <getopt.h>
 #endif // HAVE_GETOPT_H
@@ -44,7 +45,7 @@ main(int argc, char *argv[])
         int proto = LDAP_VERSION3;
         char *dn = NULL;
         const char *user = "cn=cmdb,ou=admins,dc=thargoid,dc=co,dc=uk";
-        const char *host = "ldaps://thaldp01.thargoid.co.uk";
+        const char *url = "ldaps://thaldp01.thargoid.co.uk";
         const char *pass = "aiGeeYw5S9z3mnXn8QPM";
         const char *base_dn = "dc=thargoid,dc=co,dc=uk";
         const char *filter = "(ou=thapxe_dhcp)";
@@ -55,10 +56,10 @@ main(int argc, char *argv[])
 
         ailsa_list_init(list, clean_kv_s, compare_key);
         if (argc >= 0)  // Silence compiler warnings *sigh*
-                aildap_parse_config(list, argv[0]);
-        if ((retval = ldap_initialize(&shihad, host)) != LDAP_SUCCESS) {
+                aildap_parse_config(list, basename(argv[0]));
+        if ((retval = ldap_initialize(&shihad, url)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
-                fprintf(stderr, "ldap uri was %s\n", host);
+                fprintf(stderr, "ldap uri was %s\n", url);
         }
         if ((retval = ldap_set_option(shihad, LDAP_OPT_PROTOCOL_VERSION, &proto)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Cannot set protocol version to v3\n");

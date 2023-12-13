@@ -74,7 +74,19 @@ aildap_parse_system_config(AILSA_LIST *config, const char *prog)
 static void
 aildap_parse_user_config(AILSA_LIST *config, const char *prog)
 {
-        return;
+        char file[RBUFF_S];
+        FILE *conf = NULL;
+        char *home = getenv("HOME");
+
+        sprintf(file, "%s/.%s/%s.conf", home, PACKAGE, prog);
+        if (!(conf = fopen(file, "r"))) {
+                ailsa_syslog(LOG_ERR, "Cannot open file %s\n", file);
+                goto cleanup;
+        }
+        aildap_parse_config_values(config, conf);
+        cleanup:
+                if(conf)
+                        fclose(conf);
 }
 
 static void
@@ -88,9 +100,7 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
 
         for (i=1; max > 0; i++) {
                 if (!(fgets(l, RBUFF_S - 1, file))) {
-                        ferror(file);
-                        max--;
-                        continue;
+                        break;
                 }
                 if (sscanf(l, " %[#\n\r]", k))   // Empty line or comment
                         continue;
@@ -109,6 +119,12 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
                         if ((ailsa_list_get_member(config, kv, &mem)) != -1) {
                                 clean_kv_s(kv);
                                 kv = mem;
+                                if ((put_kv_value(kv, v)) != 0) {
+                                        ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
+                                        exit(EXIT_FAILURE);
+                                }
+                                max--;
+                                continue;
                         }
                 }
                 if ((put_kv_value(kv, v)) != 0) {
