@@ -83,9 +83,8 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
         char l[RBUFF_S], k[RBUFF_S], v[RBUFF_S];
         char *p;
         int i, max = 128;
-        size_t len = 0;
-        ssize_t llen;
-        AILSA_DICT *kv;
+        AILSA_DICT *kv = NULL;
+        void *mem = NULL;
 
         for (i=1; max > 0; i++) {
                 if (!(fgets(l, RBUFF_S - 1, file))) {
@@ -96,11 +95,30 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
                 if (sscanf(l, " %[#\n\r]", k))   // Empty line or comment
                         continue;
                 if (sscanf(l, " %[a-zA-Z0-9_] %[^#\n\r]", k, v) < 2) {
-                        ailsa_syslog(LOG_ERR, "error at line %s: %s\n", i, l);
+                        ailsa_syslog(LOG_ERR, "error in config file at line %d: %s\n", i, l);
                         continue;
                 }
-                for (p = k; *p; p++) *p = tolower(*p);
-                printf("name='%s' value='%s'\n", k, v);
+                for (p = k; *p; p++) if (isalpha(*p))*p = tolower(*p);
+                init_kv_s(&kv);
+                if ((put_kv_key(kv, k)) != 0) {
+                        ailsa_syslog(LOG_ERR, "cannot add key to KV pair in aildap_parse_config_values");
+                        exit(EXIT_FAILURE);
+                }
+// Library should check for this
+                if (config->total > 0) {
+                        if ((ailsa_list_get_member(config, kv, &mem)) != -1) {
+                                clean_kv_s(kv);
+                                kv = mem;
+                        }
+                }
+                if ((put_kv_value(kv, v)) != 0) {
+                        ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
+                        exit(EXIT_FAILURE);
+                }
+                if ((ailsa_list_insert_tail(config, kv)) != 0) {
+                        ailsa_syslog(LOG_ERR, "cannot add element to list in aildap_parse_config_values");
+                        exit(EXIT_FAILURE);
+                }
                 max--;       
         }
         return;

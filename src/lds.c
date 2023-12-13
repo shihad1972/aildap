@@ -53,7 +53,7 @@ main(int argc, char *argv[])
         LDAPMessage *e = NULL;
         AILSA_LIST *list = ailsa_calloc(sizeof(AILSA_LIST), "AILSA_LIST in main of lds.c");
 
-        ailsa_list_init(list, clean_kv_s, compare_kv);
+        ailsa_list_init(list, clean_kv_s, compare_key);
         if (argc >= 0)  // Silence compiler warnings *sigh*
                 aildap_parse_config(list, argv[0]);
         if ((retval = ldap_initialize(&shihad, host)) != LDAP_SUCCESS) {
