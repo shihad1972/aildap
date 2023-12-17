@@ -114,18 +114,15 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
                         ailsa_syslog(LOG_ERR, "cannot add key to KV pair in aildap_parse_config_values");
                         exit(EXIT_FAILURE);
                 }
-// Library should check for this
-                if (config->total > 0) {
-                        if ((ailsa_list_get_member(config, kv, &mem)) != -1) {
-                                clean_kv_s(kv);
-                                kv = mem;
-                                if ((put_kv_value(kv, v)) != 0) {
-                                        ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
-                                        exit(EXIT_FAILURE);
-                                }
-                                max--;
-                                continue;
+                if ((ailsa_list_get_member(config, kv, &mem)) != -1) {
+                        clean_kv_s(kv);
+                        kv = mem;
+                        if ((put_kv_value(kv, v)) != 0) {
+                                ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
+                                exit(EXIT_FAILURE);
                         }
+                        max--;
+                        continue;
                 }
                 if ((put_kv_value(kv, v)) != 0) {
                         ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
