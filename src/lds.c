@@ -34,9 +34,20 @@
 #endif // HAVE_GETOPT_H
 #include <errno.h>
 #include <error.h>
+#include <syslog.h>
 #include <ldap.h>
 #include <ailsa.h>
 #include <ailsaldap.h>
+
+typedef struct lds_config_s {
+        const char *user, *url, *pass, *base_dn, *filter;
+} lds_config_s;
+
+static void
+fill_lds_config(lds_config_s *config, AILSA_LIST *list);
+
+static void
+lds_error(int error);
 
 int
 main(int argc, char *argv[])
@@ -44,11 +55,7 @@ main(int argc, char *argv[])
         int retval = 0;
         int proto = LDAP_VERSION3;
         char *dn = NULL;
-        const char *user = "cn=cmdb,ou=admins,dc=thargoid,dc=co,dc=uk";
-        const char *url = "ldaps://thaldp01.thargoid.co.uk";
-        const char *pass = "aiGeeYw5S9z3mnXn8QPM";
-        const char *base_dn = "dc=thargoid,dc=co,dc=uk";
-        const char *filter = "(ou=thapxe_dhcp)";
+        lds_config_s *config = ailsa_calloc(sizeof(lds_config_s), "config in main");
         LDAP *shihad = NULL;
         LDAPMessage *res = NULL;
         LDAPMessage *e = NULL;
@@ -57,9 +64,10 @@ main(int argc, char *argv[])
         create_kv_list(&list);
         if (argc >= 0)  // Silence compiler warnings *sigh*
                 aildap_parse_config(list, basename(argv[0]));
-        if ((retval = ldap_initialize(&shihad, url)) != LDAP_SUCCESS) {
+        fill_lds_config(config, list);
+        if ((retval = ldap_initialize(&shihad, config->url)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
-                fprintf(stderr, "ldap uri was %s\n", url);
+                fprintf(stderr, "ldap uri was %s\n", config->url);
         }
         if ((retval = ldap_set_option(shihad, LDAP_OPT_PROTOCOL_VERSION, &proto)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Cannot set protocol version to v3\n");
@@ -67,13 +75,13 @@ main(int argc, char *argv[])
 			ldap_unbind(shihad);
 		exit(1);
         }
-        if ((retval = ldap_simple_bind_s(shihad, user, pass)) != LDAP_SUCCESS) {
+        if ((retval = ldap_simple_bind_s(shihad, config->user, config->pass)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Bind failed with %s\n", ldap_err2string(retval));
 		if (shihad)
 			ldap_unbind(shihad);
                 exit(2);
         }
-        if ((retval = ldap_search_s(shihad, base_dn, LDAP_SCOPE_SUBTREE, filter, NULL, 0, &res)) != LDAP_SUCCESS) {
+        if ((retval = ldap_search_s(shihad, config->base_dn, LDAP_SCOPE_SUBTREE, config->filter, NULL, 0, &res)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Search failed with %s\n", ldap_err2string(retval));
                 if (shihad)
                         ldap_unbind(shihad);
@@ -89,5 +97,48 @@ main(int argc, char *argv[])
         ldap_msgfree(res);
         ldap_unbind(shihad);
         destroy_kv_list(list);
+        my_free(config);
         return retval;
+}
+
+static void
+fill_lds_config(lds_config_s *config, AILSA_LIST *list)
+{
+        if (!(config->user = get_value_from_kv_list(list, "user")))
+                lds_error(CONF_USER);
+        if (!(config->url = get_value_from_kv_list(list, "url")))
+                lds_error(CONF_URL);
+        if (!(config->pass = get_value_from_kv_list(list, "pass")))
+                lds_error(CONF_PASS);
+        if (!(config->base_dn = get_value_from_kv_list(list, "base")))
+                lds_error(CONF_BASE_DN);
+        if (!(config->filter = get_value_from_kv_list(list, "filter")))
+                lds_error(CONF_FILTER);
+}
+
+static void
+lds_error(int error)
+{
+        switch(error) {
+        case CONF_USER:
+                ailsa_syslog(LOG_DAEMON, "Cannot get user from config");
+                exit(CONF_USER);
+                break;
+        case CONF_URL:
+                ailsa_syslog(LOG_DAEMON, "Cannot get url from config");
+                exit(CONF_URL);
+                break;
+        case CONF_PASS:
+                ailsa_syslog(LOG_DAEMON, "Cannot get pass from config");
+                exit(CONF_PASS);
+                break;
+        case CONF_BASE_DN:
+                ailsa_syslog(LOG_DAEMON, "Cannot get base DN from config");
+                exit(CONF_BASE_DN);
+                break;
+        case CONF_FILTER:
+                ailsa_syslog(LOG_DAEMON, "Cannot get filter from config");
+                exit(CONF_FILTER);
+                break;
+        }
 }

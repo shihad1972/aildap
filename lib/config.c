@@ -63,7 +63,7 @@ aildap_parse_system_config(AILSA_LIST *config)
         FILE *conf_file = NULL;
 
         if (!(conf_file = fopen(file, "r"))) {
-                ailsa_syslog(LOG_ERR, "Cannot open file %s\n", file);
+                ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
                 goto cleanup;
         }
         aildap_parse_config_values(config, conf_file);
@@ -81,7 +81,7 @@ aildap_parse_user_config(AILSA_LIST *config, const char *prog)
 
         sprintf(file, "%s/.%s/%s.conf", home, PACKAGE, prog);
         if (!(conf = fopen(file, "r"))) {
-                ailsa_syslog(LOG_ERR, "Cannot open file %s\n", file);
+                ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
                 goto cleanup;
         }
         aildap_parse_config_values(config, conf);
@@ -104,7 +104,7 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
                 if (sscanf(l, " %[#\n\r]", k))   // Empty line or comment
                         continue;
                 if (sscanf(l, " %[a-zA-Z0-9_] %[^#\n\r]", k, v) < 2) {
-                        ailsa_syslog(LOG_ERR, "error in config file at line %d: %s\n", i, l);
+                        ailsa_syslog(LOG_DAEMON, "error in config file at line %d: %s\n", i, l);
                         continue;
                 }
                 for (p = k; *p; p++) if (isalpha(*p))*p = tolower(*p);
