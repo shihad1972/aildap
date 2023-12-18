@@ -52,9 +52,9 @@ main(int argc, char *argv[])
         LDAP *shihad = NULL;
         LDAPMessage *res = NULL;
         LDAPMessage *e = NULL;
-        AILSA_LIST *list = ailsa_calloc(sizeof(AILSA_LIST), "AILSA_LIST in main of lds.c");
+        AILSA_LIST *list;
 
-        ailsa_list_init(list, clean_kv_s, compare_key);
+        create_kv_list(&list);
         if (argc >= 0)  // Silence compiler warnings *sigh*
                 aildap_parse_config(list, basename(argv[0]));
         if ((retval = ldap_initialize(&shihad, url)) != LDAP_SUCCESS) {
@@ -88,7 +88,6 @@ main(int argc, char *argv[])
         }
         ldap_msgfree(res);
         ldap_unbind(shihad);
-        ailsa_list_destroy(list);
-        my_free(list);
+        destroy_kv_list(list);
         return retval;
 }

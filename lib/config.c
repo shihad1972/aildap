@@ -40,7 +40,7 @@
 #include <ailsaldap.h>
 
 static void
-aildap_parse_system_config(AILSA_LIST *config, const char *prog);
+aildap_parse_system_config(AILSA_LIST *config);
 
 static void
 aildap_parse_user_config(AILSA_LIST *config, const char *prog);
@@ -51,13 +51,14 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file);
 void
 aildap_parse_config(AILSA_LIST *config, const char *prog)
 {
-        aildap_parse_system_config(config, prog);
+        aildap_parse_system_config(config);
         aildap_parse_user_config(config, prog);
 }
 
 static void
-aildap_parse_system_config(AILSA_LIST *config, const char *prog)
+aildap_parse_system_config(AILSA_LIST *config)
 {
+// Need to add other potential config files
         const char *file = "/etc/ldap/ldap.conf";
         FILE *conf_file = NULL;
 
@@ -94,9 +95,7 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
 {
         char l[RBUFF_S], k[RBUFF_S], v[RBUFF_S];
         char *p;
-        int i, max = 128;
-        AILSA_DICT *kv = NULL;
-        void *mem = NULL;
+        int i, retval,  max = 128;
 
         for (i=1; max > 0; i++) {
                 if (!(fgets(l, RBUFF_S - 1, file))) {
@@ -109,29 +108,8 @@ aildap_parse_config_values(AILSA_LIST *config, FILE *file)
                         continue;
                 }
                 for (p = k; *p; p++) if (isalpha(*p))*p = tolower(*p);
-                init_kv_s(&kv);
-                if ((put_kv_key(kv, k)) != 0) {
-                        ailsa_syslog(LOG_ERR, "cannot add key to KV pair in aildap_parse_config_values");
-                        exit(EXIT_FAILURE);
-                }
-                if ((ailsa_list_get_member(config, kv, &mem)) != -1) {
-                        clean_kv_s(kv);
-                        kv = mem;
-                        if ((put_kv_value(kv, v)) != 0) {
-                                ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
-                                exit(EXIT_FAILURE);
-                        }
-                        max--;
-                        continue;
-                }
-                if ((put_kv_value(kv, v)) != 0) {
-                        ailsa_syslog(LOG_ERR, "cannot add value to KV pair in aildap_parse_config_values");
-                        exit(EXIT_FAILURE);
-                }
-                if ((ailsa_list_insert_tail(config, kv)) != 0) {
-                        ailsa_syslog(LOG_ERR, "cannot add element to list in aildap_parse_config_values");
-                        exit(EXIT_FAILURE);
-                }
+                if ((retval = add_to_kv_list(config, k, v)) != 0)
+                        exit(retval);
                 max--;       
         }
         return;
