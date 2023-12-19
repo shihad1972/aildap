@@ -39,7 +39,7 @@
 int
 parse_command_line(int argc, char *argv[], inp_data_s *data)
 {
-	const char *optstr = "d:ghln:pu:vG:U:";
+	const char *optstr = "d:ghln:psu:vG:U:";
 	int opt, slen, retval;
 	opt = slen = retval = 0;
 
@@ -52,6 +52,7 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		{"long-name",		no_argument,		NULL,	'l'},
 		{"name",		required_argument,	NULL,	'n'},
 		{"no-password",		no_argument,		NULL,	'p'},
+		{"sso",			no_argument,		NULL,	's'},
 		{"userid",		required_argument,	NULL,	'u'},
 		{"version", 		no_argument,		NULL,	'v'},
 		{"group-ou",		required_argument,	NULL,	'G'},
@@ -74,6 +75,8 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		} else if (opt == 'n') {
 			if (!(data->name = strndup(optarg, NAME)))
 				error(MALLOC, errno, "data->name");
+		} else if (opt == 's') {
+			data->sso = 1;
 		} else if (opt == 'u') {
 			if (optarg)
 				data->user = (short)strtoul(optarg, NULL, DECIMAL);
@@ -104,7 +107,7 @@ parse_command_line(int argc, char *argv[], inp_data_s *data)
 		fprintf(stderr, "No name specified\n");
 		rep_usage(argv[0]);
 		exit (1);
-	} else if (data->user == 0) {
+	} else if ((data->user == 0) && (data->sso == 0)) {
 		fprintf(stderr, "No userid specified\n");
 		rep_usage(argv[0]);
 		exit (1);
@@ -117,19 +120,20 @@ main (int argc, char *argv[])
 {
 	char *pass;
 	int retval = 0;
-	inp_data_s *data;
+	inp_data_s *data = ailsa_calloc(sizeof(inp_data_s), "data in main");
 
-	if (!(data = malloc(sizeof(inp_data_s))))
-		rep_err("data in main");
-	memset (data, 0, sizeof(inp_data_s));
 	parse_command_line(argc, argv, data);
-	split_name(data);
+	if (data->sso == 0)
+		split_name(data);
 	if (data->np == 0) {
 		pass = getPassword("Enter password for user: ");
 		data->pass = strndup(pass, DOMAIN);
 		free(pass);
 	}
-	output_ldif(data);
+	if (data->sso == 0)
+		output_user_ldif(data);
+	else
+		output_sso_ldif(data);
 	clean_lcu_data(data);
 	return retval;
 }

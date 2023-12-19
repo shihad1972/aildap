@@ -146,7 +146,42 @@ getPassword(const char *message)
 }
 
 void
-output_ldif(inp_data_s *data)
+output_sso_ldif(inp_data_s *data)
+{
+	char *name, *phash = '\0', *ldom = get_ldif_format(data->dom, "dc", ".");
+	const char *uou = "people";
+
+	name = data->name;
+	if (data->uou)
+		uou = data->uou;
+#ifdef HAVE_GLIB
+# ifdef HAVE_OPENSSL
+	if (data->np ==  0)
+		phash = get_ldif_pass_hash(data->pass);
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
+	printf("\
+# %s, %s, %s\n\
+dn: cn=%s,ou=%s,%s\n\
+cn: %s\n\
+objectClass: simpleSecurityObject\n\
+objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
+#ifdef HAVE_GLIB
+# ifdef HAVE_OPENSSL
+	if (data->np == 0)
+		printf("userPassword: {SSHA}%s\n", phash);
+# else
+	if (data->np == 0)
+		printf("userPassword: %s\n", data->pass);
+# endif /* HAVE_OPENSSL */
+#endif /* HAVE_GLIB */
+	free(ldom);
+	if(phash)
+		free(phash);
+}
+
+void
+output_user_ldif(inp_data_s *data)
 {
 	char *name, *ldom, *phash = '\0';
 	const char *uou = "people", *gou = "group";

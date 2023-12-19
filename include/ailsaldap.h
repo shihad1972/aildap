@@ -84,7 +84,7 @@ typedef struct cont_s {
 } cont_s;
 
 typedef struct inp_data_s {
-	unsigned short int gr, lu, user, np;
+	unsigned short int gr, lu, user, np, sso;
 	char *dom, *sur, *name, *uname, *pass, *fname, *gou, *uou;
 } inp_data_s;
 
@@ -265,7 +265,10 @@ void
 split_name(inp_data_s *data);
 
 void
-output_ldif(inp_data_s *data);
+output_user_ldif(inp_data_s *data);
+
+void
+output_sso_ldif(inp_data_s *data);
 
 void
 output_version(const char *name);

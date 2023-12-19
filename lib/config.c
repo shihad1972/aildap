@@ -79,7 +79,8 @@ aildap_parse_user_config(AILSA_LIST *config, const char *prog)
         FILE *conf = NULL;
         char *home = getenv("HOME");
 
-        sprintf(file, "%s/.%s/%s.conf", home, PACKAGE, prog);
+        if (snprintf(file, RBUFF_S, "%s/.%s/%s.conf", home, PACKAGE, prog) >= RBUFF_S)
+                ailsa_syslog(LOG_DAEMON, "Path to user config truncated");
         if (!(conf = fopen(file, "r"))) {
                 ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
                 goto cleanup;
