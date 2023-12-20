@@ -46,6 +46,9 @@ typedef struct lds_config_s {
 static void
 fill_lds_config(lds_config_s *config, AILSA_LIST *list);
 
+static int
+parse_lds_command_line(int argc, char *argv[], lds_config_s *config);
+
 static void
 lds_error(int error);
 
@@ -62,9 +65,10 @@ main(int argc, char *argv[])
         AILSA_LIST *list;
 
         create_kv_list(&list);
-        if (argc >= 0)  // Silence compiler warnings *sigh*
-                aildap_parse_config(list, basename(argv[0]));
+        aildap_parse_config(list, basename(argv[0]));
         fill_lds_config(config, list);
+        if (argc > 1)
+                retval = parse_lds_command_line(argc, argv, config);
         if ((retval = ldap_initialize(&shihad, config->url)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
                 fprintf(stderr, "ldap uri was %s\n", config->url);
@@ -141,4 +145,26 @@ lds_error(int error)
                 exit(CONF_FILTER);
                 break;
         }
+}
+
+static int
+parse_lds_command_line(int argc, char *argv[], lds_config_s *config)
+{
+        const char *optstr = "f:";
+        int opt, retval = 0;
+#ifdef HAVE_GETOPT_H
+	int index;
+	struct option lopts[] = {
+                {"filter",              required_argument,      NULL,   'f'},
+                {NULL,                  0,                      NULL,   0}
+        };
+        while ((opt = getopt_long(argc, argv, optstr, lopts, &index)) != -1) {
+# else
+	while ((opt = getopt(argc, argv, optstr)) != -1) {
+#endif // HAVE_GETOPT_H
+                if (opt == 'f') {
+                        config->filter = optarg;
+                }
+        }
+        return retval;
 }
