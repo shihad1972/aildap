@@ -28,7 +28,8 @@ else
         OLDCPPFLAGS="$CPPFLAGS"; CPPFLAGS="$CPPFLAGS -I$with_libailsa/include"
         AC_CHECK_LIB([alisa], [ailsa_list_init])
         if test "$ac_cv_lib_ailsa_ailsa_list_init" = "yes"; then
-                AILSA_LIBS="-L$with_libailsa/lib -lailsa"
+                AILSA_LDFLAGS="-L$with_libailsa/lib"
+                AILSA_LIBS="-lailsa"
                 HAVE_AILSA="true"
                 test -f "$with_libailsa/include/ailsa.h" && AILSA_CFLAGS="-I$with_libailsa/include"
                 AC_MSG_CHECKING([libailsa])
@@ -39,6 +40,7 @@ else
                 AC_MSG_WARN([libailsa not found])
         fi
 fi
-AC_SUBST([AILSA_LIBS])
 AC_SUBST([AILSA_LDFLAGS])
+AC_SUBST([AILSA_LIBS])
+AC_SUBST([AILSA_CFLAGS])
 ])

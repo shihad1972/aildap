@@ -50,7 +50,7 @@ fi
 
 host=docker.shihad.org:5000
 image=${host}/${APP}:${TAG}
-password=$(aws secretsmanager get-secret-value --region eu-west-1 --secret-id /shihad/docker | jq --raw-output '.SecretString' | jq -r .password)
+password=$(aws secretsmanager get-secret-value --region eu-west-1 --secret-id /shihad/docker | jq --raw-output '.SecretString' | jq -r .iain)
 
 docker login ${host} --password="${password}" --username=iain
 echo "Deploying image $image:"

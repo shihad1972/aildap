@@ -58,7 +58,7 @@ else
 		HAVE_KERBEROS="true"
 	else
 		AC_MSG_RESULT([no])
-		AC_MSG_WARN([--with-kerberos5 specified but krb5-config not found])
+		AC_MSG_ERROR([--with-kerberos5 specified but krb5-config not found])
 	fi
 fi
 AC_SUBST([K5CFLAGS])
