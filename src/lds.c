@@ -39,6 +39,15 @@
 #include <ailsa.h>
 #include <ailsaldap.h>
 
+/*
+ * This struct is quite useful, as all the pointers are const and so
+ * point to _already existing pointers_ The cool thing about this is
+ * they do not need to be free'ed as they exist outside the struct.
+ *
+ * You will notice in the parse_lds_command_line that we can configure
+ * pointers in this struct to point directly at the command line arguments
+ * passed to the application.
+ */
 typedef struct lds_config_s {
         const char *user, *url, *pass, *base_dn, *filter;
 } lds_config_s;
@@ -46,7 +55,7 @@ typedef struct lds_config_s {
 static void
 fill_lds_config(lds_config_s *config, AILSA_LIST *list);
 
-static int
+static void
 parse_lds_command_line(int argc, char *argv[], lds_config_s *config);
 
 static void
@@ -68,7 +77,7 @@ main(int argc, char *argv[])
         aildap_parse_config(list, basename(argv[0]));
         fill_lds_config(config, list);
         if (argc > 1)
-                retval = parse_lds_command_line(argc, argv, config);
+                parse_lds_command_line(argc, argv, config);
         if ((retval = ldap_initialize(&shihad, config->url)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
                 fprintf(stderr, "ldap uri was %s\n", config->url);
@@ -147,11 +156,11 @@ lds_error(int error)
         }
 }
 
-static int
+static void
 parse_lds_command_line(int argc, char *argv[], lds_config_s *config)
 {
         const char *optstr = "f:";
-        int opt, retval = 0;
+        int opt;
 #ifdef HAVE_GETOPT_H
 	int index;
 	struct option lopts[] = {
@@ -166,5 +175,4 @@ parse_lds_command_line(int argc, char *argv[], lds_config_s *config)
                         config->filter = optarg;
                 }
         }
-        return retval;
 }

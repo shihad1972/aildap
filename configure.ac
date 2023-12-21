@@ -56,6 +56,7 @@ AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
 AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
 AM_CONDITIONAL([HAVE_CHECK], [test x"$HAVE_CHECK" = xtrue])
 AM_CONDITIONAL([HAVE_GLIB_OPENSSL], [test x"$HAVE_GLIB" = "xtrue" && test x"$HAVE_OPENSSL" = "xtrue"])
+AM_CONDITIONAL([HAVE_KERBEROS], [test x"$HAVE_KERBEROS" = "xtrue"])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
                  old/Makefile
