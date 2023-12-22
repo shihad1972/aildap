@@ -1,6 +1,6 @@
 /*
  *
- *  ldap-col: collection of ldap utilities
+ *  aildap: collection of ldap utilities
  *  Copyright (C) 2023  Iain M Conochie <iain-AT-ailsatech-DOT-net>
  *
  *  This program is free software; you can redistribute it and/or modify

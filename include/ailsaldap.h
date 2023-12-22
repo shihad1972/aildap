@@ -26,6 +26,7 @@
  *
  */
 
+#include <ldap.h>
 #include <ailsa.h>
 
 #ifndef HAVE_AILSA_LDAP_H
@@ -287,4 +288,9 @@ int
 output_hex_conversion(unsigned char *string, const char *hash);
 
 # endif //HAVE_OPENSSL
+
+// LDAP Helper functions
+void
+ailsa_ldap_init(LDAP **ailsa, char *url);
+
 #endif // HAVE_AILSA_LDAP_H

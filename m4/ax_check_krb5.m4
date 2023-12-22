@@ -21,10 +21,9 @@ dnl this software for any purpose.  It is provided "as is" without express
 dnl or implied warranty.
 
 dnl
-dnl Updates by Iain M. Conochie
+dnl Updates by Iain M. Conochie December 2023
 dnl  * Change macro name
 dnl  * Updated initial search path
-dnl 2023
 dnl
 
 dnl AX_CHECK_KRB5
