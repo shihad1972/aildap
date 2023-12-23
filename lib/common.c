@@ -59,13 +59,11 @@ rep_usage(const char *prog)
 		fprintf(stderr, "-d domain -n newou ( -o comma seperated list of ou's) ( -i | -r )\n");
 	else if (strstr(prog, "lcu")) {
 		fprintf(stderr, "\
--d domain [ -g ] [ -l ] [ -p ] -n full-name -u userid [ -G group-ou ] [ -U users-ou ]\n\
+-d domain [ -g ] [ -l ] [ -p ] [ -s ] -n full-name -u userid [ -G group-ou ] [ -U users-ou ]\n\
 -g: create group for the user (same name and id)\n\
--l: create long user name (first initial plus surname)\n");
-#ifdef HAVE_OPENSSL
-		fprintf(stderr, "\
--p: do not ask for a password\n");
-#endif /* HAVE_OPENSSL */
+-l: create long user name (first initial plus surname)\n\
+-p: do not ask for a password\n\
+-s: create a Simple Security Object user\n");
 	} else if (strstr(prog, "hh")) {
 		fprintf(stderr, "[ -n hostname ]\n");
 	}

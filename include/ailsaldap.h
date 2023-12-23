@@ -291,6 +291,6 @@ output_hex_conversion(unsigned char *string, const char *hash);
 
 // LDAP Helper functions
 void
-ailsa_ldap_init(LDAP **ailsa, char *url);
+ailsa_ldap_init(LDAP **ailsa, const char *url);
 
 #endif // HAVE_AILSA_LDAP_H

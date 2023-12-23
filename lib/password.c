@@ -20,7 +20,7 @@
  *  password.c
  * 
  *  Contains the sha function for generating passwords for slapd
- *  and also various other functions. Part fo the ailsaldap library
+ *  and also various other functions. Part of the ailsaldap library
  * 
  */
 

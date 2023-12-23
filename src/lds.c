@@ -65,7 +65,6 @@ int
 main(int argc, char *argv[])
 {
         int retval = 0;
-        int proto = LDAP_VERSION3;
         char *dn = NULL;
         lds_config_s *config = ailsa_calloc(sizeof(lds_config_s), "config in main");
         LDAP *shihad = NULL;
@@ -78,16 +77,7 @@ main(int argc, char *argv[])
         fill_lds_config(config, list);
         if (argc > 1)
                 parse_lds_command_line(argc, argv, config);
-        if ((retval = ldap_initialize(&shihad, config->url)) != LDAP_SUCCESS) {
-                fprintf(stderr, "Connect failed with %s\n", ldap_err2string(retval));
-                fprintf(stderr, "ldap uri was %s\n", config->url);
-        }
-        if ((retval = ldap_set_option(shihad, LDAP_OPT_PROTOCOL_VERSION, &proto)) != LDAP_SUCCESS) {
-                fprintf(stderr, "Cannot set protocol version to v3\n");
-		if (shihad)
-			ldap_unbind(shihad);
-		exit(1);
-        }
+        ailsa_ldap_init(&shihad, config->url);
         if ((retval = ldap_simple_bind_s(shihad, config->user, config->pass)) != LDAP_SUCCESS) {
                 fprintf(stderr, "Bind failed with %s\n", ldap_err2string(retval));
 		if (shihad)
