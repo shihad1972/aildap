@@ -1,13 +1,114 @@
-.TH LCDHCP 1 "Version 0.1: April 13 2014" "Collection of ldap utilities" "ldap collection"
+.TH LCDHCP 1 "Version 0.4.4: December 25 2023" "Collection of ldap utilities" "ldap collection"
 .SH NAME
 lcdhcp \- LDAP create DHCP.
 .SH SYNOPSIS
+.B lcdhcp ACTION ARGUMENTS
+
 .B lcdhcp
+[
+.B -h | -v
+]
+
+.B lcdhcp -t -b
+dn
+.B -n
+name
+.B -i
+ip
+.B -e
+ether
+.B -d
+domain
+.B
+[
+.B -f
+file
+.B
+]
+
+.B lcdhcp -n -b
+dn
+.B -d
+domain
+.B -g
+gateway
+.B -k
+netblock
+.B -m
+netmask
+.B -i
+ip
+.B
+[
+.B -f
+file
+.B
+]
+
+.B lcdhcp -s -b
+dn
+.B -n
+name
+.B
+[
+.B -f
+file
+.B
+]
+
+.SH DESCRIPTION
+\fBlcdhcp\fP will create an ldif output for a \fIDHCP\fP host, server or network
+in an \fILDAP\fP directory. The directory must have the \fIisc-dhcp-server\fP
+schema loaded for the ldif to be accepted.
+.SH OPTIONS
+.B ACTIONS
+.IP "-h,  --help"
+display help
+.IP "-v,  --version"
+display version
+.IP "-t,  --host"
+create a host entry
+.IP "-s,  --server"
+create a server entry
+.IP "-n,  --network"
+create a network entry
+.PP
+.B ARGUMENTS
+.IP "-a,  --name \fBname\fP"
+a name for the entry
+.IP "-b,  --basedn \fBbase-dn\fP"
+base DN of the ldap directory
+.IP "-c,  --container \fBou\fP"
+name of the OU containing the entries
+.IP "-d,  --domain \fBdomain\fP"
+DNS domain name
+.IP "-e,  --ethernet \fBaddress\fP"
+ethernet address of the host
+.IP "-f,  --filename \fBfilename\fP"
+output to a file called \fIfilename\fP
+.IP "-g,  --gateway \fBaddress\fP"
+gateway IP address
+.IP "-i,  --ip-address \fBaddress\fP"
+ip address
+.IP "-k,  --netblock \fBaddress\fP"
+netblock address
+.IP "-m,  --boot-file \fBfilename\fP"
+net boot file called \fIfilename\fP
+.IP "-m,  --netmaks \fBaddress\fP"
+netmask address
+.IP "-o,  --ou \fBou\fP"
+ou name
+.IP "-r,  --boot-server \fBaddress\fP"
+boot server address
+.IP "-u,  --ddns-update-style \fBstyle\fP"
+dynamic DNS update style
+.IP "-x,  --disable-booting"
+disable booting of the host over the network
 
 .SH ENVIRONMENT
 There are no environment variables used in this program.
 .SH AUTHOR
-Iain M Conochie <iain-at-thargoid-dot-co-dot-uk>
+Iain M Conochie <iain-at-ailsatech-dot-net>
 .SH "SEE ALSO"
 .BR lcdb(1)
 .BR lcc(1)

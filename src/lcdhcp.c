@@ -140,21 +140,21 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 #ifdef HAVE_GETOPT_H
 	int index;
 	struct option l_opts[] = {
+		{"name",		required_argument,	NULL,	'a'},
 		{"basedn",		required_argument,	NULL,	'b'},
-		{"boot-file",		required_argument,	NULL,	'l'},
-		{"boot-server",		required_argument,	NULL,	'r'},
 		{"container",		required_argument,	NULL,	'c'},
-		{"ddns-update-style",	required_argument,	NULL,	'u'},
-		{"disable-booting",	no_argument,		NULL,	'x'},
 		{"domain",		required_argument,	NULL,	'd'},
 		{"ethernet",		required_argument,	NULL,	'e'},
+		{"filename",		required_argument,	NULL,	'f'},
 		{"gateway",		required_argument,	NULL,	'g'},
 		{"ip-address",		required_argument,	NULL,	'i'},
-		{"name",		required_argument,	NULL,	'a'},
 		{"netblock",		required_argument,	NULL,	'k'},
+		{"boot-file",		required_argument,	NULL,	'l'},
 		{"netmask",		required_argument,	NULL,	'm'},
 		{"ou",			required_argument,	NULL,	'o'},
-		{"filename",		required_argument,	NULL,	'f'},
+		{"boot-server",		required_argument,	NULL,	'r'},
+		{"ddns-update-style",	required_argument,	NULL,	'u'},
+		{"disable-booting",	no_argument,		NULL,	'x'},
 		{"help",		no_argument,		NULL,	'h'},
 		{"host",		no_argument,		NULL,	't'},
 		{"network",		no_argument,		NULL,	'n'},
@@ -205,7 +205,7 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 		} else if (opt == 'm') {
 			if (!(data->netm = strndup(optarg, INET6_ADDRSTRLEN - 1)))
 				error(MALLOC, errno, "data->netm");
-		} else if (opt == 'o') {
+		} else if (opt == 'o') { // OU not used at present
 			if (!(data->ou = strndup(optarg, CANAME - 1)))
 				error(MALLOC, errno, "data->ou");
 		} else if (opt == 'f') {
@@ -357,7 +357,7 @@ cn: %s\n\
 %s: fixed-address %s\n\
 %s: domain-name \"%s\"\n",
 data->name, container, data->basedn, data->name, container, data->dn,
-data->name, obcl_top, dp_shr_net, dp_opt, dh_mac, data->ether, dh_stmt,
+data->name, obcl_top, dp_host, dp_opt, dh_mac, data->ether, dh_stmt,
 data->ipaddr, dh_stmt, data->domain);
 	if (out != stdout)
 		fclose(out);
