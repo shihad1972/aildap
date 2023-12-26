@@ -67,6 +67,16 @@ aildap_parse_system_config(AILSA_LIST *config)
                 goto cleanup;
         }
         aildap_parse_config_values(config, conf_file);
+        if (conf_file)
+                fclose(conf_file);
+        file = "/etc/aildap/aildap.conf";
+        if (!(conf_file = fopen(file, "r"))) {
+#ifdef DEBUG
+                ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
+#endif
+                goto cleanup;
+        }
+        aildap_parse_config_values(config, conf_file);
         cleanup:
                 if (conf_file)
                         fclose(conf_file);
@@ -80,7 +90,9 @@ aildap_parse_user_config(AILSA_LIST *config, const char *prog)
         char *home = getenv("HOME");
 
         if (snprintf(file, RBUFF_S, "%s/.%s/%s.conf", home, PACKAGE, prog) >= RBUFF_S)
+#ifdef DEBUG
                 ailsa_syslog(LOG_DAEMON, "Path to user config truncated");
+#endif
         if (!(conf = fopen(file, "r"))) {
                 ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
                 goto cleanup;

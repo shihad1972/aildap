@@ -1,4 +1,4 @@
-.TH LCDHCP 1 "Version 0.4.4: December 25 2023" "Collection of ldap utilities" "ldap collection"
+.TH LCDHCP 1 "Version 0.4.4: December 26 2023" "Collection of ldap utilities" "ldap collection"
 .SH NAME
 lcdhcp \- LDAP create DHCP.
 .SH SYNOPSIS
@@ -30,8 +30,12 @@ file
 dn
 .B -d
 domain
+.B
+[
 .B -g
 gateway
+.B
+]
 .B -k
 netblock
 .B -m
@@ -78,8 +82,6 @@ create a network entry
 a name for the entry
 .IP "-b,  --basedn \fBbase-dn\fP"
 base DN of the ldap directory
-.IP "-c,  --container \fBou\fP"
-name of the OU containing the entries
 .IP "-d,  --domain \fBdomain\fP"
 DNS domain name
 .IP "-e,  --ethernet \fBaddress\fP"
@@ -97,14 +99,26 @@ net boot file called \fIfilename\fP
 .IP "-m,  --netmaks \fBaddress\fP"
 netmask address
 .IP "-o,  --ou \fBou\fP"
-ou name
+ou name. If 1 is not provided, 'dhcp' will be used
 .IP "-r,  --boot-server \fBaddress\fP"
 boot server address
 .IP "-u,  --ddns-update-style \fBstyle\fP"
 dynamic DNS update style
 .IP "-x,  --disable-booting"
 disable booting of the host over the network
-
+.SH FILES
+.I /etc/ldap/ldap.conf
+.RS
+The system wide ldap configuration file
+.RE
+.I /etc/aildap/aildap.conf
+.RS
+The system wide aildap configuration file
+.RE
+.I ~/.aildap/lcdhcp.conf
+.RS
+User configuration for the \fIlcdhcp\fP program
+.RE
 .SH ENVIRONMENT
 There are no environment variables used in this program.
 .SH AUTHOR

@@ -328,41 +328,6 @@ clean_lcsudo_data(lcsudo_s *data)
 }
 
 void
-init_lcdhcp_data_struct(lcdhcp_s *data)
-{
-	if (data) {
-		memset(data, 0, sizeof(lcdhcp_s));
-		data->boot = 1;
-	} else {
-		fprintf(stderr, "null pointer passed to init_lcdhcp_data_struct");
-		exit(1);
-	}
-}
-
-void
-clean_lcdhcp_data(lcdhcp_s *data)
-{
-	if (data) {
-		CLEAN_DATA_MEMBER(basedn);
-		CLEAN_DATA_MEMBER(bfile);
-		CLEAN_DATA_MEMBER(bserver);
-		CLEAN_DATA_MEMBER(ether);
-		CLEAN_DATA_MEMBER(cont);
-		CLEAN_DATA_MEMBER(ddns);
-		CLEAN_DATA_MEMBER(dn);
-		CLEAN_DATA_MEMBER(domain);
-		CLEAN_DATA_MEMBER(gw);
-		CLEAN_DATA_MEMBER(ipaddr);
-		CLEAN_DATA_MEMBER(name);
-		CLEAN_DATA_MEMBER(netb);
-		CLEAN_DATA_MEMBER(netm);
-		CLEAN_DATA_MEMBER(ou);
-		CLEAN_DATA_MEMBER(filename);
-		free(data);
-	}
-}
-
-void
 check_snprintf(char *target, int max, const char *string, const char *what)
 {
 	int retval;

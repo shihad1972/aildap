@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h>
 #include <error.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -35,6 +36,7 @@
 # define _GNU_SOURCE
 # include <getopt.h>
 #endif /* HAVE_GETOPT_H */
+#include <ailsa.h>
 #define WANT_OBCL_TOP	// Expose obcl_top variable
 #include <ailsaldap.h>
 
@@ -76,6 +78,10 @@ const char *dh_netmask = "dhcpNetMask";
 /*
  * Static functions in this file. Add ALL functions within this file here.
  */
+
+static void
+fill_dhcp_config(lcdhcp_s *dhcp, AILSA_LIST *list);
+
 static int
 parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data);
 
@@ -102,20 +108,15 @@ main (int argc, char *argv[])
 {
 	int retval = 0;
 	lcdhcp_s *dhcp;
+	AILSA_LIST *list;
 
-	if (argc == 1) {
-		report_lcdhcp_help();
-		return retval;
-	}
-	if (!(dhcp = malloc(sizeof(lcdhcp_s))))
-		error(MALLOC, errno, "dhcp in main");
-	init_lcdhcp_data_struct(dhcp);
-	if ((retval = parse_lcdhcp_command_line(argc, argv, dhcp)) != 0)
-		goto cleanup;
-	if (dhcp->basedn) {
-		if (!(dhcp->dn = get_ldif_format(dhcp->basedn, "dc", ".")))
-			rep_err("Cannot convert basedn\n");
-	}
+	dhcp = ailsa_calloc(sizeof(lcdhcp_s), "dhcp in main");
+	create_kv_list(&list);
+	aildap_parse_config(list, basename(argv[0]));
+	fill_dhcp_config(dhcp, list);
+	if (argc > 1)
+		if ((retval = parse_lcdhcp_command_line(argc, argv, dhcp)) != 0)
+			goto cleanup;
 	if (dhcp->action == ACT_VERSION)
 		output_version(argv[0]);
 	else if (dhcp->action == ACT_HELP)
@@ -127,8 +128,16 @@ main (int argc, char *argv[])
 	else if (dhcp->action == ACT_NET)
 		output_dhcp_network_ldif(dhcp);
 	cleanup:
-		clean_lcdhcp_data(dhcp);
+		destroy_kv_list(list);
+		my_free(dhcp);
 		return retval;
+}
+
+static void
+fill_dhcp_config(lcdhcp_s *config, AILSA_LIST *list)
+{
+	config->dn = get_value_from_kv_list(list, "base");
+	config->ou = get_value_from_kv_list(list, "ou");
 }
 
 static int
@@ -136,13 +145,11 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 {
 	int opt;
 	int retval = 0;
-	const char *optstr = "b:l:r:c:u:xd:e:g:i:a:k:m:o:htnsv";
+	const char *optstr = "b:l:r:u:xd:e:g:i:n:k:m:o:htwsv";
 #ifdef HAVE_GETOPT_H
 	int index;
 	struct option l_opts[] = {
-		{"name",		required_argument,	NULL,	'a'},
 		{"basedn",		required_argument,	NULL,	'b'},
-		{"container",		required_argument,	NULL,	'c'},
 		{"domain",		required_argument,	NULL,	'd'},
 		{"ethernet",		required_argument,	NULL,	'e'},
 		{"filename",		required_argument,	NULL,	'f'},
@@ -151,13 +158,14 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 		{"netblock",		required_argument,	NULL,	'k'},
 		{"boot-file",		required_argument,	NULL,	'l'},
 		{"netmask",		required_argument,	NULL,	'm'},
+		{"name",		required_argument,	NULL,	'n'},
 		{"ou",			required_argument,	NULL,	'o'},
 		{"boot-server",		required_argument,	NULL,	'r'},
 		{"ddns-update-style",	required_argument,	NULL,	'u'},
 		{"disable-booting",	no_argument,		NULL,	'x'},
 		{"help",		no_argument,		NULL,	'h'},
 		{"host",		no_argument,		NULL,	't'},
-		{"network",		no_argument,		NULL,	'n'},
+		{"network",		no_argument,		NULL,	'w'},
 		{"server",		no_argument,		NULL,	's'},
 		{"version",		no_argument,		NULL,	'v'},
 		{NULL, 0, NULL, 0}
@@ -168,54 +176,38 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 #endif /* HAVE_GETOPT_H */
 	{
 		if (opt == 'b') {
-			if (!(data->basedn = strndup(optarg, DOMAIN - 1)))
-				error(MALLOC, errno, "data->basedn");
+			data->dn = optarg;
 		} else if (opt == 'l') {
-			if (!(data->bfile = strndup(optarg, FILES - 1)))
-				error(MALLOC, errno, "data->bfile");
+			data->bfile = optarg;
 		} else if (opt == 'r') {
-			if (!(data->bserver = strndup(optarg, INET6_ADDRSTRLEN - 1)))
-				error(MALLOC, errno, "data->bserver");
-		} else if (opt == 'c') {
-			if (!(data->cont = strndup(optarg, NAME - 1)))
-				error(MALLOC, errno, "data->cont");
+			data->bserver = optarg;
 		} else if (opt == 'u') {
-			if (!(data->ddns = strndup(optarg, GROUP - 1)))
-				error(MALLOC, errno, "data->ddns");
+			data->ddns = optarg;
 		} else if (opt == 'x') {
 			data->boot = 0;
 		} else if (opt == 'd') {
-			if (!(data->domain = strndup(optarg, DOMAIN - 1)))
-				error(MALLOC, errno, "data->domain");
+			data->domain = optarg;
 		} else if (opt == 'e') {
-			if (!(data->ether = strndup(optarg, NAME - 1)))
-				error(MALLOC, errno, "data->ether");
+			data->ether = optarg;
 		} else if (opt == 'g') {
-			if (!(data->gw = strndup(optarg, INET6_ADDRSTRLEN - 1)))
-				error(MALLOC, errno, "data->gw");
+			data->gw = optarg;
 		} else if (opt == 'i') {
-			if (!(data->ipaddr = strndup(optarg, INET6_ADDRSTRLEN - 1)))
-				error(MALLOC, errno, "data->ipaddr");
-		} else if (opt == 'a') {
-			if (!(data->name = strndup(optarg, CANAME - 1)))
-				error(MALLOC, errno, "data->name");
+			data->ipaddr = optarg;
+		} else if (opt == 'n') {
+			data->name = optarg;
 		} else if (opt == 'k') {
-			if (!(data->netb = strndup(optarg, INET6_ADDRSTRLEN - 1)))
-				error(MALLOC, errno, "data->netb");
+			data->netb = optarg;
 		} else if (opt == 'm') {
-			if (!(data->netm = strndup(optarg, INET6_ADDRSTRLEN - 1)))
-				error(MALLOC, errno, "data->netm");
+			data->netm = optarg;
 		} else if (opt == 'o') { // OU not used at present
-			if (!(data->ou = strndup(optarg, CANAME - 1)))
-				error(MALLOC, errno, "data->ou");
+			data->ou = optarg;
 		} else if (opt == 'f') {
-			if (!(data->filename = strndup(optarg, FILES - 1)))
-				error(MALLOC, errno, "data->filename");
+			data->filename = optarg;
 		} else if (opt == 'h') {
 			data->action = ACT_HELP;
 		} else if (opt == 't') {
 			data->action = ACT_HOST;
-		} else if (opt == 'n') {
+		} else if (opt == 'w') {
 			data->action = ACT_NET;
 		} else if (opt == 's') {
 			data->action = ACT_SERVER;
@@ -248,7 +240,7 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		what = "action";
 		goto cleanup;
 	}
-	if (!(data->basedn)) {
+	if (!(data->dn)) {
 		who = "all";
 		what = "basedn";
 		goto cleanup;
@@ -266,9 +258,6 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 			goto cleanup;
 		} else if (!(data->ipaddr)) {
 			what = "name server ip address";
-			goto cleanup;
-		} else if (!(data->gw)) {
-			what = "gateway";
 			goto cleanup;
 		} else if (!(data->netb)) {
 			what = "Network block";
@@ -331,7 +320,6 @@ static void
 output_dhcp_host_ldif(lcdhcp_s *data)
 {
 	FILE *out;
-	char *container;
 	if (!(data))		// Sanity check
 		return;
 	if (data->filename) {
@@ -342,10 +330,8 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 	} else {
 		out = stdout;
 	}
-	if (data->cont)
-		container = strndup(data->cont, NAME - 1);
-	else
-		container = strndup("dhcp", 5);
+	if (!(data->ou))
+		data->ou = "dhcp";
 	fprintf(out, "\
 # %s, %s, %s\n\
 dn: cn=%s,cn=%s,%s\n\
@@ -356,19 +342,17 @@ cn: %s\n\
 %s: ethernet %s\n\
 %s: fixed-address %s\n\
 %s: domain-name \"%s\"\n",
-data->name, container, data->basedn, data->name, container, data->dn,
+data->name, data->ou, data->dn, data->name, data->ou, data->dn,
 data->name, obcl_top, dp_host, dp_opt, dh_mac, data->ether, dh_stmt,
 data->ipaddr, dh_stmt, data->domain);
 	if (out != stdout)
 		fclose(out);
-	free(container);
 }
 
 static void
 output_dhcp_server_ldif(lcdhcp_s *data)
 {
 	FILE *out;
-	char *container;
 	if (!(data))		// Sanity check
 		return;
 	if (data->filename) {
@@ -379,44 +363,40 @@ output_dhcp_server_ldif(lcdhcp_s *data)
 	} else {
 		out = stdout;
 	}
-	if (data->cont)
-		container = strndup(data->cont, NAME - 1);
-	else
-		container = strndup("dhcp", 5);
+	if (!(data->ou))
+		data->ou = "dhcp";
 	fprintf(out, "\
-# %s, %s\n\
-dn: cn=%s,%s\n\
+# %s, %s, %s\n\
+dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
-%s: cn=%s,%s\n\n",
-data->name, data->basedn, data->name, data->dn,
-data->name, obcl_top, dp_server, dh_serv_dn, container, data->dn);
+%s: cn=service,ou=%s,%s\n\n",
+data->name, data->ou, data->dn, data->name, data->ou, data->dn,
+data->name, obcl_top, dp_server, dh_serv_dn, data->ou, data->dn);
 /*
  * Need to do some testing for booting and also ddns style
  */
 	fprintf(out, "\
-# %s, %s\n\
-dn: cn=%s,%s\n\
-cn: %s\n\
+# service, %s, %s\n\
+dn: cn=service,ou=%s,%s\n\
+cn: service\n\
 %s\n\
 %s\n\
-%s: cn=%s,%s\n\
+%s: ou=%s,%s\n\
 %s: allow booting\n\
 %s: allow bootp\n\
 %s: ddns-update-style none\n",
-container, data->basedn, container, data->dn, container, obcl_top, dp_service,
-dh_pri_dn, data->name, data->dn, dh_stmt, dh_stmt, dh_stmt);
+data->ou, data->dn, data->ou, data->dn, obcl_top, dp_service,
+dh_pri_dn, data->ou, data->dn, dh_stmt, dh_stmt, dh_stmt);
 	if (out != stdout)
 		fclose(out);
-	free(container);
 }
 
 static void
 output_dhcp_network_ldif(lcdhcp_s *data)
 {
 	FILE *out;
-	char *container;
 	if (!(data))		// Sanity check
 		return;
 	if (data->filename) {
@@ -427,36 +407,37 @@ output_dhcp_network_ldif(lcdhcp_s *data)
 	} else {
 		out = stdout;
 	}
-	if (data->cont)
-		container = strndup(data->cont, NAME - 1);
-	else
-		container = strndup("dhcp", 5);
+	if (!(data->ou))
+		data->ou = "dhcp";
 	fprintf(out, "\
 # %s, %s, %s\n\
-dn: cn=%s,cn=%s,%s\n\
+dn: cn=%s,cn=service,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
 %s\n\
 %s: domain-name-servers %s\n\
-%s: domain-search \"%s\"\n\
-%s: routers %s\n\n", data->domain, container, data->dn, data->domain,
-container, data->dn, data->domain, obcl_top, dp_shr_net, dp_opt, dh_opt,
-data->ipaddr, dh_opt, data->domain, dh_opt, data->gw);
+%s: domain-search \"%s\"\n", data->domain, data->ou, data->dn, data->domain,
+data->ou, data->dn, data->domain, obcl_top, dp_shr_net, dp_opt, dh_opt,
+data->ipaddr, dh_opt, data->domain);
+	if (data->gw)
+		fprintf(out, "\
+%s: routers %s\n\n", dh_opt, data->gw);
+	else
+		fprintf(out, "\n");
 	fprintf(out, "\
 # %s, %s, %s, %s\n\
-dn: cn=%s,cn=%s,cn=%s,%s\n\
+dn: cn=%s,cn=%s,cn=service,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
 %s: %s\n\
 %s: authoratative\n\
 %s: next-server %s\n\
-%s: filename \"pxelinux.0\"\n", data->netb, data->domain, container, data->dn,
-data->netb, data->domain, container, data->dn, data->netb, obcl_top, dp_subnet,
+%s: filename \"pxelinux.0\"\n", data->netb, data->domain, data->ou, data->dn,
+data->netb, data->domain, data->ou, data->dn, data->netb, obcl_top, dp_subnet,
 dh_netmask, data->netm, dh_stmt, dh_stmt, data->ipaddr, dh_stmt);
 	if (out != stdout)
 		fclose(out);
-	free(container);
 }
 

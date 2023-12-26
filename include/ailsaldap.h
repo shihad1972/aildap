@@ -63,8 +63,8 @@ typedef struct lcdb_s {
 } lcdb_s;
 
 typedef struct lcdhcp_s {
-	char *basedn, *bfile, *bserver, *ether, *cont, *ddns, *dn, *domain;
-	char *gw, *ipaddr, *name, *netb, *netm, *ou, *filename;
+	const char *bfile, *bserver, *ether, *ddns, *dn, *domain;
+	const char *gw, *ipaddr, *name, *netb, *netm, *ou, *filename;
 	short int action, boot;
 } lcdhcp_s;
 
@@ -237,12 +237,6 @@ init_lcsudo_data_struct(lcsudo_s *data);
 
 void
 clean_lcsudo_data(lcsudo_s *data);
-
-void
-init_lcdhcp_data_struct(lcdhcp_s *data);
-
-void
-clean_lcdhcp_data(lcdhcp_s *data);
 
 char *
 get_ldif_format(const char *form, const char *type, const char *delim);
