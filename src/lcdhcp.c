@@ -114,9 +114,13 @@ main (int argc, char *argv[])
 	create_kv_list(&list);
 	aildap_parse_config(list, basename(argv[0]));
 	fill_dhcp_config(dhcp, list);
-	if (argc > 1)
+	if (argc > 1) {
 		if ((retval = parse_lcdhcp_command_line(argc, argv, dhcp)) != 0)
 			goto cleanup;
+	} else {
+		report_lcdhcp_help();
+		goto cleanup;
+	}
 	if (dhcp->action == ACT_VERSION)
 		output_version(argv[0]);
 	else if (dhcp->action == ACT_HELP)
@@ -274,9 +278,6 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		} else if (!(data->ipaddr)) {
 			what = "ip address";
 			goto cleanup;
-		} else if (!(data->domain)) {
-			what = "domain";
-			goto cleanup;
 		} else if (!(data->ether)) {
 			what = "ether";
 			goto cleanup;
@@ -334,17 +335,19 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 		data->ou = "dhcp";
 	fprintf(out, "\
 # %s, %s, %s\n\
-dn: cn=%s,cn=%s,%s\n\
+dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
 %s\n\
 %s: ethernet %s\n\
-%s: fixed-address %s\n\
-%s: domain-name \"%s\"\n",
+%s: fixed-address %s\n",
 data->name, data->ou, data->dn, data->name, data->ou, data->dn,
 data->name, obcl_top, dp_host, dp_opt, dh_mac, data->ether, dh_stmt,
-data->ipaddr, dh_stmt, data->domain);
+data->ipaddr);
+	if (data->domain)
+		fprintf(out, "\
+%s: domain-name \"%s\"\n", dh_stmt, data->domain);
 	if (out != stdout)
 		fclose(out);
 }
