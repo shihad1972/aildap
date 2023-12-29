@@ -22,8 +22,8 @@ domain
 .B
 [
 .B -f
-file
-.B
+file |
+.B -a
 ]
 
 .B lcdhcp -n -b
@@ -45,8 +45,8 @@ ip
 .B
 [
 .B -f
-file
-.B
+file |
+.B -a
 ]
 
 .B lcdhcp -s -b
@@ -56,8 +56,8 @@ name
 .B
 [
 .B -f
-file
-.B
+file |
+.B -a
 ]
 
 .SH DESCRIPTION
@@ -78,8 +78,8 @@ create a server entry
 create a network entry
 .PP
 .B ARGUMENTS
-.IP "-a,  --name \fBname\fP"
-a name for the entry
+.IP "-a,  --add-ldap"
+flag to add directly to LDAP directory. Mutually exclusive with \fI-f\fP option
 .IP "-b,  --basedn \fBbase-dn\fP"
 base DN of the ldap directory
 .IP "-d,  --domain \fBdomain\fP"
@@ -87,7 +87,7 @@ DNS domain name
 .IP "-e,  --ethernet \fBaddress\fP"
 ethernet address of the host
 .IP "-f,  --filename \fBfilename\fP"
-output to a file called \fIfilename\fP
+output to a file called \fIfilename\fP. Mutually exclusive with \fI-a\fP option
 .IP "-g,  --gateway \fBaddress\fP"
 gateway IP address
 .IP "-i,  --ip-address \fBaddress\fP"
@@ -96,13 +96,15 @@ ip address
 netblock address
 .IP "-m,  --boot-file \fBfilename\fP"
 net boot file called \fIfilename\fP
+.IP "-n,  --name \fBname\fP"
+a name for the entry
 .IP "-m,  --netmaks \fBaddress\fP"
 netmask address
 .IP "-o,  --ou \fBou\fP"
 ou name. If 1 is not provided, 'dhcp' will be used
 .IP "-r,  --boot-server \fBaddress\fP"
 boot server address
-.IP "-u,  --ddns-update-style \fBstyle\fP"
+.IP "-u,  --url \fBURL\fP"
 dynamic DNS update style
 .IP "-x,  --disable-booting"
 disable booting of the host over the network
@@ -118,6 +120,17 @@ The system wide aildap configuration file
 .I ~/.aildap/lcdhcp.conf
 .RS
 User configuration for the \fIlcdhcp\fP program
+.RE
+.SH FILE CONFIGURATION OPTIONS
+Options in the configuration files should be whitespace separated NAME VALUE pairs
+
+.I OU
+.RS
+Specify the OU container for the DHCP objects
+.RE
+.I BASE
+.RS
+Specify the base DN for the LDAP directory
 .RE
 .SH ENVIRONMENT
 There are no environment variables used in this program.

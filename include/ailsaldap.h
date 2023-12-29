@@ -63,9 +63,10 @@ typedef struct lcdb_s {
 } lcdb_s;
 
 typedef struct lcdhcp_s {
-	const char *bfile, *bserver, *ether, *ddns, *dn, *domain;
+	const char *bfile, *bserver, *ether, *dn, *domain, *url;
 	const char *gw, *ipaddr, *name, *netb, *netm, *ou, *filename;
-	short int action, boot;
+	const char *user, *pass;
+	short int action, boot, ldap;
 } lcdhcp_s;
 
 typedef struct cert_s {
@@ -158,6 +159,11 @@ enum {
 enum {
 	ACT_HELP = 1,
 	ACT_VERSION = 2
+};
+
+enum {
+	AILSA_DHCPD_CLASS = 4,
+	AILSA_DHCP_HOST = 6
 };
 
 #ifndef MALLOC_DATA_MEMBER
