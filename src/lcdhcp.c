@@ -165,8 +165,6 @@ main (int argc, char *argv[])
 		output_dhcp_network_ldif(dhcp);
 	cleanup:
 		destroy_kv_list(list);
-		if (dhcp->bfile)
-			my_free(dhcp->bfile);
 		my_free(dhcp);
 		return retval;
 }
@@ -273,6 +271,8 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 	const char *server = "server";
 	const char *network = "network";
 	const char *host = "host";
+	const char *ou = "dhcp";
+	const char *bfile = "pxelinux.cfg";
 	const char *who = NULL, *what = NULL;
 
 	if (!(data))		// Sanity check
@@ -290,9 +290,9 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		goto cleanup;
 	}
 	if (!(data->ou))
-		data->ou = strdup("dhcp");
+		data->ou = ou;
 	if (data->boot && !(data->bfile))
-		data->bfile = strdup("pxelinux.0");
+		data->bfile = bfile;
 	if (data->filename && data->ldap) {
 		ailsa_syslog(LOG_DAEMON, "-a and -f options are mutually exclusive");
 		goto cleanup;
@@ -707,11 +707,11 @@ fill_dhcpd_ldap_subnet(lcdhcp_s *dhcp, LDAPMod **mods)
 	mods[3]->mod_type = strdup("dhcpStatements");
 	mods[3]->mod_values = values;
 	values[0] = strdup("authoratative");
-	if (dhcp->boot && dhcp->bserver && dhcp->filename) {
+	if (dhcp->boot && dhcp->bserver) {
 		values[1] = ailsa_calloc(RBUFF_S, "values[1] for mods[3] in fill_dhcpd_ldap_subnet");
 		snprintf(values[1], RBUFF_S, "next-server %s", dhcp->bserver);
 		values[2] = ailsa_calloc(RBUFF_S, "values[2] for mods[3] in fill_dhcpd_ldap_subnet");
-		snprintf(values[2], RBUFF_S, "filename \"%s\"", dhcp->filename);
+		snprintf(values[2], RBUFF_S, "filename \"%s\"", dhcp->bfile);
 	}
 	cleanup:
 		return retval;
@@ -722,16 +722,119 @@ add_dhcpd_ldap_server(lcdhcp_s *dhcp)
 {
 	int retval = 0;
 	LDAP *ld = NULL;
+	char *server_dn = ailsa_calloc(RBUFF_S, "server_dn in add_dhcpd_ldap_server");
+	char *service_dn = ailsa_calloc(RBUFF_S, "service_dn in add_dhcpd_ldap_server");
+	LDAPMod **ver = ailsa_calloc(sizeof(ver) * AILSA_DHCP_SERVICE, "ver in add_dhcpd_ldap_server");
+	LDAPMod **ice = ailsa_calloc(sizeof(ver) * AILSA_DHCP_SERVICE, "ice in add_dhcpd_ldap_server");
+
+	if (!(dhcp)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	snprintf(server_dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
+	snprintf(service_dn, RBUFF_S, "cn=service,ou=%s,%s", dhcp->ou, dhcp->dn);
+	ailsa_ldap_init(&ld, dhcp->url);
+	if ((retval = fill_dhcp_ldap_server(dhcp, ver)) != 0)
+		goto cleanup;
+	if ((retval = fill_dhcp_ldap_service(dhcp, ice)) != 0)
+		goto cleanup;
+	if ((retval = ldap_simple_bind_s(ld, dhcp->user, dhcp->pass)) != LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "bind failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_add_ext_s(ld, server_dn, ver, NULL, NULL)) != LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "Adding DHCP server failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_add_ext_s(ld, service_dn, ice, NULL, NULL)) != LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "Adding DHCP service failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	cleanup:
+		ldap_mods_free(ver, ONE);
+		ldap_mods_free(ice, ONE);
+		if (ld)
+			ldap_unbind(ld);
+		my_free(server_dn);
+		my_free(service_dn);
+		return retval;
 }
 
 static int
 fill_dhcp_ldap_server(lcdhcp_s *dhcp, LDAPMod **mods)
 {
+	int retval = 0;
+	char **values = NULL;
 
+	if (!(dhcp) || !(mods)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+
+	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mods[0] in fill_dhcp_ldap_server");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[0] in fill_dhcp_ldap_server");
+	mods[0]->mod_type = strdup("cn");
+	mods[0]->mod_values = values;
+	values[0] = strndup(dhcp->name, RBUFF_S);
+
+	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in fill_dhcp_ldap_server");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[1] in fill_dhcp_ldap_server");
+	mods[1]->mod_type = strdup("objectClass");
+	mods[1]->mod_values = values;
+	values[0] = strdup("top");
+	values[1] = strdup("dhcpServer");
+
+	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in fill_dhcp_ldap_server");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[2] in fill_dhcp_ldap_server");
+	mods[2]->mod_type = strdup("dhcpServiceDn");
+	mods[2]->mod_values = values;
+	values[0] = ailsa_calloc(RBUFF_S, "values[0] for mods[2] in fill_dhcp_ldap_server");
+	snprintf(values[0], RBUFF_S, "cn=service,ou=%s,%s", dhcp->ou, dhcp->dn);
+
+	cleanup:
+		return retval;
 }
 
 static int
 fill_dhcp_ldap_service(lcdhcp_s *dhcp, LDAPMod **mods)
 {
-	
+	char **values;
+	int retval = 0;
+
+	if (!(dhcp) || !(mods)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+
+	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mods[0] in fill_dhcp_ldap_service");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[0] in fill_dhcp_ldap_service");
+	mods[0]->mod_type = strdup("cn");
+	mods[0]->mod_values = values;
+	values[0] = strdup("service");
+
+	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in fill_dhcp_ldap_service");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[1] in fill_dhcp_ldap_service");
+	mods[1]->mod_type = strdup("objectClass");
+	mods[1]->mod_values = values;
+	values[0] = strdup("top");
+	values[1] = strdup("dhcpService");
+
+	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in fill_dhcp_ldap_service");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[2] in fill_dhcp_ldap_service");
+	mods[2]->mod_type = strdup("dhcpPrimaryDn");
+	mods[2]->mod_values = values;
+	values[0] = ailsa_calloc(RBUFF_S, "values[0] for mods[2] in fill_dhcp_ldap_service");
+	snprintf(values[0], RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
+
+	mods[3] = ailsa_calloc(sizeof(LDAPMod), "mods[3] in fill_dhcp_ldap_service");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[3] in fill_dhcp_ldap_service");
+	mods[3]->mod_type = strdup("dhcpStatements");
+	mods[3]->mod_values = values;
+	values[0] = strdup("ddns-update-style none");
+	if (dhcp->boot) {
+		values[1] = strdup("allow booting");
+		values[2] = strdup("allow bootp");
+	}
+	cleanup:
+		return retval;
 }

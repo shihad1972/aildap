@@ -164,6 +164,7 @@ enum {
 enum {
 	AILSA_DHCPD_CLASS = 4,
 	AILSA_DHCP_NET = 5,
+	AILSA_DHCP_SERVICE = 5,
 	AILSA_DHCP_HOST = 6
 };
 
