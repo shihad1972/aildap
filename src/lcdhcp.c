@@ -177,6 +177,7 @@ fill_dhcp_config(lcdhcp_s *config, AILSA_LIST *list)
 	config->url = get_value_from_kv_list(list, "url");
 	config->user = get_value_from_kv_list(list, "user");
 	config->pass = get_value_from_kv_list(list, "pass");
+	config->service = get_value_from_kv_list(list, "service");
 }
 
 static int
@@ -200,6 +201,7 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 		{"name",		required_argument,	NULL,	'n'},
 		{"ou",			required_argument,	NULL,	'o'},
 		{"boot-server",		required_argument,	NULL,	'r'},
+		{"service",		required_argument,	NULL,	'z'},
 		{"url",			required_argument,	NULL,	'u'},
 		{"disable-booting",	no_argument,		NULL,	'x'},
 		{"add-ldap",		no_argument,		NULL,	'a'},
@@ -282,6 +284,11 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 	if (data->action == 0) {
 		who = "all";
 		what = "action";
+		goto cleanup;
+	}
+	if (!(data->service)) {
+		who = "all";
+		what = "service";
 		goto cleanup;
 	}
 	if (!(data->dn)) {
@@ -424,22 +431,23 @@ dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
-%s: cn=service,ou=%s,%s\n\n",
+%s: cn=%s,ou=%s,%s\n\n",
 data->name, data->ou, data->dn, data->name, data->ou, data->dn,
-data->name, obcl_top, dp_server, dh_serv_dn, data->ou, data->dn);
+data->name, obcl_top, dp_server, dh_serv_dn, data->service, data->ou,
+data->dn);
 /*
  * Need to do some testing for booting and also ddns style
  */
 	fprintf(out, "\
-# service, %s, %s\n\
-dn: cn=service,ou=%s,%s\n\
-cn: service\n\
+# %s, %s, %s\n\
+dn: cn=%s,ou=%s,%s\n\
+cn: %s\n\
 %s\n\
 %s\n\
-%s: ou=%s,%s\n\
-%s: ddns-update-style none\n",
-data->ou, data->dn, data->ou, data->dn, obcl_top, dp_service,
-dh_pri_dn, data->ou, data->dn, dh_stmt);
+%s: cn=%s,ou=%s,%s\n\
+%s: ddns-update-style none\n", data->service,
+data->ou, data->dn, data->service, data->ou, data->dn, data->service, obcl_top,
+dp_service, dh_pri_dn, data->name, data->ou, data->dn, dh_stmt);
 	if (data->boot)
 		fprintf(out, "\
 %s: allow booting\n\
@@ -732,7 +740,7 @@ add_dhcpd_ldap_server(lcdhcp_s *dhcp)
 		goto cleanup;
 	}
 	snprintf(server_dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
-	snprintf(service_dn, RBUFF_S, "cn=service,ou=%s,%s", dhcp->ou, dhcp->dn);
+	snprintf(service_dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->service, dhcp->ou, dhcp->dn);
 	ailsa_ldap_init(&ld, dhcp->url);
 	if ((retval = fill_dhcp_ldap_server(dhcp, ver)) != 0)
 		goto cleanup;
@@ -789,7 +797,7 @@ fill_dhcp_ldap_server(lcdhcp_s *dhcp, LDAPMod **mods)
 	mods[2]->mod_type = strdup("dhcpServiceDn");
 	mods[2]->mod_values = values;
 	values[0] = ailsa_calloc(RBUFF_S, "values[0] for mods[2] in fill_dhcp_ldap_server");
-	snprintf(values[0], RBUFF_S, "cn=service,ou=%s,%s", dhcp->ou, dhcp->dn);
+	snprintf(values[0], RBUFF_S, "cn=%s,ou=%s,%s", dhcp->service, dhcp->ou, dhcp->dn);
 
 	cleanup:
 		return retval;
@@ -810,7 +818,7 @@ fill_dhcp_ldap_service(lcdhcp_s *dhcp, LDAPMod **mods)
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[0] in fill_dhcp_ldap_service");
 	mods[0]->mod_type = strdup("cn");
 	mods[0]->mod_values = values;
-	values[0] = strdup("service");
+	values[0] = strdup(dhcp->service);
 
 	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in fill_dhcp_ldap_service");
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[1] in fill_dhcp_ldap_service");

@@ -65,7 +65,7 @@ typedef struct lcdb_s {
 typedef struct lcdhcp_s {
 	const char *bfile, *bserver, *ether, *dn, *domain, *url;
 	const char *gw, *ipaddr, *name, *netb, *netm, *ou, *filename;
-	const char *user, *pass;
+	const char *user, *pass, *service;
 	short int action, boot, ldap;
 } lcdhcp_s;
 
