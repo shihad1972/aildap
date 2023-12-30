@@ -111,6 +111,15 @@ fill_dhcpd_ldap_shared_network(lcdhcp_s *data, LDAPMod **mods);
 static int
 fill_dhcpd_ldap_subnet(lcdhcp_s *data, LDAPMod **mods);
 
+static int
+add_dhcpd_ldap_server(lcdhcp_s *data);
+
+static int
+fill_dhcp_ldap_server(lcdhcp_s *data, LDAPMod **mods);
+
+static int
+fill_dhcp_ldap_service(lcdhcp_s *data, LDAPMod **mods);
+
 static void
 report_lcdhcp_error(const char *who, const char *what);
 
@@ -156,6 +165,8 @@ main (int argc, char *argv[])
 		output_dhcp_network_ldif(dhcp);
 	cleanup:
 		destroy_kv_list(list);
+		if (dhcp->bfile)
+			my_free(dhcp->bfile);
 		my_free(dhcp);
 		return retval;
 }
@@ -282,10 +293,6 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		data->ou = strdup("dhcp");
 	if (data->boot && !(data->bfile))
 		data->bfile = strdup("pxelinux.0");
-	if (data->boot && !(data->bserver)) {
-		ailsa_syslog(LOG_DAEMON, "booting enabled by default; provide boot server with -r");
-		goto cleanup;
-	}
 	if (data->filename && data->ldap) {
 		ailsa_syslog(LOG_DAEMON, "-a and -f options are mutually exclusive");
 		goto cleanup;
@@ -298,6 +305,10 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		}
 	} else if (data->action == ACT_NET) {
 		who = network;
+		if (data->boot && !(data->bserver)) {
+			ailsa_syslog(LOG_DAEMON, "booting enabled by default; provide boot server with -r");
+			goto cleanup;
+		}
 		if (!(data->netb)) {
 			what = "Network block";
 			goto cleanup;
@@ -426,11 +437,13 @@ cn: service\n\
 %s\n\
 %s\n\
 %s: ou=%s,%s\n\
-%s: allow booting\n\
-%s: allow bootp\n\
 %s: ddns-update-style none\n",
 data->ou, data->dn, data->ou, data->dn, obcl_top, dp_service,
-dh_pri_dn, data->ou, data->dn, dh_stmt, dh_stmt, dh_stmt);
+dh_pri_dn, data->ou, data->dn, dh_stmt);
+	if (data->boot)
+		fprintf(out, "\
+%s: allow booting\n\
+%s: allow bootp\n", dh_stmt, dh_stmt);
 	if (out != stdout)
 		fclose(out);
 }
@@ -504,6 +517,8 @@ add_dhcpd_ldap(lcdhcp_s *data)
 		retval = add_dhcpd_ldap_host(data);
 	else if (data->action == ACT_NET)
 		retval = add_dhcpd_ldap_network(data);
+	else if (data->action == ACT_SERVER)
+		retval = add_dhcpd_ldap_server(data);
 	return retval;
 }
 
@@ -613,6 +628,8 @@ add_dhcpd_ldap_network(lcdhcp_s *dhcp)
 	cleanup:
 		ldap_mods_free(shr, ONE);
 		ldap_mods_free(sub, ONE);
+		if (ld)
+			ldap_unbind(ld);
 		my_free(shr_dn);
 		my_free(sub_dn);
 		return retval;
@@ -682,11 +699,13 @@ fill_dhcpd_ldap_subnet(lcdhcp_s *dhcp, LDAPMod **mods)
 	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in fill_dhcpd_ldap_subnet");
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[2] in fill_dhcpd_ldap_subnet");
 	mods[2]->mod_type = strdup("dhcpNetMask");
+	mods[2]->mod_values = values;
 	values[0] = strndup(dhcp->netm, RBUFF_S);
 
 	mods[3] = ailsa_calloc(sizeof(LDAPMod), "mods[3] in fill_dhcpd_ldap_subnet");
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[3] in fill_dhcpd_ldap_subnet");
 	mods[3]->mod_type = strdup("dhcpStatements");
+	mods[3]->mod_values = values;
 	values[0] = strdup("authoratative");
 	if (dhcp->boot && dhcp->bserver && dhcp->filename) {
 		values[1] = ailsa_calloc(RBUFF_S, "values[1] for mods[3] in fill_dhcpd_ldap_subnet");
@@ -696,4 +715,23 @@ fill_dhcpd_ldap_subnet(lcdhcp_s *dhcp, LDAPMod **mods)
 	}
 	cleanup:
 		return retval;
+}
+
+static int
+add_dhcpd_ldap_server(lcdhcp_s *dhcp)
+{
+	int retval = 0;
+	LDAP *ld = NULL;
+}
+
+static int
+fill_dhcp_ldap_server(lcdhcp_s *dhcp, LDAPMod **mods)
+{
+
+}
+
+static int
+fill_dhcp_ldap_service(lcdhcp_s *dhcp, LDAPMod **mods)
+{
+	
 }
