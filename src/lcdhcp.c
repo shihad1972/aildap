@@ -474,10 +474,10 @@ output_dhcp_network_ldif(lcdhcp_s *data)
 		data->ou = "dhcp";
 	fprintf(out, "\
 # %s, %s, %s\n\
-dn: cn=%s,cn=service,ou=%s,%s\n\
+dn: cn=%s,cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
-%s\n", data->name, data->ou, data->dn, data->name,
+%s\n", data->name, data->ou, data->dn, data->name, data->service,
 data->ou, data->dn, data->name, obcl_top, dp_shr_net);
 	if ((data->ipaddr && data->domain) || data->gw) {
 		fprintf(out, "\
@@ -492,14 +492,14 @@ data->ou, data->dn, data->name, obcl_top, dp_shr_net);
 	}
 	fprintf(out, "\n");
 	fprintf(out, "\
-# %s, %s, %s, %s\n\
-dn: cn=%s,cn=%s,cn=service,ou=%s,%s\n\
+# %s, %s, %s, %s, %s\n\
+dn: cn=%s,cn=%s,cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
 %s: %s\n\
-%s: authoratative\n", data->netb, data->name, data->ou, data->dn,
-data->netb, data->name, data->ou, data->dn, data->netb, obcl_top, dp_subnet,
+%s: authoratative\n", data->netb, data->service, data->name, data->ou, data->dn,
+data->netb, data->name, data->service, data->ou, data->dn, data->netb, obcl_top, dp_subnet,
 dh_netmask, data->netm, dh_stmt);
 	if (data->boot)
 		fprintf(out, "\
@@ -614,8 +614,8 @@ add_dhcpd_ldap_network(lcdhcp_s *dhcp)
 		retval = AILSA_NO_DATA;
 		goto cleanup;
 	}
-	snprintf(shr_dn, RBUFF_S, "cn=%s,cn=service,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
-	snprintf(sub_dn, RBUFF_S, "cn=%s,cn=%s,cn=service,ou=%s,%s", dhcp->netb, dhcp->name, dhcp->ou, dhcp->dn);
+	snprintf(shr_dn, RBUFF_S, "cn=%s,cn=%s,ou=%s,%s", dhcp->name, dhcp->service, dhcp->ou, dhcp->dn);
+	snprintf(sub_dn, RBUFF_S, "cn=%s,cn=%s,cn=%s,ou=%s,%s", dhcp->netb, dhcp->name, dhcp->service, dhcp->ou, dhcp->dn);
 	ailsa_ldap_init(&ld, dhcp->url);
 	if ((retval = fill_dhcpd_ldap_shared_network(dhcp, shr)) != 0)
 		goto cleanup;
