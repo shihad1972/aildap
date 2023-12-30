@@ -4,10 +4,9 @@ lcdhcp \- LDAP create DHCP.
 .SH SYNOPSIS
 .B lcdhcp ACTION ARGUMENTS
 
-.B lcdhcp
-[
-.B -h | -v
-]
+.B lcdhcp [ -h
+|
+.B -v ]
 
 .B lcdhcp -t -b
 dn
@@ -19,51 +18,43 @@ ip
 ether
 .B -d
 domain
-.B
-[
-.B -f
+.B [ -f
 file |
-.B -a
-]
+.B -a ]
 
-.B lcdhcp -n -b
+.B lcdhcp -w -b
 dn
-.B -d
-domain
-.B
-[
-.B -g
-gateway
-.B
-]
 .B -k
 netblock
 .B -m
 netmask
+.B [ -d
+domain
 .B -i
 ip
-.B
-[
-.B -f
+.B ] [
+.B -g
+gateway
+.B ]
+.B [ -f
 file |
-.B -a
-]
+.B -a ]
 
 .B lcdhcp -s -b
 dn
 .B -n
 name
-.B
-[
-.B -f
+.B [ -f
 file |
-.B -a
-]
+.B -a ]
 
 .SH DESCRIPTION
 \fBlcdhcp\fP will create an ldif output for a \fIDHCP\fP host, server or network
 in an \fILDAP\fP directory. The directory must have the \fIisc-dhcp-server\fP
-schema loaded for the ldif to be accepted.
+schema loaded for the ldif to be accepted. All entries in the directory will be
+stored under an \fIou\fP, that can be specified via the command line, or the
+configuration files. If none is specified, then the default \fIdhcp\fP will be
+used.
 .SH OPTIONS
 .B ACTIONS
 .IP "-h,  --help"
@@ -74,7 +65,7 @@ display version
 create a host entry
 .IP "-s,  --server"
 create a server entry
-.IP "-n,  --network"
+.IP "-w,  --network"
 create a network entry
 .PP
 .B ARGUMENTS
@@ -91,7 +82,7 @@ output to a file called \fIfilename\fP. Mutually exclusive with \fI-a\fP option
 .IP "-g,  --gateway \fBaddress\fP"
 gateway IP address
 .IP "-i,  --ip-address \fBaddress\fP"
-ip address
+ip address. When adding a network, this will be the DNS server IP address, if -d also specified
 .IP "-k,  --netblock \fBaddress\fP"
 netblock address
 .IP "-m,  --boot-file \fBfilename\fP"
@@ -105,7 +96,7 @@ ou name. If 1 is not provided, 'dhcp' will be used
 .IP "-r,  --boot-server \fBaddress\fP"
 boot server address
 .IP "-u,  --url \fBURL\fP"
-dynamic DNS update style
+ldap(s):// style URL for the ldap server
 .IP "-x,  --disable-booting"
 disable booting of the host over the network
 .SH FILES

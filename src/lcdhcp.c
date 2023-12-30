@@ -102,6 +102,15 @@ add_dhcpd_ldap_host(lcdhcp_s *data);
 static int
 fill_dhcpd_ldap_host(lcdhcp_s *data, LDAPMod **mod);
 
+static int
+add_dhcpd_ldap_network(lcdhcp_s *data);
+
+static int
+fill_dhcpd_ldap_shared_network(lcdhcp_s *data, LDAPMod **mods);
+
+static int
+fill_dhcpd_ldap_subnet(lcdhcp_s *data, LDAPMod **mods);
+
 static void
 report_lcdhcp_error(const char *who, const char *what);
 
@@ -123,6 +132,7 @@ main (int argc, char *argv[])
 
 	dhcp = ailsa_calloc(sizeof(lcdhcp_s), "dhcp in main");
 	create_kv_list(&list);
+	dhcp->boot = 1;
 	aildap_parse_config(list, basename(argv[0]));
 	fill_dhcp_config(dhcp, list);
 	if (argc > 1) {
@@ -220,7 +230,7 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 			data->netb = optarg;
 		} else if (opt == 'm') {
 			data->netm = optarg;
-		} else if (opt == 'o') { // OU not used at present
+		} else if (opt == 'o') {
 			data->ou = optarg;
 		} else if (opt == 'f') {
 			data->filename = optarg;
@@ -268,6 +278,14 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		what = "basedn";
 		goto cleanup;
 	}
+	if (!(data->ou))
+		data->ou = strdup("dhcp");
+	if (data->boot && !(data->bfile))
+		data->bfile = strdup("pxelinux.0");
+	if (data->boot && !(data->bserver)) {
+		ailsa_syslog(LOG_DAEMON, "booting enabled by default; provide boot server with -r");
+		goto cleanup;
+	}
 	if (data->filename && data->ldap) {
 		ailsa_syslog(LOG_DAEMON, "-a and -f options are mutually exclusive");
 		goto cleanup;
@@ -280,17 +298,15 @@ check_lcdhcp_command_line(lcdhcp_s *data)
 		}
 	} else if (data->action == ACT_NET) {
 		who = network;
-		if (!(data->domain)) {
-			what = "domain";
-			goto cleanup;
-		} else if (!(data->ipaddr)) {
-			what = "name server ip address";
-			goto cleanup;
-		} else if (!(data->netb)) {
+		if (!(data->netb)) {
 			what = "Network block";
 			goto cleanup;
 		} else if (!(data->netm)) {
 			what = "Netmask";
+			goto cleanup;
+		}
+		if ((!(data->ipaddr) && (data->domain)) || (!(data->domain) && (data->ipaddr))) {
+			ailsa_syslog(LOG_DAEMON, "only one of -i and -d provided, both are required to add a DNS domain to a network");
 			goto cleanup;
 		}
 	} else if (data->action == ACT_HOST) {
@@ -440,17 +456,20 @@ output_dhcp_network_ldif(lcdhcp_s *data)
 dn: cn=%s,cn=service,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
-%s\n\
-%s\n\
-%s: domain-name-servers %s\n\
-%s: domain-search \"%s\"\n", data->domain, data->ou, data->dn, data->domain,
-data->ou, data->dn, data->domain, obcl_top, dp_shr_net, dp_opt, dh_opt,
-data->ipaddr, dh_opt, data->domain);
-	if (data->gw)
+%s\n", data->name, data->ou, data->dn, data->name,
+data->ou, data->dn, data->name, obcl_top, dp_shr_net);
+	if ((data->ipaddr && data->domain) || data->gw) {
 		fprintf(out, "\
-%s: routers %s\n\n", dh_opt, data->gw);
-	else
-		fprintf(out, "\n");
+%s\n", dp_opt);
+		if (data->ipaddr && data->domain)
+			fprintf(out, "\
+%s: domain-name-servers %s\n\
+%s: domain-search \"%s\"\n", dh_opt, data->ipaddr, dh_opt, data->domain);
+		if (data->gw)
+			fprintf(out, "\
+%s: routers %s\n", dh_opt, data->gw);
+	}
+	fprintf(out, "\n");
 	fprintf(out, "\
 # %s, %s, %s, %s\n\
 dn: cn=%s,cn=%s,cn=service,ou=%s,%s\n\
@@ -458,11 +477,13 @@ cn: %s\n\
 %s\n\
 %s\n\
 %s: %s\n\
-%s: authoratative\n\
+%s: authoratative\n", data->netb, data->name, data->ou, data->dn,
+data->netb, data->name, data->ou, data->dn, data->netb, obcl_top, dp_subnet,
+dh_netmask, data->netm, dh_stmt);
+	if (data->boot)
+		fprintf(out, "\
 %s: next-server %s\n\
-%s: filename \"pxelinux.0\"\n", data->netb, data->domain, data->ou, data->dn,
-data->netb, data->domain, data->ou, data->dn, data->netb, obcl_top, dp_subnet,
-dh_netmask, data->netm, dh_stmt, dh_stmt, data->ipaddr, dh_stmt);
+%s: filename \"%s\"\n", dh_stmt, data->bserver, dh_stmt, data->bfile);
 	if (out != stdout)
 		fclose(out);
 }
@@ -481,6 +502,8 @@ add_dhcpd_ldap(lcdhcp_s *data)
 		return AILSA_NO_DATA;
 	if (data->action == ACT_HOST)
 		retval = add_dhcpd_ldap_host(data);
+	else if (data->action == ACT_NET)
+		retval = add_dhcpd_ldap_network(data);
 	return retval;
 }
 
@@ -489,13 +512,10 @@ add_dhcpd_ldap_host(lcdhcp_s *dhcp)
 {
 	int retval = 0;
 	char *dn = ailsa_calloc(RBUFF_S, "dn in add_dhcpd_ldap_host");
-	LDAP *ld;
+	LDAP *ld = NULL;
 	LDAPMod **mod = ailsa_calloc(sizeof(mod) * AILSA_DHCP_HOST, "mod in add_dhcpd_ldap_host"); // ** HARDCODED **
 
-	if (dhcp->ou)
-		snprintf(dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
-	else
-		snprintf(dn, RBUFF_S, "cn=%s,ou=dhcp,%s", dhcp->name, dhcp->dn);
+	snprintf(dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
 	ailsa_ldap_init(&ld, dhcp->url);
 	if ((retval = fill_dhcpd_ldap_host(dhcp, mod)) != 0)
 		goto cleanup;
@@ -522,13 +542,13 @@ fill_dhcpd_ldap_host(lcdhcp_s *data, LDAPMod **mods)
 	int retval = 0;
 	LDAPMod *mod;
 
-	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mod in fill_dhcpd_ldap_host");
+	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mods[0] in fill_dhcpd_ldap_host");
 	mod = mods[0];
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values in fill_dhcpd_ldap_host");
 	mod->mod_type = strdup("cn");
 	mod->mod_values = values;
 	values[0] = strndup(data->name, RBUFF_S);
-	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mod in loop in fill_dhcpd_ldap_host");
+	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in loop in fill_dhcpd_ldap_host");
 	mod = mods[1];
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values in fill_dhcpd_ldap_host");
 	mod->mod_type = strdup("objectclass");
@@ -536,14 +556,14 @@ fill_dhcpd_ldap_host(lcdhcp_s *data, LDAPMod **mods)
 	values[0] = strdup("top");
 	values[1] = strdup("dhcpHost");
 	values[2] = strdup("dhcpOptions");
-	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mod in loop in fill_dhcpd_ldap_host");
+	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in loop in fill_dhcpd_ldap_host");
 	mod = mods[2];
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values in fill_dhcpd_ldap_host");
 	mod->mod_type = strdup("dhcpHWAddress");
 	mod->mod_values = values;
 	values[0] = ailsa_calloc(RBUFF_S, "values[0] in fill_dhcpd_ldap_host");
 	snprintf(values[0], RBUFF_S, "ethernet %s", data->ether);
-	mods[3] = ailsa_calloc(sizeof(LDAPMod), "mod in loop in fill_dhcpd_ldap_host");
+	mods[3] = ailsa_calloc(sizeof(LDAPMod), "mods[3] in loop in fill_dhcpd_ldap_host");
 	mod = mods[3];
 	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values in fill_dhcpd_ldap_host");
 	mod->mod_type = strdup("dhcpStatements");
@@ -555,4 +575,125 @@ fill_dhcpd_ldap_host(lcdhcp_s *data, LDAPMod **mods)
 		snprintf(values[1], RBUFF_S, "domain-name \"%s\"", data->domain);
 	}
 	return retval;
+}
+
+static int
+add_dhcpd_ldap_network(lcdhcp_s *dhcp)
+{
+	int retval = 0;
+	LDAP *ld = NULL;
+	char *shr_dn = ailsa_calloc(RBUFF_S, "shr_dn in add_dhcpd_ldap_network");
+	char *sub_dn = ailsa_calloc(RBUFF_S, "sub_dn in add_dhcpd_ldap_network");
+	LDAPMod **shr = ailsa_calloc(sizeof(shr) * AILSA_DHCP_NET, "shr in add_dhcpd_ldap_network"); // ** HARDCODED **
+	LDAPMod **sub = ailsa_calloc(sizeof(sub) * AILSA_DHCP_NET, "sub in add_dhcpd_ldap_network");
+
+	if (!(dhcp)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	snprintf(shr_dn, RBUFF_S, "cn=%s,cn=service,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
+	snprintf(sub_dn, RBUFF_S, "cn=%s,cn=%s,cn=service,ou=%s,%s", dhcp->netb, dhcp->name, dhcp->ou, dhcp->dn);
+	ailsa_ldap_init(&ld, dhcp->url);
+	if ((retval = fill_dhcpd_ldap_shared_network(dhcp, shr)) != 0)
+		goto cleanup;
+	if ((retval = fill_dhcpd_ldap_subnet(dhcp, sub)) != 0)
+		goto cleanup;
+	if ((retval = ldap_simple_bind_s(ld, dhcp->user, dhcp->pass)) != LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "bind failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_add_ext_s(ld, shr_dn, shr, NULL, NULL))!= LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "Adding shared network failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_add_ext_s(ld, sub_dn, sub, NULL, NULL)) != LDAP_SUCCESS) {
+		ailsa_syslog(LOG_DAEMON, "Adding subnet failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	cleanup:
+		ldap_mods_free(shr, ONE);
+		ldap_mods_free(sub, ONE);
+		my_free(shr_dn);
+		my_free(sub_dn);
+		return retval;
+}
+
+static int
+fill_dhcpd_ldap_shared_network(lcdhcp_s *dhcp, LDAPMod **mods)
+{
+	int retval = 0;
+	char **values = NULL;
+
+	if (!(dhcp) || !(mods)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+
+	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mods[0] in fill_dhcpd_ldap_shared_network");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[0] in fill_dhcpd_ldap_shared_network");
+	mods[0]->mod_type = strdup("cn");
+	mods[0]->mod_values = values;
+	values[0] = strndup(dhcp->name, RBUFF_S);
+
+	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in fill_dhcpd_ldap_shared_network");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[1] in fill_dhcpd_ldap_shared_network");
+	mods[1]->mod_type = strdup("objectClass");
+	mods[1]->mod_values = values;
+	values[0] = strdup("top");
+	values[1] = strdup("dhcpSharedNetwork");
+	if (dhcp->domain && dhcp->ipaddr) {
+		values[2] = strdup("dhcpOptions");
+		mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in fill_dhcpd_ldap_shared_network");
+		values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[2] in fill_dhcpd_ldap_shared_network");
+		mods[2]->mod_type = strdup("dhcpOption");
+		mods[2]->mod_values = values;
+		values[0] = ailsa_calloc(RBUFF_S, "values[0] for mods[2] in fill_dhcpd_ldap_shared_network");
+		snprintf(values[0], RBUFF_S, "domain-name-servers %s", dhcp->ipaddr);
+		values[1] = ailsa_calloc(RBUFF_S, "values[1] for mods[2] in fill_dhcpd_ldap_shared_network");
+		snprintf(values[1], RBUFF_S, "domain-search \"%s\"", dhcp->domain);
+	}
+	cleanup:
+		return retval;
+}
+
+static int
+fill_dhcpd_ldap_subnet(lcdhcp_s *dhcp, LDAPMod **mods)
+{
+	int retval = 0;
+	char ** values = NULL;
+
+	if (!(dhcp) || !(mods)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	mods[0] = ailsa_calloc(sizeof(LDAPMod), "mods[0] in fill_dhcpd_ldap_subnet");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[0] in fill_dhcpd_ldap_subnet");
+	mods[0]->mod_type = strdup("cn");
+	mods[0]->mod_values = values;
+	values[0] = strndup(dhcp->netb, RBUFF_S);
+
+	mods[1] = ailsa_calloc(sizeof(LDAPMod), "mods[1] in fill_dhcpd_ldap_subnet");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[1] in fill_dhcpd_ldap_subnet");
+	mods[1]->mod_type = strdup("objectClass");
+	mods[1]->mod_values = values;
+	values[0] = strdup("top");
+	values[1] = strdup("dhcpSubnet");
+
+	mods[2] = ailsa_calloc(sizeof(LDAPMod), "mods[2] in fill_dhcpd_ldap_subnet");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[2] in fill_dhcpd_ldap_subnet");
+	mods[2]->mod_type = strdup("dhcpNetMask");
+	values[0] = strndup(dhcp->netm, RBUFF_S);
+
+	mods[3] = ailsa_calloc(sizeof(LDAPMod), "mods[3] in fill_dhcpd_ldap_subnet");
+	values = ailsa_calloc(sizeof(values) * AILSA_DHCPD_CLASS, "values for mods[3] in fill_dhcpd_ldap_subnet");
+	mods[3]->mod_type = strdup("dhcpStatements");
+	values[0] = strdup("authoratative");
+	if (dhcp->boot && dhcp->bserver && dhcp->filename) {
+		values[1] = ailsa_calloc(RBUFF_S, "values[1] for mods[3] in fill_dhcpd_ldap_subnet");
+		snprintf(values[1], RBUFF_S, "next-server %s", dhcp->bserver);
+		values[2] = ailsa_calloc(RBUFF_S, "values[2] for mods[3] in fill_dhcpd_ldap_subnet");
+		snprintf(values[2], RBUFF_S, "filename \"%s\"", dhcp->filename);
+	}
+	cleanup:
+		return retval;
 }
