@@ -391,17 +391,17 @@ output_dhcp_host_ldif(lcdhcp_s *data)
 	if (!(data->ou))
 		data->ou = "dhcp";
 	fprintf(out, "\
-# %s, %s, %s\n\
-dn: cn=%s,ou=%s,%s\n\
+# %s, %s, %s, %s\n\
+dn: cn=%s,cn=%s,ou=%s,%s\n\
 cn: %s\n\
 %s\n\
 %s\n\
 %s\n\
 %s: ethernet %s\n\
 %s: fixed-address %s\n",
-data->name, data->ou, data->dn, data->name, data->ou, data->dn,
-data->name, obcl_top, dp_host, dp_opt, dh_mac, data->ether, dh_stmt,
-data->ipaddr);
+data->name, data->service, data->ou, data->dn, data->name, data->service,
+data->ou, data->dn,data->name, obcl_top, dp_host, dp_opt, dh_mac, data->ether,
+dh_stmt, data->ipaddr);
 	if (data->domain)
 		fprintf(out, "\
 %s: domain-name \"%s\"\n", dh_stmt, data->domain);
@@ -538,7 +538,7 @@ add_dhcpd_ldap_host(lcdhcp_s *dhcp)
 	LDAP *ld = NULL;
 	LDAPMod **mod = ailsa_calloc(sizeof(mod) * AILSA_DHCP_HOST, "mod in add_dhcpd_ldap_host"); // ** HARDCODED **
 
-	snprintf(dn, RBUFF_S, "cn=%s,ou=%s,%s", dhcp->name, dhcp->ou, dhcp->dn);
+	snprintf(dn, RBUFF_S, "cn=%s,cn=%s,ou=%s,%s", dhcp->name, dhcp->service, dhcp->ou, dhcp->dn);
 	ailsa_ldap_init(&ld, dhcp->url);
 	if ((retval = fill_dhcpd_ldap_host(dhcp, mod)) != 0)
 		goto cleanup;
