@@ -185,7 +185,7 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 {
 	int opt;
 	int retval = 0;
-	const char *optstr = "b:l:r:u:xd:e:f:g:i:n:k:m:o:ahtwsv";
+	const char *optstr = "b:l:r:u:xd:e:f:g:i:n:k:m:o:z:ahtwsv";
 #ifdef HAVE_GETOPT_H
 	int index;
 	struct option l_opts[] = {
