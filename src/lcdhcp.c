@@ -244,7 +244,7 @@ parse_lcdhcp_command_line(int argc, char *argv[], lcdhcp_s *data)
 		} else if (opt == 'o') {
 			data->ou = optarg;
 		} else if (opt == 'z') {
-			data->service = service;
+			data->service = optarg;
 		} else if (opt == 'f') {
 			data->filename = optarg;
 		} else if (opt == 'h') {
