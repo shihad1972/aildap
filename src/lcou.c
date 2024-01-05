@@ -25,12 +25,20 @@
  * 
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <syslog.h>
+#include <libgen.h>
 #include <errno.h>
 #include <error.h>
+#ifdef HAVE_LIBLDAP
+# include <ldap.h>
+#endif // HAVE_LIBLDAP
+#define WANT_OBCL_TOP
+#include <ailsa.h>
 #include <ailsaldap.h>
 
 int
@@ -38,67 +46,81 @@ parse_command_line(int argc, char *argv[], lcou_s *data)
 {
 	int retval = 0, opt = 0;
 
-	while ((opt = getopt(argc, argv, "d:o:n:fir")) != -1) {
-		if (opt == 'd') {
-			if ((retval = snprintf(data->domain, DOMAIN, "%s", optarg)) >= DOMAIN)
-				rep_truncate("domain", DOMAIN);
+	while ((opt = getopt(argc, argv, "ad:o:n:fir")) != -1) {
+		if (opt == 'a') {
+			data->ldap = true;
+		} else if (opt == 'd') {
+			data->dn = optarg;
 		} else if (opt == 'f') {
 			data->file = 1;
 		} else if (opt == 'i') {
-			data->action = 1;
+			data->action = ACT_ADD;
 		} else if (opt == 'o') {
-			if ((retval = snprintf(data->ou, CANAME, "%s", optarg)) >= CANAME)
-				rep_truncate("ou", CANAME);
+			data->ou = optarg;
 		} else if (opt == 'n') {
-			if ((retval = snprintf(data->newou, CANAME, "%s", optarg)) >= CANAME)
-				rep_truncate("newou", CANAME);
+			data->newou = optarg;
 		} else if (opt == 'r') {
-			data->action = 2;
+			data->action = ACT_DEL;
 		} else {
-			fprintf(stderr, "Usage: %s ( -i | -r ) -d domain ( -o ou ) -n newou\n",
+			fprintf(stderr, "Usage: %s [ -a ] [ -i | -r ] -d dn [ -o ou ] -n newou\n",
 			 argv[0]);
 			return WARG;
 		}
 	}
 	retval = 0;
-	if (strlen(data->domain) < 1) {
-		fprintf(stderr, "No domain specified\n");
+#ifndef HAVE_LIBLDAP
+	if (data->ldap) {
+		fprintf(stderr, "You have requested adding to an ldap directory, \
+but this program is not linked against an ldap library\n");
+		retval = NOLDAP;
+	}
+#endif // HAVE_LIBLDAP
+	if (data->action == 0)
+		data->action = ACT_ADD;	// default is to add to ldap
+	if (!(data->dn)) {
+		fprintf(stderr, "No dn specified\n");
 		retval = NODOM;
 	}
-	if (strlen(data->newou) < 1) {
+	if (!(data->newou)) {
 		fprintf(stderr, "No new ou specified\n");
 		retval = NOOU;
 	}
 	return retval;
 }
 
+void
+fill_lcou_config(lcou_s *ou, AILSA_LIST *list)
+{
+	ou->dn = get_value_from_kv_list(list, "base");
+	ou->url = get_value_from_kv_list(list, "url");
+	ou->user = get_value_from_kv_list(list, "user");
+	ou->pass = get_value_from_kv_list(list, "pass");
+}
+
 char *
 convert_to_dn(lcou_s *data)
 {
-	char *ou = 0, *dom, *dn = 0;
+	char *ou = 0, *dn = 0;
 	size_t len;
 
 	ou = get_ldif_format(data->ou, "ou", ",");
-	if (!(dom = get_ldif_format(data->domain, "dc", ".")))
-		return dn;
 	if (ou)
-		len = strlen(ou) + strlen(dom) + 2;
+		len = strlen(ou) + strlen(data->dn) + 2;
 	else
-		len = strlen(dom) + 1;
+		len = strlen(data->dn) + 1;
 	if (!(dn = malloc(len)))
 		return dn;
 	if (ou)
-		snprintf(dn, len, "%s,%s", ou, dom);
+		snprintf(dn, len, "%s,%s", ou, data->dn);
 	else
-		snprintf(dn, len, "%s", dom);
+		snprintf(dn, len, "%s", data->dn);
 	if (ou)
 		free(ou);
-	free(dom);
 	return dn;
 }
 
 void
-output_ou(char *dn, char *ou, short int ffile)
+output_ou(const char *dn, const char *ou, short int ffile)
 {
 	FILE *out;
 	const char *file = "ou.ldif";
@@ -113,11 +135,91 @@ output_ou(char *dn, char *ou, short int ffile)
 	fprintf(out, "\
 # ou=%s\n\
 dn: ou=%s,%s\n\
-objectClass: top\n\
+%s\n\
 objectClass: organizationalUnit\n\
-ou: %s\n", ou, ou, dn, ou);
+ou: %s\n", ou, ou, dn, obcl_top, ou);
 	if (ffile > 0)
 		fclose(out);
+}
+
+int
+add_ou_to_ldap(lcou_s *ou, const char *dn)
+{
+	int retval = 0;
+	char *newdn = ailsa_calloc(RBUFF_S, "newdn in add_ou_to_ldap");
+	LDAP *ld;
+	LDAPMod **mod = ailsa_calloc(sizeof(mod) * AILSA_OU_CLASS, "mod in add_ou_to_ldap");
+	char **values;
+
+	if (!(ou)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	if (ou->url) {
+		ailsa_ldap_init(&ld, ou->url);
+	} else {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	if ((retval = snprintf(newdn, RBUFF_S, "ou=%s,%s", ou->newou, dn)) >= RBUFF_S)
+		ailsa_syslog(LOG_DAEMON, "newdn truncated in add_ou_to_ldap");
+	mod[0] = ailsa_calloc(sizeof(mod), "mod[0] in add_ou_to_ldap");
+	values = ailsa_calloc(sizeof(values) * 2, "values #1 in add_ou_to_ldap");
+	values[0] = strndup(ou->newou, RBUFF_S);
+	if ((retval = ailsa_ldap_mod_str_pack(mod[0], 0, strdup("ou"), values)) != 0)
+		goto cleanup;
+	mod[1] = ailsa_calloc(sizeof(mod), "mod[1] in add_ou_to_ldap");
+	values = ailsa_calloc(sizeof(values) * 3, "values #2 in add_ou_to_ldap");
+	values[0] = strdup("top");
+	values[1] = strdup("organizationalUnit");
+	if ((retval = ailsa_ldap_mod_str_pack(mod[1], 0, strdup("objectClass"), values)) != 0)
+		goto cleanup;
+	if ((retval = ldap_simple_bind_s(ld, ou->user, ou->pass)) != 0) {
+		ailsa_syslog(LOG_DAEMON, "bind failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_add_ext_s(ld, newdn, mod, NULL, NULL)) != 0) {
+		ailsa_syslog(LOG_DAEMON, "Adding failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	cleanup:
+		my_free(newdn);
+		ldap_mods_free(mod, true);
+		if (ld)
+			ldap_unbind(ld);
+		return retval;
+}
+
+int
+del_ou_from_ldap(lcou_s *ou, const char *dn)
+{
+	int retval = 0;
+	char *newdn = ailsa_calloc(RBUFF_S, "newdn in del_ou_from_ldap");
+	LDAP *ld;
+
+	if (!(ou)) {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	if (ou->url) {
+		ailsa_ldap_init(&ld, ou->url);
+	} else {
+		retval = AILSA_NO_DATA;
+		goto cleanup;
+	}
+	if ((retval = snprintf(newdn, RBUFF_S, "ou=%s,%s", ou->newou, dn)) >= RBUFF_S)
+		ailsa_syslog(LOG_DAEMON, "newdn truncated in add_ou_to_ldap");
+	if ((retval = ldap_simple_bind_s(ld, ou->user, ou->pass)) != 0) {
+		ailsa_syslog(LOG_DAEMON, "bind failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	if ((retval = ldap_delete_s(ld, newdn)) != 0) {
+		ailsa_syslog(LOG_DAEMON, "delete failed with %s", ldap_err2string(retval));
+		goto cleanup;
+	}
+	cleanup:
+		my_free(newdn);
+		return retval;
 }
 
 int
@@ -126,20 +228,29 @@ main(int argc, char *argv[])
 	char *dn = 0;
 	int retval = 0;
 	lcou_s *data;
+	AILSA_LIST *list;
 
-	if (!(data = malloc(sizeof(lcou_s))))
+	if (!(data = ailsa_calloc(sizeof(lcou_s), "data in main")))
 		error(MALLOC, errno, "data in main");
-	init_lcou_data_struct(data);
+	create_kv_list(&list);
+	aildap_parse_config(list, basename(argv[0]));
+	fill_lcou_config(data, list);
 	if ((retval = parse_command_line(argc, argv, data)) == 0) {
 		if (!(dn = convert_to_dn(data)))
 			goto cleanup;
-		output_ou(dn, data->newou, data->file);
+		if (data->ldap && (data->action == ACT_ADD))
+			retval = add_ou_to_ldap(data, dn);
+		else if (data->ldap && (data->action == ACT_DEL))
+			retval = del_ou_from_ldap(data, dn);
+		else
+			output_ou(dn, data->newou, data->file);
 	} else {
 		rep_usage(argv[0]);
 	}
 	goto cleanup;
 	cleanup:
-		clean_lcou_data_struct(data);
+		my_free(data);
+		destroy_kv_list(list);
 		if (dn)
 			free(dn);
 		return retval;

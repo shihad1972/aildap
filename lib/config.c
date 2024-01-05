@@ -91,10 +91,8 @@ aildap_parse_user_config(AILSA_LIST *config, const char *prog)
         char *home = getenv("HOME");
 
         retval = snprintf(file, RBUFF_S, "%s/.%s/%s.conf", home, PACKAGE, PACKAGE);
-#ifdef DEBUG
         if (retval >= RBUFF_S)
                 ailsa_syslog(LOG_DAEMON, "Path to user config truncated");
-#endif
         if (!(conf = fopen(file, "r"))) {
 #ifdef DEBUG
                 ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);
@@ -105,10 +103,8 @@ aildap_parse_user_config(AILSA_LIST *config, const char *prog)
         if (conf)
                 fclose(conf);
         retval = snprintf(file, RBUFF_S, "%s/.%s/%s.conf", home, PACKAGE, prog);
-#ifdef DEBUG
         if (retval >= RBUFF_S)
                 ailsa_syslog(LOG_DAEMON, "Path to user config truncated");
-#endif
         if (!(conf = fopen(file, "r"))) {
 #ifdef DEBUG
                 ailsa_syslog(LOG_DAEMON, "Cannot open file %s\n", file);

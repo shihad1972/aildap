@@ -48,8 +48,8 @@ typedef struct lck_s {
 } lck_s;
 
 typedef struct lcou_s {
-	char *domain, *newou, *ou;
-	short int file, action;
+	const char *newou, *ou, *dn, *url, *user, *pass;
+	short int file, action, ldap;
 } lcou_s;
 
 typedef struct lcsudo_s {
@@ -115,6 +115,7 @@ enum {
 	NOGRP,
 	NOGRNM,
 	NODATA,
+	NOLDAP,
 	DB = 8,
 	INSERT,
 	REMOVE,
@@ -156,12 +157,15 @@ enum {
 	MDB = 2
 };
 
-enum {
+enum {	// Should move this into libailsa at some point
 	ACT_HELP = 1,
-	ACT_VERSION = 2
+	ACT_VERSION = 2,
+	ACT_ADD = 3,
+	ACT_DEL = 4
 };
 
 enum {
+	AILSA_OU_CLASS = 3,
 	AILSA_DHCPD_CLASS = 4,
 	AILSA_DHCP_NET = 5,
 	AILSA_DHCP_SERVICE = 5,
@@ -212,12 +216,6 @@ init_lck_data_struct(lck_s *data);
 
 void
 clean_lck_data_struct(lck_s *data);
-
-void
-init_lcou_data_struct(lcou_s *data);
-
-void
-clean_lcou_data_struct(lcou_s *data);
 
 void
 clean_lgc_data(lgc_s *data);

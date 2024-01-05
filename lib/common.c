@@ -180,31 +180,6 @@ clean_lck_data_struct(lck_s *data)
 }
 
 void
-init_lcou_data_struct(lcou_s *data)
-{
-	if (data) {
-		memset(data, 0, sizeof(lcou_s));
-		MALLOC_DATA_MEMBER(domain, DOMAIN);
-		MALLOC_DATA_MEMBER(newou, CANAME);
-		MALLOC_DATA_MEMBER(ou, CANAME);
-	} else {
-		fprintf(stderr, "null pointer passed to init_lcu_data_struct\n");
-		exit(1);
-	}
-}
-
-void
-clean_lcou_data_struct(lcou_s *data)
-{
-	if (data) {
-		CLEAN_DATA_MEMBER(domain);
-		CLEAN_DATA_MEMBER(newou);
-		CLEAN_DATA_MEMBER(ou);
-		free(data);
-	}
-}
-
-void
 clean_lgc_data(lgc_s *data)
 {
 	if (data) {
