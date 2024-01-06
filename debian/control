@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Build-Depends: debhelper-compat (= 12)
 Maintainer: Iain M Conochie <iain@ailsatech.net>
-Standards-Version: 4.6.2
+Standards-Version: 4.5.1
 Homepage: https://github.com/shihad1972/libailsa
 Rules-Requires-Root: no
 
