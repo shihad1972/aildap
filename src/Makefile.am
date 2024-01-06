@@ -5,6 +5,7 @@ AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_LDFLAGS = -L$(top_builddir)/lib
 LIBS += -lailsaldap
+LDADD =
 bin_PROGRAMS = lcs lcg lck lcu lcr lcdb lcou lcsudo lcdhcp
 
 if HAVE_LIBLDAP
@@ -39,4 +40,9 @@ endif
 if HAVE_KERBEROS
 AM_CFLAGS += $(K5CFLAGS)
 LIBS += $(K5LIBS)
+endif
+
+if HAVE_LIBGCRYPT
+AM_CPPFLAGS += $(LIBGCRYPT_CFLAGS)
+AM_LDFLAGS += $(LIBGCRYPT_LIBS)
 endif

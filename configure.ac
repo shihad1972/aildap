@@ -39,6 +39,7 @@ AX_LIB_LDAP
 AX_LIB_AILSA
 AX_CHECK_KRB5
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
+AM_PATH_LIBGCRYPT([1.8.0], [AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt found])])
 
 # PKG_CHECK_MODULES test needed for automake
 # AS_IF test needed for pre-processor
@@ -56,6 +57,7 @@ AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
 AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
 AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
 AM_CONDITIONAL([HAVE_CHECK], [test x"$HAVE_CHECK" = xtrue])
+AM_CONDITIONAL([HAVE_LIBGCRYPT], [$HAVE_LIBGCRYPT])
 AM_CONDITIONAL([HAVE_GLIB_OPENSSL], [test x"$HAVE_GLIB" = "xtrue" && test x"$HAVE_OPENSSL" = "xtrue"])
 AM_CONDITIONAL([HAVE_AILSA], [test x"$HAVE_AILSA" = "xtrue"])
 AM_CONDITIONAL([HAVE_KERBEROS], [test x"$HAVE_KERBEROS" = "xtrue"])
