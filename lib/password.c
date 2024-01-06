@@ -169,6 +169,7 @@ objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
 #ifdef HAVE_GLIB
 # ifdef HAVE_OPENSSL
 	if (data->np == 0)
+		// The below gives errors in debian package build. Probably due to ifdefs
 		printf("userPassword: {SSHA}%s\n", phash);
 # else
 	if (data->np == 0)
