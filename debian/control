@@ -4,10 +4,11 @@ Priority: optional
 Build-Depends: debhelper-compat (= 12)
 Maintainer: Iain M Conochie <iain@ailsatech.net>
 Standards-Version: 4.5.1
-Homepage: https://github.com/shihad1972/libailsa
+Homepage: https://github.com/shihad1972/aildap
 Rules-Requires-Root: no
 
 Package: aildap
+Section: net
 Architecture: Any
 Multi-Arch: foreign
 Depends: libaildap (= ${binary:Version}),
@@ -22,7 +23,7 @@ Section: libs
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Depends: libailsa, ${misc:Depends}, ${shlibs:Depends}
+Depends: libailsa (>=0.2.2), ${misc:Depends}, ${shlibs:Depends}
 Description: Library functions from aildap
  C libraries with functions from aildap
 
