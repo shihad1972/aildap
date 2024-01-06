@@ -10,7 +10,8 @@ Rules-Requires-Root: no
 Package: aildap
 Architecture: Any
 Multi-Arch: foreign
-Depends: libaildap libailsa (= ${binary:Version}),
+Depends: libaildap (= ${binary:Version}),
+         libailsa (>=0.2.2),
          ${misc:Depends},
          ${shlibs:Depends}
 Description: A collection of useful LDAP utilities
@@ -19,15 +20,18 @@ Description: A collection of useful LDAP utilities
 Package: libaildap
 Section: libs
 Architecture: any
+Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Depends: libailsa ${misc:Depends}, ${shlibs:Depends}
+Depends: libailsa, ${misc:Depends}, ${shlibs:Depends}
 Description: Library functions from aildap
  C libraries with functions from aildap
 
 Package: libaildap-dev
 Section: libdevel
 Architecture: any
-Multi-Arch: foreign
-Depends: libaildap libailsa libailsa-dev (= ${binary:Version}), ${misc:Depends}
+Multi-Arch: same
+Depends: libaildap (= ${binary:Version}),
+         libailsa-dev (>=0.2.2),
+         ${misc:Depends}
 Description: Development files for libaildap
  Development headers to include for the libaildap library
