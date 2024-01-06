@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([aildap], [0.5.1], [iain@ailsatech.net])
-AC_CONFIG_SRCDIR([src/lcc.c])
+AC_CONFIG_SRCDIR([src/lcou.c])
 AC_CONFIG_HEADERS([include/config.h])
 AM_INIT_AUTOMAKE
 
