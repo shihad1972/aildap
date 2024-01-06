@@ -10,7 +10,7 @@ CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=
 CPPFLAGS += -I../include/ `pkg-config --cflags glib-2.0`
 LDFLAGS = -L../lib `pkg-config --libs-only-L glib-2.0`
 LDLIBS = -lailsaldap -lailsa -lcrypto `pkg-config --libs-only-l glib-2.0` -lldap
-bin_PROGRAMS = lcs lcc lcg lcu lcr lcdb lck lcou lcsudo lcdhcp hh lds
+bin_PROGRAMS = lcs lcg lcu lcr lcdb lck lcou lcsudo lcdhcp hh lds
 
 
 all:	$(bin_PROGRAMS)

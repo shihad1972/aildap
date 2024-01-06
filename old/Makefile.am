@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 #
 
-bin_PROGRAMS = 
+bin_PROGRAMS = lcc
 # Add this to AM_CPPFLAGS if you want to have bind authentication
 PCFLAGS = -DLDAP_DEPRECATED
 
