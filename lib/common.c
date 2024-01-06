@@ -222,31 +222,6 @@ clean_lcdb_data(lcdb_s *data)
 }
 
 void
-init_lcc_data_struct(cont_s *data)
-{
-	if (data) {
-		memset(data, 0, sizeof(cont_s));
-		MALLOC_DATA_MEMBER(domain, DOMAIN);
-		MALLOC_DATA_MEMBER(dc, DC);
-		MALLOC_DATA_MEMBER(dn, DN);
-	} else {
-		fprintf(stderr, "null pointer passed to init_lcc_data_struct\n");
-		exit(1);
-	}
-}
-
-void
-clean_lcc_data(cont_s *data)
-{
-	if (data) {
-		CLEAN_DATA_MEMBER(domain);
-		CLEAN_DATA_MEMBER(dc);
-		CLEAN_DATA_MEMBER(dn);
-		free(data);
-	}
-}
-
-void
 init_lcs_data_struct(cert_s *data)
 {
 	if (data) {
