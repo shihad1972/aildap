@@ -6,7 +6,7 @@ docker/ldap-provision/*deb
 *.o
 *.a
 src/hh
-src/lcc
+old/lcc
 src/lcdb
 src/lcdhcp
 src/lcg

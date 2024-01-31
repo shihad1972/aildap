@@ -320,13 +320,3 @@ output_version(const char *name)
 		prog++;
 	fprintf(stderr, "%s: %s\n", prog, VERSION);
 }
-
-#ifdef HAVE_LIBGCRYPT
-const char *
-ailsa_init_grcypt(const char *version)
-{
-	const char *v;
-	v =  gcry_check_version(version);
-	return v;
-}
-#endif

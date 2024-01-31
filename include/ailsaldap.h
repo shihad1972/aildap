@@ -289,4 +289,13 @@ output_hex_conversion(unsigned char *string, const char *hash);
 
 # endif //HAVE_OPENSSL
 
+# ifdef HAVE_LIBGCRYPT
+
+const char *
+ailsa_init_grcypt(const char *version);
+
+int
+ailsa_get_hash_method(const char *hash);
+
+# endif // HAVE_LIBGCRYPT
 #endif // HAVE_AILSA_LDAP_H

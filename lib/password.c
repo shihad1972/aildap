@@ -338,15 +338,3 @@ output_hex_conversion(unsigned char *string, const char *hash)
 
 # endif /* HAVE_OPENSSL */
 #endif /* HAVE_GLIB */
-/*
-int
-hex_conv(const char *pass, guchar *out)
-{
-	int retval = NONE;
-	gsize olen = strlen(out), x;
-	for (x = 0; x < olen; x++) {
-		sscanf(pass + 2*x, "%02x", &out[x]);
-	}
-	return retval;
-}
-*/

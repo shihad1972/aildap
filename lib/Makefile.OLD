@@ -6,16 +6,18 @@
 CC = gcc
 RM = rm -f
 ECHO = echo
-CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 -g
+# Add this as CFLAGS if you want to have bind authentication
+PCFLAGS = -DLDAP_DEPRECATED
+
+CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -Wunused -D_XOPEN_SOURCE=700 $(PCFLAGS) -g
 CPPFLAGS += -I../include/
 lib_LIBRARIES = libailsaldap.a
 
-# Add this as CPPFLAGS if you want to have bind authentication
-PCFLAGS = -DLDAP_DEPRECATED
+
 
 CPPFLAGS += `pkg-config --cflags glib-2.0`
 LDFLAGS += -L/lib/x86_64-linux-gnu `pkg-config --libs-only-L glib-2.0`
-LDLIBS += `pkg-config --libs-only-l glib-2.0` -lldap -lcrypto
+LDLIBS += `pkg-config --libs-only-l glib-2.0` -lldap -lcrypto -lgcrypt
 ARFLAGS = rvU
 #LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 #SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto
@@ -24,7 +26,7 @@ shared_SOURCES =
 libs:	libailsaldap.a
 
 libailsaldap.a:	libailsaldap.a(common.o) libailsaldap.a(password.o) libailsaldap.a(ldif.o) \
-		libailsaldap.a(config.o)
+		libailsaldap.a(config.o) libailsaldap.a(gcrypt_hash.o)
 
 libailsaldap.a(common.o):	common.o
 	$(AR) $(ARFLAGS) $@ $<
@@ -38,6 +40,8 @@ libailsaldap.a(ldif.o):	ldif.o
 libailsaldap.a(config.o):	config.o
 	$(AR) $(ARFLAGS) $@ $<
 
+libailsaldap.a(gcrypt_hash.o):	gcrypt_hash.o
+	$(AR) $(ARFLAGS) $@ $<
 .PHONY:	clean
 
 clean:

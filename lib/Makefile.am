@@ -26,4 +26,5 @@ endif
 if HAVE_LIBGCRYPT
 AM_CPPFLAGS += $(LIBGCRYPT_CFLAGS)
 AM_LDFLAGS += $(LIBGCRYPT_LIBS)
+libailsaldap_la_SOURCES += gcrypt_hash.c
 endif
