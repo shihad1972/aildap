@@ -19,10 +19,10 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *  gcrypt_hash.c
- * 
+ *
  *  Contains the hashing functions for generating passwords for slapd
  *  and also various other functions. Part of the ailsaldap library
- * 
+ *
  */
 
 #include <config.h>
