@@ -17,5 +17,6 @@ src/lcs
 src/lcsudo
 src/lcu
 src/lds
+src/shift
 tests/check_kv
 tests/check_get_ldif_format
