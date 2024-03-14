@@ -47,13 +47,13 @@ AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])]
 
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="false"])
 
-AX_CHECK_OLD
-AX_CHECK_DAM
+#AX_CHECK_OLD
+#AX_CHECK_DAM
 
 AM_CONDITIONAL([HAVE_LIBLDAP], [test x"$HAVE_LIBLDAP" = xtrue])
 AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
-AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
-AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
+#AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
+#AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
 AM_CONDITIONAL([HAVE_CHECK], [test x"$HAVE_CHECK" = xtrue])
 AM_CONDITIONAL([HAVE_LIBGCRYPT], [$HAVE_LIBGCRYPT])
 AM_CONDITIONAL([HAVE_AILSA], [test x"$HAVE_AILSA" = "xtrue"])
