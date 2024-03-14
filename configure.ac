@@ -41,10 +41,6 @@ AX_CHECK_KRB5
 AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 AM_PATH_LIBGCRYPT([1.8.0], [AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt found])])
 
-# PKG_CHECK_MODULES test needed for automake
-# AS_IF test needed for pre-processor
-AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])])
-
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="false"])
 
 #AX_CHECK_OLD
@@ -60,8 +56,6 @@ AM_CONDITIONAL([HAVE_AILSA], [test x"$HAVE_AILSA" = "xtrue"])
 AM_CONDITIONAL([HAVE_KERBEROS], [test x"$HAVE_KERBEROS" = "xtrue"])
 AC_CONFIG_FILES([Makefile
                  man/Makefile
-                 old/Makefile
-		 dam/Makefile
 		 lib/Makefile
                  tests/Makefile
                  src/Makefile])
