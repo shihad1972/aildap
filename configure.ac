@@ -43,7 +43,6 @@ AM_PATH_LIBGCRYPT([1.8.0], [AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt found])]
 
 # PKG_CHECK_MODULES test needed for automake
 # AS_IF test needed for pre-processor
-PKG_CHECK_MODULES([GLIB], [glib-2.0], [HAVE_GLIB="true"], )
 AS_IF([test "x$HAVE_GLIB" = "xtrue"], [AC_DEFINE([HAVE_GLIB], [1], [Have Glib])])
 
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="false"])
@@ -51,14 +50,12 @@ PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="f
 AX_CHECK_OLD
 AX_CHECK_DAM
 
-AM_CONDITIONAL([HAVE_GLIB], [test x"$HAVE_GLIB" = xtrue])
 AM_CONDITIONAL([HAVE_LIBLDAP], [test x"$HAVE_LIBLDAP" = xtrue])
 AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
 AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
 AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
 AM_CONDITIONAL([HAVE_CHECK], [test x"$HAVE_CHECK" = xtrue])
 AM_CONDITIONAL([HAVE_LIBGCRYPT], [$HAVE_LIBGCRYPT])
-AM_CONDITIONAL([HAVE_GLIB_OPENSSL], [test x"$HAVE_GLIB" = "xtrue" && test x"$HAVE_OPENSSL" = "xtrue"])
 AM_CONDITIONAL([HAVE_AILSA], [test x"$HAVE_AILSA" = "xtrue"])
 AM_CONDITIONAL([HAVE_KERBEROS], [test x"$HAVE_KERBEROS" = "xtrue"])
 AC_CONFIG_FILES([Makefile

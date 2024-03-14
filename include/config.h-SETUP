@@ -25,9 +25,6 @@
 /* Define to 1 if you have the `getpass' function. */
 #define HAVE_GETPASS 1
 
-/* Have Glib */
-#define HAVE_GLIB 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 

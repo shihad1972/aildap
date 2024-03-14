@@ -35,14 +35,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <termios.h> 
-#ifdef HAVE_GLIB
-# include <glib.h>
-# ifdef HAVE_OPENSSL
-#  include <openssl/evp.h>
-#  include <openssl/sha.h>
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#include <termios.h>
+#ifdef HAVE_OPENSSL
+# include <openssl/evp.h>
+# include <openssl/sha.h>
+#endif /* HAVE_OPENSSL */
 #include <ailsaldap.h>
 
 void
@@ -154,28 +151,24 @@ output_sso_ldif(inp_data_s *data)
 	name = data->name;
 	if (data->uou)
 		uou = data->uou;
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 	if (data->np ==  0)
 		phash = get_ldif_pass_hash(data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 	printf("\
 # %s, %s, %s\n\
 dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 objectClass: simpleSecurityObject\n\
 objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		// The below gives errors in debian package build. Probably due to ifdefs
 		printf("userPassword: {SSHA}%s\n", phash);
-# else
+#else
 	if (data->np == 0)
 		printf("userPassword: %s\n", data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 	free(ldom);
 	if(phash)
 		free(phash);
@@ -193,12 +186,10 @@ output_user_ldif(inp_data_s *data)
 		uou = data->uou;
 	if (data->gou)
 		gou = data->gou;
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 	if (data->np ==  0)
 		phash = get_ldif_pass_hash(data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
@@ -219,15 +210,13 @@ uidNumber: %hd\n\
 homeDirectory: /home/%s\n\
 ", name, data->dom, name, uou, ldom, name, data->sur, data->fname, data->name, 
 data->user, name);
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
-# else
+#else
 	if (data->np == 0)
 		printf("userPassword: %s\n", data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 	printf("gecos: %s %s\n", data->fname, data->sur);
 	printf("mail: %s@%s\n", name, data->dom);
 	if (data->gr > NONE)
@@ -251,14 +240,13 @@ gidNumber: 100\n\
 		free(phash);
 }
 
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 char *
 get_ldif_pass_hash(char *pass)
 {
 	int rd = open("/dev/urandom", O_RDONLY), i;
 	char *npass, salt[6], type[] = "sha1";
-	guchar *out;
+	unsigned char *out;
         EVP_MD_CTX *msg;
         const EVP_MD *md;
         unsigned int md_len;
@@ -285,7 +273,7 @@ get_ldif_pass_hash(char *pass)
 	EVP_cleanup();
 	for (i = 0; i < 6; i++)
 		*(out + 20 + i) = salt[i];
-	npass = g_base64_encode(out, 26);
+	npass = (char *)ailsa_b64_encode(out, 26);
 	free(out);
 	return npass;
 }
@@ -336,5 +324,4 @@ output_hex_conversion(unsigned char *string, const char *hash)
 	return retval;
 }
 
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */

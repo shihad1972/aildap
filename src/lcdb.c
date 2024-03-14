@@ -173,11 +173,9 @@ main (int argc, char *argv[])
 	}
 	data->pass = getPassword("Enter password for admin DN: ");
 	if (strlen(data->pass) > 0) {
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 		data->phash = get_ldif_pass_hash(data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 		output_db_ldif(data);
 	} else {
 		fprintf(stderr, "Empty password!\n");

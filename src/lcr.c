@@ -182,11 +182,9 @@ print_consumer(lcr_t *data)
 	}
 	dom = get_ldif_format(data->domain, "dc", ".");
 	/* This is not actually used. When I do, I will need a fallback */
-#ifdef HAVE_GLIB
-# ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
 	phash = get_ldif_pass_hash(data->pass);
-# endif /* HAVE_OPENSSL */
-#endif /* HAVE_GLIB */
+#endif /* HAVE_OPENSSL */
 	if (data->mod == 0)
 		fprintf(consumer, "\
 #Load the syncprov module.\n\
