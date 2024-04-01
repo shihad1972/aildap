@@ -282,7 +282,7 @@ char *
 get_ldif_pass_hash(char *pass);
 
 unsigned char *
-ailsa_hash_string(char *string, const char *type);
+ailsa_hash_string(const char *string, const char *type);
 
 int
 output_hex_conversion(unsigned char *string, const char *hash);
@@ -292,7 +292,7 @@ output_hex_conversion(unsigned char *string, const char *hash);
 # ifdef HAVE_LIBGCRYPT
 
 const char *
-ailsa_init_grcypt(const char *version);
+ailsa_init_gcrypt(const char *version);
 
 int
 ailsa_get_hash_method(const char *hash);

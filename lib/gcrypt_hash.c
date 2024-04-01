@@ -32,16 +32,37 @@
 #include <unistd.h>
 #include <error.h>
 #include <errno.h>
+#include <syslog.h>
 #include <gcrypt.h>
+#include <ailsa.h>
+#include <ailsaldap.h>
 
 const char *
-ailsa_init_grcypt(const char *version)
+ailsa_init_gcrypt(const char *version)
 {
 	const char *v;
-	v =  gcry_check_version(version);
+        if (!(v = gcry_check_version(version))) {
+                ailsa_syslog(LOG_DAEMON, "libgcrypt too old: need version %s, we have %s", version, v);
+                return NULL;
+        }
 	gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
 	gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
 	return v;
+}
+
+const char *
+ailsa_init_sec_gcrypt(const char *version, unsigned int bytes)
+{
+        const char *v;
+        if (!(v = gcry_check_version(version))) {
+                ailsa_syslog(LOG_DAEMON, "libgcrypt too old: need version %s, we have %s", version, v);
+                return NULL;
+        }
+        gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+        gcry_control (GCRYCTL_INIT_SECMEM, bytes, 0);
+        gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+        gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+        return v;
 }
 
 int
@@ -49,15 +70,34 @@ ailsa_get_hash_method(const char *hash)
 {
         int retval;
 
-        if (strcmp(hash, "sha1"))
+        if (strcmp(hash, "sha1") == 0)
                 retval = GCRY_MD_SHA1;
-        else if (strcmp(hash, "sha224"))
+        else if (strcmp(hash, "sha224") == 0)
                 retval = GCRY_MD_SHA224;
-        else if (strcmp(hash, "sha256"))
+        else if (strcmp(hash, "sha256") == 0)
                 retval = GCRY_MD_SHA256;
-        else if (strcmp(hash, "sha512"))
+        else if (strcmp(hash, "sha512") == 0)
                 retval = GCRY_MD_SHA512;
         else
                 retval = -1;
         return retval;
 }
+
+unsigned char *
+ailsa_hash_string(const char *string, const char *method)
+{
+        int hash;
+
+        if ((hash = ailsa_get_hash_method(method)) < 0) {
+                ailsa_syslog(LOG_DAEMON, "wrong hash method provided: %s", method);
+                return NULL;
+        }
+        if (!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P)) {
+                ailsa_syslog(LOG_DAEMON, "libgcrypt must be initialised before calling this function");
+                return NULL;
+        }
+        unsigned char *output = ailsa_calloc(64, "output in ailsa_hash_string");
+        gcry_md_hash_buffer(hash, output, string, strlen(string));
+        return output;
+}
+

@@ -37,6 +37,9 @@
 /* Define to 1 if you have the `ldap' library (-lldap). */
 #define HAVE_LIBLDAP 1
 
+/* Define to 1 if you have the `gcrypt` library (-lgcrypt). */
+#define HAVE_LIBGCRYPT 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
 
