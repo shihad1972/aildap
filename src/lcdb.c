@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <error.h>
+#include <syslog.h>
 #include <ailsaldap.h>
 
 int
@@ -62,8 +63,8 @@ parse_lcdb_command_line(int argc, char *argv[], lcdb_s *data)
 		return WARG;
 	}
 	if (data->type == 0) {
-		fprintf(stderr, "Invalid or missing database type\n");
-		retval = NOTYPE;
+		ailsa_syslog(LOG_DAEMON, "Setting database type to mdb\n");
+		data->type = MDB;
 	}
 	return retval;
 }
@@ -72,11 +73,7 @@ void
 output_db_ldif(lcdb_s *data)
 {
 	char *ldf, *dir, *dom, *adm;
-#ifdef HAVE_OPENSSL
-	char *hsh;
-#else
-	char *pass;
-#endif /* HAVE_OPENSSL */
+	unsigned char *hsh;
 	size_t len;
 	FILE *out;
 
@@ -87,11 +84,7 @@ output_db_ldif(lcdb_s *data)
 	dom = data->domain;
 	dir = data->dir;
 	adm = data->admin;
-#ifdef HAVE_OPENSSL
 	hsh = data->phash;
-#else
-	pass = data->pass;
-#endif /* HAVE_OPENSSL */
 	len = strlen(data->dir);
 	ldf = get_ldif_format(dom, "dc", ".");
 	if (len == 0)
@@ -127,11 +120,7 @@ anonymous auth by dn=\"cn=%s,%s\" write by * none\n\
 olcAccess: to dn.base=\"\" by * read\n\
 olcAccess: to * by self write by dn=\"cn=%s,%s\" write by * read\n\
 olcRootDN: cn=%s,%s\n", dir, ldf, adm, ldf, adm, ldf, adm, ldf);
-#ifdef HAVE_OPENSSL
 	fprintf(out, "olcRootPW: {SSHA}%s\n", hsh);
-#else
-	fprintf(out, "olcRootPW: %s\n", pass);
-#endif /* HAVE_OPENSSL */
 	fprintf(out, "\
 olcDbCheckpoint: 512 30\n");
 	if (data->type == HDB) {
@@ -173,13 +162,14 @@ main (int argc, char *argv[])
 	}
 	data->pass = getPassword("Enter password for admin DN: ");
 	if (strlen(data->pass) > 0) {
-#ifdef HAVE_OPENSSL
-		data->phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+		if (!(ailsa_init_gcrypt("1.6.0")))
+			goto cleanup;
+		data->phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
 		output_db_ldif(data);
 	} else {
 		fprintf(stderr, "Empty password!\n");
 	}
-	clean_lcdb_data(data);
-	return retval;
+	cleanup:
+		clean_lcdb_data(data);
+		return retval;
 }

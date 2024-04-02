@@ -32,6 +32,9 @@
 #include <unistd.h>
 #include <error.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <syslog.h>
 #include <gcrypt.h>
 #include <ailsa.h>
@@ -82,6 +85,26 @@ ailsa_get_hash_method(const char *hash)
                 retval = -1;
         return retval;
 }
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+size_t
+ailsa_get_hash_len(const char *hash)
+{
+        size_t len;
+
+        if (strcmp(hash, "sha1") == 0)
+                len = 20;
+        else if (strcmp(hash, "sha224") == 0)
+                len = 28;
+        else if (strcmp(hash, "sha256") == 0)
+                len = 32;
+        else if (strcmp(hash, "sha512") == 0)
+                len = 64;
+        else
+                len = 0;
+        return len;
+}
 
 unsigned char *
 ailsa_hash_string(const char *string, const char *method)
@@ -96,8 +119,45 @@ ailsa_hash_string(const char *string, const char *method)
                 ailsa_syslog(LOG_DAEMON, "libgcrypt must be initialised before calling this function");
                 return NULL;
         }
-        unsigned char *output = ailsa_calloc(64, "output in ailsa_hash_string");
+        unsigned char *output = ailsa_calloc(HASH_LEN, "output in ailsa_hash_string");
         gcry_md_hash_buffer(hash, output, string, strlen(string));
         return output;
 }
 
+unsigned char *
+ailsa_get_pass_hash(char *pass, const char *type, size_t len)
+{
+        if (!(pass) || !(type))
+                return NULL;
+        if (strlen(pass) > len)
+                return NULL;
+	int rd = open("/dev/urandom", O_RDONLY);
+	char *npass = NULL, salt[6], *p;
+        unsigned char *out, *hpass;
+        size_t slen;
+
+	if ((read(rd, &salt, 6)) != 6) {
+		close(rd);
+		rep_err("Could not read enough random data");
+	}
+        close(rd);
+        npass = ailsa_calloc(len + 7, "npass in ailsa_get_pass_hash");
+        p = stpcpy(npass, pass);
+        p = stpcpy(p, salt);
+        if (!(out = ailsa_hash_string(npass, type))) {
+                ailsa_syslog(LOG_DAEMON, "ailsa_hash_string failed in ailsa_get_pass_hash");
+                my_free(npass);
+                return NULL;
+        }
+        if ((slen = ailsa_get_hash_len(type)) == 0) {
+                ailsa_syslog(LOG_DAEMON, "Unknown hash algorithm %s", type);
+                my_free(npass);
+                return NULL;
+        }
+        if (slen == HASH_LEN)
+                p = realloc(out, HASH_LEN + 7);
+        p = (char *)out + slen;
+        p = stpcpy(p, salt);
+        hpass = ailsa_b64_encode(out, slen + 6);
+        return hpass;
+}

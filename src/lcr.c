@@ -170,8 +170,9 @@ int
 print_consumer(lcr_t *data)
 {
 	FILE *consumer;
-	char *dom, *phash = '\0';
+	char *dom;
 	const char *file = "consumer.ldif";
+	unsigned char *phash = NULL;
 
 	if (data->file > 0) {
 		if (!(consumer = fopen(file, "w")))
@@ -182,9 +183,7 @@ print_consumer(lcr_t *data)
 	}
 	dom = get_ldif_format(data->domain, "dc", ".");
 	/* This is not actually used. When I do, I will need a fallback */
-#ifdef HAVE_OPENSSL
-	phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+	phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
 	if (data->mod == 0)
 		fprintf(consumer, "\
 #Load the syncprov module.\n\

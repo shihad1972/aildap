@@ -36,10 +36,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <termios.h>
-#ifdef HAVE_OPENSSL
-# include <openssl/evp.h>
-# include <openssl/sha.h>
-#endif /* HAVE_OPENSSL */
 #include <ailsaldap.h>
 
 void
@@ -145,30 +141,26 @@ getPassword(const char *message)
 void
 output_sso_ldif(inp_data_s *data)
 {
-	char *name, *phash = '\0', *ldom = get_ldif_format(data->dom, "dc", ".");
+	char *name, *ldom = get_ldif_format(data->dom, "dc", ".");
+	unsigned char *phash = NULL;
 	const char *uou = "people";
 
 	name = data->name;
 	if (data->uou)
 		uou = data->uou;
-#ifdef HAVE_OPENSSL
 	if (data->np ==  0)
-		phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+		phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
 	printf("\
 # %s, %s, %s\n\
 dn: cn=%s,ou=%s,%s\n\
 cn: %s\n\
 objectClass: simpleSecurityObject\n\
 objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
-#ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		// The below gives errors in debian package build. Probably due to ifdefs
 		printf("userPassword: {SSHA}%s\n", phash);
-#else
 	if (data->np == 0)
 		printf("userPassword: %s\n", data->pass);
-#endif /* HAVE_OPENSSL */
 	free(ldom);
 	if(phash)
 		free(phash);
@@ -177,8 +169,9 @@ objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
 void
 output_user_ldif(inp_data_s *data)
 {
-	char *name, *ldom, *phash = '\0';
+	char *name, *ldom;
 	const char *uou = "people", *gou = "group";
+	unsigned char *phash = NULL;
 
 	ldom = get_ldif_format(data->dom, "dc", ".");
 	name = data->uname;
@@ -186,10 +179,8 @@ output_user_ldif(inp_data_s *data)
 		uou = data->uou;
 	if (data->gou)
 		gou = data->gou;
-#ifdef HAVE_OPENSSL
 	if (data->np ==  0)
-		phash = get_ldif_pass_hash(data->pass);
-#endif /* HAVE_OPENSSL */
+		phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
 	*(data->sur) = toupper(*(data->sur));
 	printf("\
 # %s, people, %s\n\
@@ -210,13 +201,8 @@ uidNumber: %hd\n\
 homeDirectory: /home/%s\n\
 ", name, data->dom, name, uou, ldom, name, data->sur, data->fname, data->name, 
 data->user, name);
-#ifdef HAVE_OPENSSL
 	if (data->np == 0)
 		printf("userPassword: {SSHA}%s\n", phash);
-#else
-	if (data->np == 0)
-		printf("userPassword: %s\n", data->pass);
-#endif /* HAVE_OPENSSL */
 	printf("gecos: %s %s\n", data->fname, data->sur);
 	printf("mail: %s@%s\n", name, data->dom);
 	if (data->gr > NONE)
@@ -240,44 +226,6 @@ gidNumber: 100\n\
 		free(phash);
 }
 
-#ifdef HAVE_OPENSSL
-char *
-get_ldif_pass_hash(char *pass)
-{
-	int rd = open("/dev/urandom", O_RDONLY), i;
-	char *npass, salt[6], type[] = "sha1";
-	unsigned char *out;
-        EVP_MD_CTX *msg;
-        const EVP_MD *md;
-        unsigned int md_len;
-
-	if (!(out = malloc(26)))
-		rep_err("out in get_ldif_pass_hash");
-	if ((read(rd, &salt, 6)) != 6) {
-		close(rd);
-		rep_err("Could not read enough random data");
-	}
-	close(rd);
-	OpenSSL_add_all_digests();
-	md = EVP_get_digestbyname(type);
-        if (!md) {
-                printf("Unknown digest %s!\n", type);
-                exit(1);
-        }
-	msg = EVP_MD_CTX_create();
-	EVP_DigestInit_ex(msg, md, NULL);
-	EVP_DigestUpdate(msg, pass, strlen(pass));
-	EVP_DigestUpdate(msg, salt, 6);
-	EVP_DigestFinal_ex(msg, out, &md_len);
-	EVP_MD_CTX_destroy(msg);
-	EVP_cleanup();
-	for (i = 0; i < 6; i++)
-		*(out + 20 + i) = salt[i];
-	npass = (char *)ailsa_b64_encode(out, 26);
-	free(out);
-	return npass;
-}
-
 int
 output_hex_conversion(unsigned char *string, const char *hash)
 {
@@ -298,4 +246,3 @@ output_hex_conversion(unsigned char *string, const char *hash)
 	return retval;
 }
 
-#endif /* HAVE_OPENSSL */

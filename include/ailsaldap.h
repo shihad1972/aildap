@@ -58,7 +58,8 @@ typedef struct lcsudo_s {
 } lcsudo_s;
 
 typedef struct lcdb_s {
-	char *domain, *admin, *pass, *phash, *dir;
+	char *domain, *admin, *pass, *dir;
+	unsigned char *phash;
 	short int file, type;
 } lcdb_s;
 
@@ -135,6 +136,7 @@ enum {
 	NAME = 32,
 	DC = 64,
 	CANAME = 64,
+	HASH_LEN = 64,
 	DNL = 67,
 	DOMAIN = 256,
 	DN = 512,
@@ -296,6 +298,12 @@ ailsa_init_gcrypt(const char *version);
 
 int
 ailsa_get_hash_method(const char *hash);
+
+size_t
+ailsa_get_hash_len(const char *hash);
+
+unsigned char *
+ailsa_get_pass_hash(char *pass, const char *type, size_t len);
 
 # endif // HAVE_LIBGCRYPT
 #endif // HAVE_AILSA_LDAP_H
