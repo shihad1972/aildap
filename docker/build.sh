@@ -54,5 +54,5 @@ password=$(aws secretsmanager get-secret-value --region eu-west-1 --secret-id /s
 
 docker login ${host} --password="${password}" --username=iain
 echo "Deploying image $image:"
-docker build -t $image $APP
+docker build --no-cache -t $image $APP
 docker push $image
