@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([aildap], [0.5.2], [iain@ailsatech.net])
+AC_INIT([aildap], [0.5.3], [iain@ailsatech.net])
 AC_CONFIG_SRCDIR([src/lcou.c])
 AC_CONFIG_HEADERS([include/config.h])
 AM_INIT_AUTOMAKE
