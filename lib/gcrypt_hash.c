@@ -161,5 +161,7 @@ ailsa_get_pass_hash(char *pass, const char *type, size_t len)
         for (i = 0; i < 6; i++)
                 *(p + i) = salt[i];
         hpass = ailsa_b64_encode(out, slen + 6);
+        my_free(out);
+        my_free(npass);
         return hpass;
 }

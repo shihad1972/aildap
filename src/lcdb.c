@@ -145,6 +145,7 @@ olcDbMaxSize: 1073741824\n");
 	}
 	if (out != stdout)
 		fclose(out);
+	my_free(ldf);
 }
 
 int

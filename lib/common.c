@@ -199,8 +199,6 @@ init_lcdb_data_struct(lcdb_s *data)
 		memset(data, 0, sizeof(lcdb_s));
 		MALLOC_DATA_MEMBER(domain, DOMAIN);
 		MALLOC_DATA_MEMBER(admin, NAME);
-		MALLOC_DATA_MEMBER(phash, NAME);
-		MALLOC_DATA_MEMBER(pass, NAME);
 		MALLOC_DATA_MEMBER(dir, DN);
 	} else {
 		fprintf(stderr, "null pointer passed to init_lcdb_data_struct\n");
