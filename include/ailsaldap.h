@@ -279,17 +279,8 @@ output_version(const char *name);
 void
 aildap_parse_config(AILSA_LIST *config, const char *prog);
 
-# ifdef HAVE_OPENSSL
-char *
-get_ldif_pass_hash(char *pass);
-
-unsigned char *
-ailsa_hash_string(const char *string, const char *type);
-
 int
 output_hex_conversion(unsigned char *string, const char *hash);
-
-# endif //HAVE_OPENSSL
 
 # ifdef HAVE_LIBGCRYPT
 
@@ -304,6 +295,9 @@ ailsa_get_hash_len(const char *hash);
 
 unsigned char *
 ailsa_get_pass_hash(char *pass, const char *type, size_t len);
+
+unsigned char *
+ailsa_hash_string(const char *string, const char *type);
 
 # endif // HAVE_LIBGCRYPT
 #endif // HAVE_AILSA_LDAP_H

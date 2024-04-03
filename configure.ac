@@ -38,7 +38,6 @@ AC_CHECK_FUNCS([gethostname getpass memset strchr strerror strndup strrchr strst
 AX_LIB_LDAP
 AX_LIB_AILSA
 AX_CHECK_KRB5
-AX_CHECK_OPENSSL([AC_DEFINE([HAVE_OPENSSL], [1], [Have openssl])])
 AM_PATH_LIBGCRYPT([1.8.0], [AC_DEFINE([HAVE_LIBGCRYPT], [1], [libgcrypt found])])
 
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="false"])
@@ -47,7 +46,6 @@ PKG_CHECK_MODULES([CHECK], [check >= 0.9.4], [HAVE_CHECK="true"], [HAVE_CHECK="f
 #AX_CHECK_DAM
 
 AM_CONDITIONAL([HAVE_LIBLDAP], [test x"$HAVE_LIBLDAP" = xtrue])
-AM_CONDITIONAL([HAVE_OPENSSL], [test x"$HAVE_OPENSSL" = xtrue])
 #AM_CONDITIONAL([HAVE_OLD], [test x"$enable_old" = xyes])
 #AM_CONDITIONAL([HAVE_DAM], [test x"$enable_dam" = xyes])
 AM_CONDITIONAL([HAVE_CHECK], [test x"$HAVE_CHECK" = xtrue])
