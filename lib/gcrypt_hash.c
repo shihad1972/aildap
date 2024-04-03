@@ -85,9 +85,7 @@ ailsa_get_hash_method(const char *hash)
                 retval = -1;
         return retval;
 }
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
 size_t
 ailsa_get_hash_len(const char *hash)
 {
@@ -131,11 +129,12 @@ ailsa_get_pass_hash(char *pass, const char *type, size_t len)
                 return NULL;
         if (strlen(pass) > len)
                 return NULL;
-	int rd = open("/dev/urandom", O_RDONLY);
-	char *npass = NULL, salt[6], *p;
+	int rd = open("/dev/urandom", O_RDONLY), i;
+	char *npass = NULL, salt[7], *p;
         unsigned char *out, *hpass;
         size_t slen;
 
+        memset(salt, 0, 7);
 	if ((read(rd, &salt, 6)) != 6) {
 		close(rd);
 		rep_err("Could not read enough random data");
@@ -143,6 +142,8 @@ ailsa_get_pass_hash(char *pass, const char *type, size_t len)
         close(rd);
         npass = ailsa_calloc(len + 7, "npass in ailsa_get_pass_hash");
         p = stpcpy(npass, pass);
+        for (i = 0; i < 6; i++)
+                *(p + i) = salt[i];
         p = stpcpy(p, salt);
         if (!(out = ailsa_hash_string(npass, type))) {
                 ailsa_syslog(LOG_DAEMON, "ailsa_hash_string failed in ailsa_get_pass_hash");
@@ -157,7 +158,8 @@ ailsa_get_pass_hash(char *pass, const char *type, size_t len)
         if (slen == HASH_LEN)
                 p = realloc(out, HASH_LEN + 7);
         p = (char *)out + slen;
-        p = stpcpy(p, salt);
+        for (i = 0; i < 6; i++)
+                *(p + i) = salt[i];
         hpass = ailsa_b64_encode(out, slen + 6);
         return hpass;
 }
