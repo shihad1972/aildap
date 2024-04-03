@@ -15,7 +15,7 @@ Depends: libaildap (= ${binary:Version}),
          libailsa (>=0.2.2),
          ${misc:Depends},
          ${shlibs:Depends}
-Description: A collection of useful LDAP utilities
+Description: Collection of useful LDAP utilities
  This package contains a collection of LDAP utilities
 
 Package: libaildap
