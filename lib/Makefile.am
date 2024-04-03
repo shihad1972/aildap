@@ -1,5 +1,7 @@
+AM_CFLAGS = -W -Wall -Wshadow -Wcast-qual -Wwrite-strings -D_XOPEN_SOURCE=700
 AM_CPPFLAGS = -I$(top_srcdir)/include/
-AM_LDFLAGS = 
+AM_LDFLAGS =
+LIBS =
 
 lib_LTLIBRARIES = libailsaldap.la
 libailsaldap_la_SOURCES = common.c password.c ldif.c config.c
