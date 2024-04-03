@@ -5,4 +5,8 @@ aildap (0.5.3-1) UNRELEASED; urgency=medium
 
   [ Iain M. Conochie ]
   * Add ldap support to lcou
- -- Iain M Conochie <iain@ailsatech.net>  Sat, 06 Jan 2024 02:16:47 +0000
+
+  [ Iain M. Conochie ]
+  * Removed openssl for hashing. Using gcrypt now
+
+ -- Iain M Conochie <iain@ailsatech.net>  Wed, 03 Apr 2024 22:00:00 +0100
