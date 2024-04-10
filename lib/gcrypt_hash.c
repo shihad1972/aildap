@@ -144,7 +144,6 @@ ailsa_get_pass_hash(char *pass, const char *type, size_t len)
         p = stpcpy(npass, pass);
         for (i = 0; i < 6; i++)
                 *(p + i) = salt[i];
-        p = stpcpy(p, salt);
         if (!(out = ailsa_hash_string(npass, type))) {
                 ailsa_syslog(LOG_DAEMON, "ailsa_hash_string failed in ailsa_get_pass_hash");
                 my_free(npass);

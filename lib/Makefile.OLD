@@ -17,7 +17,7 @@ lib_LIBRARIES = libailsaldap.a
 
 CPPFLAGS += `pkg-config --cflags glib-2.0`
 LDFLAGS += -L/lib/x86_64-linux-gnu
-LDLIBS += -lldap -lcrypto -lgcrypt
+LDLIBS += -lldap -lcrypto -lgcrypt -lailsa
 ARFLAGS = rvU
 #LLDFLAGS = -L/lib/x86_64-linux-gnu -lldap
 #SLDFLAGS = -L/lib/x86_64-linux-gnu -lcrypto

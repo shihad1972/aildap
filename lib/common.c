@@ -75,6 +75,13 @@ rep_truncate(const char *what, int max)
 	fprintf(stderr, "%s truncated. Max allowed is %d\n", what, max - 1);
 }
 
+void
+rep_err(const char *error)
+{
+	fprintf(stderr, "%s\n", error);
+	exit (MEM);
+}
+
 int
 init_lcu_data(inp_data_s *data) 
 {

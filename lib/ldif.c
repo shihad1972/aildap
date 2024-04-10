@@ -111,3 +111,89 @@ get_ldif_user(inp_data_s *data)
 	return name;
 }
 
+void
+output_sso_ldif(inp_data_s *data)
+{
+	char *name, *ldom = get_ldif_format(data->dom, "dc", ".");
+	unsigned char *phash = NULL;
+	const char *uou = "people";
+
+	name = data->name;
+	if (data->uou)
+		uou = data->uou;
+	if (data->np ==  0)
+		phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
+	printf("\
+# %s, %s, %s\n\
+dn: cn=%s,ou=%s,%s\n\
+cn: %s\n\
+objectClass: simpleSecurityObject\n\
+objectClass: organizationalRole\n", name, uou, ldom, name, uou, ldom, name);
+	if (data->np == 0)
+		// The below gives errors in debian package build. Probably due to ifdefs
+		printf("userPassword: {SSHA}%s\n", phash);
+	free(ldom);
+	if(phash)
+		free(phash);
+}
+
+void
+output_user_ldif(inp_data_s *data)
+{
+	char *name, *ldom;
+	const char *uou = "people", *gou = "group";
+	unsigned char *phash = NULL;
+
+	ldom = get_ldif_format(data->dom, "dc", ".");
+	name = data->uname;
+	if (data->uou)
+		uou = data->uou;
+	if (data->gou)
+		gou = data->gou;
+	if (data->np ==  0)
+		phash = ailsa_get_pass_hash(data->pass, "sha1", strlen(data->pass));
+	*(data->sur) = toupper(*(data->sur));
+	printf("\
+# %s, people, %s\n\
+dn: uid=%s,ou=%s,%s\n\
+uid: %s\n\
+sn: %s\n\
+gn: %s\n\
+cn: %s\n\
+objectClass: inetOrgPerson\n\
+objectClass: posixAccount\n\
+objectClass: top\n\
+objectClass: shadowAccount\n\
+shadowLastChange: 0\n\
+shadowMax: 99999\n\
+shadowWarning: 7\n\
+loginShell: /bin/bash\n\
+uidNumber: %hd\n\
+homeDirectory: /home/%s\n\
+", name, data->dom, name, uou, ldom, name, data->sur, data->fname, data->name, 
+data->user, name);
+	if (data->np == 0)
+		printf("userPassword: {SSHA}%s\n", phash);
+	printf("gecos: %s %s\n", data->fname, data->sur);
+	printf("mail: %s@%s\n", name, data->dom);
+	if (data->gr > NONE)
+		printf("\
+gidNumber: %hd\n\
+\n\
+# %s, group, %s\n\
+dn: cn=%s,ou=%s,%s\n\
+cn: %s\n\
+gidNumber: %hd\n\
+objectClass: posixGroup\n\
+objectClass: top\n\
+", data->user, name, data->dom, name, gou, ldom, name, data->user);
+	else
+		printf("\
+gidNumber: 100\n\
+\n\
+");
+	free(ldom);
+	if (phash)
+		free(phash);
+}
+

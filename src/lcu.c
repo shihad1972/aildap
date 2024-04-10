@@ -129,11 +129,14 @@ main (int argc, char *argv[])
 		pass = getPassword("Enter password for user: ");
 		data->pass = strndup(pass, DOMAIN);
 		free(pass);
+		if (!(ailsa_init_gcrypt("1.6.0")))
+			goto cleanup;
 	}
 	if (data->sso == 0)
 		output_user_ldif(data);
 	else
 		output_sso_ldif(data);
-	clean_lcu_data(data);
-	return retval;
+	cleanup:
+		clean_lcu_data(data);
+		return retval;
 }
