@@ -1,4 +1,4 @@
-It would be usefule to have a function, similar to get_ldif_format, but here
+It would be useful to have a function, similar to get_ldif_format, but here
 a linked list is passed in with this structure:
 
 typedef struct ailsa_ldif_s {
@@ -11,3 +11,39 @@ based on the number of members, we could then create an ldap string like so:
 type(1)=string(1),type(2)=string(2).....type(x)=string(x)
 
 This can be used to create the DN of an entry.
+
+The question then becomes, do I need to have functions to create every type
+of entry? At the moment, I am using a helper function in lcdhcp to fill the
+LDAPmod struct. How beneficial would it be to put these into an
+ailsa_ldif_s struct first? Would it be better to have
+
+typedef struct ailsa_ldif_s {
+	char *type;
+	char **values;
+	size_t len;
+	ailsa_ldif_s *next;
+}
+
+To fill this, I would need to know the number of values for a given type.
+
+Alternatively:
+It could be useful to have a function get_ldif_entry which would an input
+linked list of structs like so:
+
+typedef struct ailsa_ldif_entry_s {
+        char *type, *values, *delim;
+        ailsa_ldif_entry_s *next;
+}
+
+The delim value is what separates the entries in values, so for each struct
+in the list, we would get a list of values separated by delim, and output:
+
+type: value(1)
+type: value(2)
+....
+type: value(x)
+
+We would continue this for each struct in the list, to get the lidif entry
+final output. 
+
+Given the structure of LDAPmod, I think the first would be better.
